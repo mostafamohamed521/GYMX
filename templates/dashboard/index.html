@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+  <div class="welcome-content">
+    <div class="welcome-text">
+      <h2>Good day, {{ request.user.get_short_name }}</h2>
+      <p>Here's your gym overview for today</p>
+    </div>
+    <div class="welcome-badge">
+      <span class="live-dot"></span>
+      {{ stats.attendance_today }} members checked in today
+    </div>
+  </div>
+</div>
+
+<!-- Stat Cards Row 1 -->
+<div class="row g-3 mb-3">
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-value">{{ stats.total_members }}</div>
+      <div class="stat-label">Total Members</div>
+      <div class="stat-change up">
+        <i class="fa-solid fa-arrow-trend-up"></i> +{{ stats.new_members_this_month }} this month
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div>
+      <div class="stat-value">{{ stats.active_members }}</div>
+      <div class="stat-label">Active Members</div>
+      <div class="stat-change up">
+        <i class="fa-solid fa-arrow-trend-up"></i> 78% retention rate
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card orange">
+      <div class="stat-icon orange"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div class="stat-value">${{ stats.monthly_revenue|floatformat:0 }}</div>
+      <div class="stat-label">Monthly Revenue</div>
+      <div class="stat-change up">
+        <i class="fa-solid fa-arrow-trend-up"></i> +12.5% vs last month
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card purple">
+      <div class="stat-icon purple"><i class="fa-solid fa-person-running"></i></div>
+      <div class="stat-value">{{ stats.total_coaches }}</div>
+      <div class="stat-label">Active Coaches</div>
+      <div class="stat-change up">
+        <i class="fa-solid fa-circle-check"></i> All schedules confirmed
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stat Cards Row 2 -->
+<div class="row g-3 mb-4">
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card cyan">
+      <div class="stat-icon cyan"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-value">{{ stats.attendance_today }}</div>
+      <div class="stat-label">Today's Attendance</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Above average</div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fa-solid fa-id-card"></i></div>
+      <div class="stat-value">{{ stats.active_memberships }}</div>
+      <div class="stat-label">Active Memberships</div>
+      <div class="stat-change up"><i class="fa-solid fa-circle-check"></i> 8 expiring soon</div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card red">
+      <div class="stat-icon red"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-value">{{ stats.pending_payments }}</div>
+      <div class="stat-label">Pending Payments</div>
+      <div class="stat-change down"><i class="fa-solid fa-triangle-exclamation"></i> Requires attention</div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="stat-card orange">
+      <div class="stat-icon orange"><i class="fa-solid fa-star"></i></div>
+      <div class="stat-value">4.8</div>
+      <div class="stat-label">Average Rating</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Based on 124 reviews</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mb-4">
+  <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:12px;">Quick Actions</div>
+  <div class="row g-2">
+    <div class="col-6 col-md-4 col-xl-2">
+      <a href="#" class="quick-action qc-1">
+        <div class="quick-action-icon"><i class="fa-solid fa-user-plus"></i></div>
+        Add Member
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+      <a href="#" class="quick-action qc-2">
+        <div class="quick-action-icon"><i class="fa-solid fa-credit-card"></i></div>
+        New Payment
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+      <a href="#" class="quick-action qc-3">
+        <div class="quick-action-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+        Add Class
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+      <a href="#" class="quick-action qc-4">
+        <div class="quick-action-icon"><i class="fa-solid fa-qrcode"></i></div>
+        Check-in Scan
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+      <a href="#" class="quick-action qc-5">
+        <div class="quick-action-icon"><i class="fa-solid fa-chart-bar"></i></div>
+        View Reports
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+      <a href="#" class="quick-action qc-6">
+        <div class="quick-action-icon"><i class="fa-solid fa-person-running"></i></div>
+        Add Coach
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Charts + Content -->
+<div class="row g-4">
+
+  <!-- Revenue Chart -->
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title">
+          <i class="fa-solid fa-chart-line"></i>
+          Revenue Overview
+        </span>
+        <div style="display:flex;gap:6px;">
+          <span class="badge-gymx blue">2024</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Membership Distribution -->
+  <div class="col-lg-4">
+    <div class="card-gymx h-100">
+      <div class="card-header">
+        <span class="card-header-title">
+          <i class="fa-solid fa-id-card"></i>
+          Membership Types
+        </span>
+      </div>
+      <div class="card-body">
+        <div style="height:180px;display:flex;align-items:center;justify-content:center;">
+          <canvas id="membershipChart"></canvas>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);">
+              <span style="width:10px;height:10px;border-radius:3px;background:var(--primary);display:inline-block;"></span>
+              Monthly
+            </div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">94 &nbsp;<span style="color:var(--text-muted);font-weight:400;">51%</span></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);">
+              <span style="width:10px;height:10px;border-radius:3px;background:var(--success);display:inline-block;"></span>
+              Quarterly
+            </div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">55 &nbsp;<span style="color:var(--text-muted);font-weight:400;">30%</span></span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);">
+              <span style="width:10px;height:10px;border-radius:3px;background:var(--warning);display:inline-block;"></span>
+              Annual
+            </div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">36 &nbsp;<span style="color:var(--text-muted);font-weight:400;">19%</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title">
+          <i class="fa-solid fa-bolt"></i>
+          Recent Activity
+        </span>
+        <a href="#" style="font-size:12px;color:var(--primary);font-weight:500;">View all</a>
+      </div>
+      <div class="card-body">
+        {% for activity in recent_activity %}
+        <div class="activity-item">
+          <div class="activity-icon"
+            style="
+              {% if activity.color == 'success' %}background:#ECFDF5;color:var(--success);{% endif %}
+              {% if activity.color == 'primary' %}background:#EFF6FF;color:var(--primary);{% endif %}
+              {% if activity.color == 'info' %}background:#F0F9FF;color:var(--accent);{% endif %}
+              {% if activity.color == 'warning' %}background:#FFFBEB;color:var(--warning);{% endif %}
+              {% if activity.color == 'secondary' %}background:var(--bg-muted);color:var(--text-muted);{% endif %}
+            ">
+            <i class="fa-solid fa-{{ activity.icon }}"></i>
+          </div>
+          <div class="activity-text">{{ activity.text }}</div>
+          <div class="activity-time">{{ activity.time }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Coaches -->
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title">
+          <i class="fa-solid fa-trophy"></i>
+          Top Coaches
+        </span>
+        <a href="#" style="font-size:12px;color:var(--primary);font-weight:500;">View all</a>
+      </div>
+      <div class="card-body">
+        {% for coach in top_coaches %}
+        <div class="coach-card">
+          <div class="coach-avatar">{{ coach.name|first }}</div>
+          <div class="coach-info">
+            <div class="coach-name">{{ coach.name }}</div>
+            <div class="coach-specialty">{{ coach.specialty }}</div>
+            <div class="stars" style="margin-top:3px;">
+              {% for i in "12345" %}
+                {% if forloop.counter <= coach.rating|floatformat:"0"|add:"0" %}
+                  <i class="fa-solid fa-star"></i>
+                {% else %}
+                  <i class="fa-regular fa-star" style="color:var(--text-disabled);"></i>
+                {% endif %}
+              {% endfor %}
+              <span style="font-size:11px;color:var(--text-muted);margin-left:4px;font-weight:500;">{{ coach.rating }}</span>
+            </div>
+          </div>
+          <div class="coach-members">
+            <div class="num">{{ coach.members }}</div>
+            <div class="lbl">members</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Chart -->
+  <div class="col-12">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title">
+          <i class="fa-solid fa-calendar-check"></i>
+          Weekly Attendance
+        </span>
+        <div class="welcome-badge" style="padding:5px 12px;font-size:11px;">
+          <span class="live-dot"></span>
+          Live
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="height:200px;">
+          <canvas id="attendanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: 'white',
+      borderColor: '#E2E8F0',
+      borderWidth: 1,
+      titleColor: '#0F172A',
+      bodyColor: '#64748B',
+      padding: 10,
+      cornerRadius: 12,
+      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+    }
+  }
+};
+
+// Revenue Chart
+const revCtx = document.getElementById('revenueChart').getContext('2d');
+const revGrad = revCtx.createLinearGradient(0, 0, 0, 260);
+revGrad.addColorStop(0, 'rgba(59,130,246,0.15)');
+revGrad.addColorStop(1, 'rgba(59,130,246,0)');
+
+new Chart(revCtx, {
+  type: 'line',
+  data: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    datasets: [{
+      data: [12400,14200,13800,15900,16200,14800,17100,18450,17300,19000,16500,20100],
+      borderColor: '#3B82F6',
+      backgroundColor: revGrad,
+      borderWidth: 2,
+      pointBackgroundColor: 'white',
+      pointBorderColor: '#3B82F6',
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      tension: 0.4,
+      fill: true,
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } } },
+      y: {
+        grid: { color: '#F1F5F9' },
+        ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 }, callback: v => '$' + (v/1000).toFixed(0) + 'k' }
+      }
+    }
+  }
+});
+
+// Membership Doughnut
+new Chart(document.getElementById('membershipChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Monthly','Quarterly','Annual'],
+    datasets: [{
+      data: [94,55,36],
+      backgroundColor: ['#3B82F6','#10B981','#F59E0B'],
+      borderColor: 'white',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    cutout: '72%',
+  }
+});
+
+// Attendance Bar
+const attCtx = document.getElementById('attendanceChart').getContext('2d');
+new Chart(attCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets: [{
+      data: [82,64,91,73,88,67,45],
+      backgroundColor: '#EFF6FF',
+      borderColor: '#3B82F6',
+      borderWidth: 1.5,
+      borderRadius: 8,
+      borderSkipped: false,
+      hoverBackgroundColor: '#DBEAFE',
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } } },
+      y: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } }, beginAtZero: true }
+    }
+  }
+});
+</script>
+{% endblock %}

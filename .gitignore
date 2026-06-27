@@ -1,53 +1,33 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Virtual Environment
-venv/
-env/
-.venv/
-ENV/
-gymx/
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
 
 # Django
-db.sqlite3
-db.sqlite3-journal
-
-# Environment Variables
-.env
-.env.*
-
-# Static & Media
-media/
-staticfiles/
-
-# Logs
 *.log
+local_settings.py
+db.sqlite3
+gymx.db
+staticfiles/
+media/
 
-# VS Code
+# Environment
+.env
+.venv
+venv/
+env/
+
+# IDEs
 .vscode/
-
-# PyCharm
 .idea/
+*.swp
+*.swo
 
-# macOS
+# OS
 .DS_Store
-
-# Windows
 Thumbs.db
-Desktop.ini
-
-# Python packaging
-build/
-dist/
-*.egg-info/
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Migrations (اختياري)
-# */migrations/*
-# !*/migrations/__init__.py

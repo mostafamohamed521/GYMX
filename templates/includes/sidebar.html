@@ -1,0 +1,111 @@
+{% load static %}
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <i class="fa-solid fa-dumbbell"></i>
+    </div>
+    <div>
+      <div class="logo-text">GymX</div>
+      <div class="logo-sub">Management</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    <div class="nav-section-label">Main</div>
+
+    <a href="{% url 'dashboard:index' %}"
+       class="nav-item {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+      <i class="fa-solid fa-gauge"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <div class="nav-section-label">Management</div>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-users"></i>
+      <span>Members</span>
+      <span class="nav-badge">248</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-id-card"></i>
+      <span>Memberships</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-person-running"></i>
+      <span>Coaches</span>
+      <span class="nav-badge success">12</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span>Attendance</span>
+    </a>
+
+    <div class="nav-section-label">Finance</div>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-credit-card"></i>
+      <span>Payments</span>
+      <span class="nav-badge warning">8</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Reports</span>
+    </a>
+
+    <div class="nav-section-label">Operations</div>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-calendar-days"></i>
+      <span>Classes</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-boxes-stacked"></i>
+      <span>Inventory</span>
+    </a>
+
+    <div class="nav-section-label">Account</div>
+
+    <a href="{% url 'accounts:profile' %}"
+       class="nav-item {% if request.resolver_match.url_name == 'profile' or request.resolver_match.url_name == 'profile_edit' %}active{% endif %}">
+      <i class="fa-solid fa-circle-user"></i>
+      <span>My Profile</span>
+    </a>
+
+    <a href="#" class="nav-item">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </a>
+
+    <a href="{% url 'accounts:logout' %}" class="nav-item danger"
+       onclick="return confirm('Are you sure you want to logout?')">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Logout</span>
+    </a>
+
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="{% url 'accounts:profile' %}" class="sidebar-user" style="text-decoration:none;">
+      <div class="sidebar-avatar">
+        {% if request.user.profile_image %}
+          <img src="{{ request.user.profile_image.url }}" alt="avatar" />
+        {% else %}
+          {{ request.user.get_short_name|first|upper }}
+        {% endif %}
+      </div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">{{ request.user.get_short_name }}</div>
+        <div class="sidebar-user-role">{{ request.user.get_role_display }}</div>
+      </div>
+      <i class="fa-solid fa-ellipsis" style="color:var(--text-muted);font-size:12px;"></i>
+    </a>
+  </div>
+
+</aside>

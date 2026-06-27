@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}GymX — Gym Management System{% endblock %}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- GymX CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ═══ SIDEBAR ═══════════════════════════════════════ -->
+  {% include 'includes/sidebar.html' %}
+
+  <!-- ═══ MAIN CONTENT ══════════════════════════════════ -->
+  <div class="main-content" id="mainContent">
+
+    <!-- ═══ NAVBAR ══════════════════════════════════════ -->
+    {% include 'includes/navbar.html' %}
+
+    <!-- ═══ ALERTS ══════════════════════════════════════ -->
+    {% if messages %}
+    <div id="messages-container" style="padding: 16px 28px 0; position: relative; z-index: 100;">
+      {% for message in messages %}
+      <div class="alert-gymx {% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}success{% endif %} mb-2 justify-content-between">
+        <span>
+          <i class="fa-solid {% if message.tags == 'error' %}fa-circle-xmark{% elif message.tags == 'warning' %}fa-triangle-exclamation{% elif message.tags == 'info' %}fa-circle-info{% else %}fa-circle-check{% endif %}"></i>
+          {{ message }}
+        </span>
+        <button onclick="this.closest('.alert-gymx').remove()" style="background:none;border:none;color:inherit;cursor:pointer;opacity:0.6;padding:0 4px;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ═══ PAGE CONTENT ════════════════════════════════ -->
+    <main class="page-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- ═══ FOOTER ══════════════════════════════════════ -->
+    {% include 'includes/footer.html' %}
+
+  </div><!-- /main-content -->
+</div><!-- /app-wrapper -->
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

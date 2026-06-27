@@ -1,0 +1,107 @@
+{% load static %}
+<header class="navbar">
+
+  <button class="navbar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <div class="navbar-breadcrumb d-none d-md-flex">
+    <i class="fa-solid fa-house" style="font-size:11px;color:var(--text-muted);"></i>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">{% block page_breadcrumb %}Dashboard{% endblock %}</span>
+  </div>
+
+  <div class="navbar-spacer"></div>
+
+  <div class="navbar-search d-none d-lg-block">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Search..." id="globalSearch" />
+  </div>
+
+  <div class="navbar-actions">
+
+    <div class="navbar-btn" data-bs-toggle="dropdown" style="position:relative;" title="Notifications">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-dot"></span>
+    </div>
+    <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end">
+      <li>
+        <div style="padding:12px 16px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text-primary);">Notifications</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">3 new today</div>
+        </div>
+      </li>
+      <li>
+        <a class="dropdown-item" href="#">
+          <div style="width:32px;height:32px;border-radius:var(--radius-lg);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid fa-user-plus" style="color:var(--primary);font-size:12px;"></i>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--text-primary);font-weight:500;">New member registered</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">2 min ago</div>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="#">
+          <div style="width:32px;height:32px;border-radius:var(--radius-lg);background:#ECFDF5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid fa-credit-card" style="color:var(--success);font-size:12px;"></i>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--text-primary);font-weight:500;">Payment received</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">15 min ago</div>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="#">
+          <div style="width:32px;height:32px;border-radius:var(--radius-lg);background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);font-size:12px;"></i>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--text-primary);font-weight:500;">8 memberships expiring</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">1 hour ago</div>
+          </div>
+        </a>
+      </li>
+      <li><hr class="dropdown-divider" /></li>
+      <li><a class="dropdown-item" href="#" style="justify-content:center;color:var(--primary);font-weight:600;">View all notifications</a></li>
+    </ul>
+
+    <div class="navbar-user" data-bs-toggle="dropdown" style="cursor:pointer;">
+      <div class="navbar-avatar">
+        {% if request.user.profile_image %}
+          <img src="{{ request.user.profile_image.url }}" alt="avatar" />
+        {% else %}
+          {{ request.user.get_short_name|first|upper }}
+        {% endif %}
+      </div>
+      <div class="d-none d-sm-block">
+        <div class="navbar-user-name">{{ request.user.get_short_name }}</div>
+        <div class="navbar-user-role">{{ request.user.get_role_display }}</div>
+      </div>
+      <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--text-muted);"></i>
+    </div>
+    <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end">
+      <li>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);margin-bottom:6px;">
+          <div style="font-size:13.5px;font-weight:700;color:var(--text-primary);">{{ request.user.get_full_name }}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">{{ request.user.email }}</div>
+        </div>
+      </li>
+      <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fa-solid fa-circle-user"></i>My Profile</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:profile_edit' %}"><i class="fa-solid fa-pen-to-square"></i>Edit Profile</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:change_password' %}"><i class="fa-solid fa-lock"></i>Change Password</a></li>
+      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>Settings</a></li>
+      <li><hr class="dropdown-divider" /></li>
+      <li>
+        <a class="dropdown-item" href="{% url 'accounts:logout' %}"
+           style="color:var(--danger);"
+           onclick="return confirm('Logout?')">
+          <i class="fa-solid fa-right-from-bracket" style="color:var(--danger);"></i>Logout
+        </a>
+      </li>
+    </ul>
+
+  </div>
+</header>
