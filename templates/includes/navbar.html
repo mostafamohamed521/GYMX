@@ -1,7 +1,7 @@
 {% load static %}
 <header class="navbar">
 
-  <button class="navbar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+  <button class="navbar-toggle" onclick="toggleSidebar()">
     <i class="fa-solid fa-bars"></i>
   </button>
 
@@ -15,65 +15,66 @@
 
   <div class="navbar-search d-none d-lg-block">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input type="text" placeholder="Search..." id="globalSearch" />
+    <input type="text" placeholder="Search... (Ctrl+K)" id="globalSearch" />
   </div>
 
   <div class="navbar-actions">
 
+    <!-- Notifications -->
     <div class="navbar-btn" data-bs-toggle="dropdown" style="position:relative;" title="Notifications">
       <i class="fa-solid fa-bell"></i>
+      {% with unread=request.user.notifications.all %}
+      {% if unread %}
       <span class="notif-dot"></span>
+      {% endif %}
+      {% endwith %}
     </div>
-    <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end">
+    <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end" style="width:320px;max-height:420px;overflow-y:auto;">
       <li>
-        <div style="padding:12px 16px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;">
+        <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
           <div style="font-size:13px;font-weight:700;color:var(--text-primary);">Notifications</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">3 new today</div>
+          <a href="{% url 'accounts:notifications' %}" style="font-size:11px;color:var(--primary);font-weight:600;text-decoration:none;">View all</a>
         </div>
       </li>
+      {% for notif in request.user.notifications.all|slice:":5" %}
       <li>
-        <a class="dropdown-item" href="#">
-          <div style="width:32px;height:32px;border-radius:var(--radius-lg);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fa-solid fa-user-plus" style="color:var(--primary);font-size:12px;"></i>
+        <a class="dropdown-item" href="{% url 'accounts:notifications' %}" style="align-items:flex-start;gap:10px;padding:12px 16px;">
+          <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;
+            {% if notif.type == 'success' or notif.type == 'payment' %}background:#ECFDF5;color:var(--success);
+            {% elif notif.type == 'warning' %}background:#FFFBEB;color:var(--warning);
+            {% elif notif.type == 'danger' %}background:#FEF2F2;color:var(--danger);
+            {% else %}background:#EFF6FF;color:var(--primary);{% endif %}">
+            <i class="fa-solid {{ notif.get_icon }}"></i>
           </div>
           <div>
-            <div style="font-size:13px;color:var(--text-primary);font-weight:500;">New member registered</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">2 min ago</div>
+            <div style="font-size:13px;color:var(--text-primary);font-weight:500;line-height:1.3;">{{ notif.title }}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">{{ notif.created_at|timesince }} ago</div>
           </div>
         </a>
       </li>
+      {% empty %}
       <li>
-        <a class="dropdown-item" href="#">
-          <div style="width:32px;height:32px;border-radius:var(--radius-lg);background:#ECFDF5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fa-solid fa-credit-card" style="color:var(--success);font-size:12px;"></i>
-          </div>
-          <div>
-            <div style="font-size:13px;color:var(--text-primary);font-weight:500;">Payment received</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">15 min ago</div>
-          </div>
+        <div style="padding:28px;text-align:center;color:var(--text-muted);font-size:13px;">
+          <i class="fa-solid fa-bell-slash" style="font-size:22px;display:block;margin-bottom:8px;"></i>
+          No notifications
+        </div>
+      </li>
+      {% endfor %}
+      <li><hr style="margin:4px 0;border-color:var(--border);" /></li>
+      <li>
+        <a class="dropdown-item" href="{% url 'accounts:notifications' %}" style="justify-content:center;color:var(--primary);font-weight:600;font-size:13px;">
+          View all notifications
         </a>
       </li>
-      <li>
-        <a class="dropdown-item" href="#">
-          <div style="width:32px;height:32px;border-radius:var(--radius-lg);background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);font-size:12px;"></i>
-          </div>
-          <div>
-            <div style="font-size:13px;color:var(--text-primary);font-weight:500;">8 memberships expiring</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">1 hour ago</div>
-          </div>
-        </a>
-      </li>
-      <li><hr class="dropdown-divider" /></li>
-      <li><a class="dropdown-item" href="#" style="justify-content:center;color:var(--primary);font-weight:600;">View all notifications</a></li>
     </ul>
 
+    <!-- User dropdown -->
     <div class="navbar-user" data-bs-toggle="dropdown" style="cursor:pointer;">
       <div class="navbar-avatar">
         {% if request.user.profile_image %}
           <img src="{{ request.user.profile_image.url }}" alt="avatar" />
         {% else %}
-          {{ request.user.get_short_name|first|upper }}
+          {{ request.user.get_initials }}
         {% endif %}
       </div>
       <div class="d-none d-sm-block">
@@ -87,18 +88,30 @@
         <div style="padding:12px 16px;border-bottom:1px solid var(--border);margin-bottom:6px;">
           <div style="font-size:13.5px;font-weight:700;color:var(--text-primary);">{{ request.user.get_full_name }}</div>
           <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">{{ request.user.email }}</div>
+          <div style="margin-top:6px;">
+            <span class="badge-gymx {% if request.user.two_fa_enabled %}green{% else %}gray{% endif %}" style="font-size:10px;">
+              <i class="fa-solid {% if request.user.two_fa_enabled %}fa-shield-halved{% else %}fa-shield{% endif %}"></i>
+              2FA {% if request.user.two_fa_enabled %}On{% else %}Off{% endif %}
+            </span>
+          </div>
         </div>
       </li>
       <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fa-solid fa-circle-user"></i>My Profile</a></li>
       <li><a class="dropdown-item" href="{% url 'accounts:profile_edit' %}"><i class="fa-solid fa-pen-to-square"></i>Edit Profile</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:notifications' %}"><i class="fa-solid fa-bell"></i>Notifications</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:activity_log' %}"><i class="fa-solid fa-list-check"></i>Activity Log</a></li>
+      <li><hr class="dropdown-divider" /></li>
       <li><a class="dropdown-item" href="{% url 'accounts:change_password' %}"><i class="fa-solid fa-lock"></i>Change Password</a></li>
-      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>Settings</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:two_fa' %}"><i class="fa-solid fa-shield-halved"></i>Two-Factor Auth</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:session_management' %}"><i class="fa-solid fa-desktop"></i>Active Sessions</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:login_history' %}"><i class="fa-solid fa-clock-rotate-left"></i>Login History</a></li>
+      <li><a class="dropdown-item" href="{% url 'accounts:preferences' %}"><i class="fa-solid fa-sliders"></i>Preferences</a></li>
       <li><hr class="dropdown-divider" /></li>
       <li>
         <a class="dropdown-item" href="{% url 'accounts:logout' %}"
            style="color:var(--danger);"
-           onclick="return confirm('Logout?')">
-          <i class="fa-solid fa-right-from-bracket" style="color:var(--danger);"></i>Logout
+           onclick="return confirm('Sign out?')">
+          <i class="fa-solid fa-right-from-bracket" style="color:var(--danger);"></i>Sign Out
         </a>
       </li>
     </ul>

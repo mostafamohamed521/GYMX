@@ -1,4 +1,4 @@
 Django==5.0.6
-psycopg[binary]
+psycopg2[binary]
 python-decouple==3.8
 Pillow>=11.2.1

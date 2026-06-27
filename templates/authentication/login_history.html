@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login History — GymX{% endblock %}
+{% block page_breadcrumb %}Login History{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Login History</h1>
+    <p class="page-subtitle">Review all sign-in activity on your account</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <!-- Quick stats -->
+    {% with success_count=history|length %}
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:8px 16px;font-size:12px;color:var(--text-muted);">
+      <i class="fa-solid fa-clock" style="margin-right:4px;"></i>
+      Last 50 events
+    </div>
+    {% endwith %}
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card blue" style="padding:16px 18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:0;"><i class="fa-solid fa-right-to-bracket"></i></div>
+      </div>
+      <div class="stat-value" style="font-size:22px;">{{ history|length }}</div>
+      <div class="stat-label">Total Events</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card green" style="padding:16px 18px;">
+      <div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-value" style="font-size:22px;">
+        {{ history|dictsortreversed:"status"|first }}
+        {% with cnt=0 %}{% for h in history %}{% if h.status == 'success' %}{% with cnt=cnt|add:"1" %}{% endwith %}{% endif %}{% endfor %}{% endwith %}
+        —
+      </div>
+      <div class="stat-label">Successful Logins</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card red" style="padding:16px 18px;">
+      <div class="stat-icon red" style="width:34px;height:34px;font-size:14px;margin-bottom:8px;"><i class="fa-solid fa-circle-xmark"></i></div>
+      <div class="stat-value" style="font-size:22px;">{{ request.user.failed_login_count }}</div>
+      <div class="stat-label">Failed Attempts</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card orange" style="padding:16px 18px;">
+      <div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:8px;"><i class="fa-solid fa-location-dot"></i></div>
+      <div class="stat-value" style="font-size:22px;">{{ request.user.last_login_ip|default:"—" }}</div>
+      <div class="stat-label">Last Login IP</div>
+    </div>
+  </div>
+</div>
+
+<!-- History Table -->
+<div class="card-gymx">
+  <div class="card-header">
+    <span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Sign-in Activity</span>
+    <a href="{% url 'accounts:activity_log' %}" style="font-size:12px;color:var(--primary);font-weight:500;">Full activity log</a>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Date & Time</th>
+          <th>IP Address</th>
+          <th>Browser</th>
+          <th>OS</th>
+          <th>Device</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in history %}
+        <tr>
+          <td>
+            {% if entry.status == 'success' %}
+            <span class="badge-gymx green"><i class="fa-solid fa-circle-check"></i> Success</span>
+            {% elif entry.status == 'failed' %}
+            <span class="badge-gymx red"><i class="fa-solid fa-circle-xmark"></i> Failed</span>
+            {% elif entry.status == 'logout' %}
+            <span class="badge-gymx gray"><i class="fa-solid fa-right-from-bracket"></i> Logout</span>
+            {% elif entry.status == 'locked' %}
+            <span class="badge-gymx orange"><i class="fa-solid fa-lock"></i> Locked</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-primary);font-weight:500;">
+            {{ entry.created_at|date:"M d, Y" }}
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">{{ entry.created_at|date:"H:i:s" }}</div>
+          </td>
+          <td style="font-family:monospace;font-size:13px;">{{ entry.ip_address|default:"—" }}</td>
+          <td>{{ entry.browser }}</td>
+          <td>{{ entry.os }}</td>
+          <td>
+            <i class="fa-solid {% if 'Mobile' in entry.os or 'Android' in entry.os or 'iOS' in entry.os %}fa-mobile-screen{% else %}fa-desktop{% endif %}"
+               style="color:var(--text-muted);"></i>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+            No login history yet
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

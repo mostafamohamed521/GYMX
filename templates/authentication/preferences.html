@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Preferences — GymX{% endblock %}
+{% block page_breadcrumb %}Preferences{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Preferences</h1>
+    <p class="page-subtitle">Customize your GymX experience</p>
+  </div>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="row g-4">
+
+    <!-- Appearance -->
+    <div class="col-lg-6">
+      <div class="card-gymx">
+        <div class="card-header">
+          <span class="card-header-title"><i class="fa-solid fa-palette"></i> Appearance</span>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <label class="form-label">Theme</label>
+            {{ form.theme }}
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;">
+              <div class="theme-option" data-value="light" onclick="selectTheme('light')"
+                style="border:2px solid {% if request.user.theme == 'light' %}var(--primary){% else %}var(--border){% endif %};border-radius:var(--radius-lg);padding:14px;cursor:pointer;text-align:center;transition:all 0.2s;background:{% if request.user.theme == 'light' %}var(--primary-light){% else %}white{% endif %};">
+                <div style="width:40px;height:28px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;margin:0 auto 8px;"></div>
+                <div style="font-size:12px;font-weight:600;color:{% if request.user.theme == 'light' %}var(--primary){% else %}var(--text-secondary){% endif %};">Light</div>
+              </div>
+              <div class="theme-option" data-value="dark" onclick="selectTheme('dark')"
+                style="border:2px solid {% if request.user.theme == 'dark' %}var(--primary){% else %}var(--border){% endif %};border-radius:var(--radius-lg);padding:14px;cursor:pointer;text-align:center;transition:all 0.2s;background:{% if request.user.theme == 'dark' %}var(--primary-light){% else %}white{% endif %};">
+                <div style="width:40px;height:28px;background:#1E293B;border-radius:6px;margin:0 auto 8px;"></div>
+                <div style="font-size:12px;font-weight:600;color:{% if request.user.theme == 'dark' %}var(--primary){% else %}var(--text-secondary){% endif %};">Dark</div>
+              </div>
+              <div class="theme-option" data-value="system" onclick="selectTheme('system')"
+                style="border:2px solid {% if request.user.theme == 'system' %}var(--primary){% else %}var(--border){% endif %};border-radius:var(--radius-lg);padding:14px;cursor:pointer;text-align:center;transition:all 0.2s;background:{% if request.user.theme == 'system' %}var(--primary-light){% else %}white{% endif %};">
+                <div style="width:40px;height:28px;background:linear-gradient(135deg,#F8FAFC 50%,#1E293B 50%);border-radius:6px;margin:0 auto 8px;"></div>
+                <div style="font-size:12px;font-weight:600;color:{% if request.user.theme == 'system' %}var(--primary){% else %}var(--text-secondary){% endif %};">System</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Language</label>
+            {{ form.language }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="col-lg-6">
+      <div class="card-gymx">
+        <div class="card-header">
+          <span class="card-header-title"><i class="fa-solid fa-bell"></i> Notifications</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:0;">
+
+            {% for field, label, desc in notification_fields %}{% endfor %}
+
+            {% for item in pref_items %}{% endfor %}
+
+            <!-- Email notifications -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-envelope" style="color:var(--text-muted);width:16px;"></i> Email Notifications
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;padding-left:24px;">Receive updates via email</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" name="notif_email" {% if request.user.notif_email %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- SMS -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-comment-sms" style="color:var(--text-muted);width:16px;"></i> SMS Notifications
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;padding-left:24px;">Receive alerts via SMS</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" name="notif_sms" {% if request.user.notif_sms %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Push -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-bell" style="color:var(--text-muted);width:16px;"></i> Push Notifications
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;padding-left:24px;">In-app notifications</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" name="notif_push" {% if request.user.notif_push %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Payment -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-credit-card" style="color:var(--text-muted);width:16px;"></i> Payment Alerts
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;padding-left:24px;">Notify on payments & dues</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" name="notif_payment" {% if request.user.notif_payment %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Membership -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-id-card" style="color:var(--text-muted);width:16px;"></i> Membership Updates
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;padding-left:24px;">Expiry and renewal reminders</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" name="notif_membership" {% if request.user.notif_membership %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Attendance -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-calendar-check" style="color:var(--text-muted);width:16px;"></i> Attendance Alerts
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;padding-left:24px;">Daily attendance summary</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" name="notif_attendance" {% if request.user.notif_attendance %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="col-12">
+      <div class="card-gymx">
+        <div class="card-header">
+          <span class="card-header-title"><i class="fa-solid fa-shield-halved"></i> Security Settings</span>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <a href="{% url 'accounts:change_password' %}" class="quick-action qc-1" style="text-decoration:none;">
+                <div class="quick-action-icon"><i class="fa-solid fa-lock"></i></div>
+                Change Password
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="{% url 'accounts:two_fa' %}" class="quick-action qc-2" style="text-decoration:none;">
+                <div class="quick-action-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                Two-Factor Auth
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="{% url 'accounts:session_management' %}" class="quick-action qc-4" style="text-decoration:none;">
+                <div class="quick-action-icon"><i class="fa-solid fa-desktop"></i></div>
+                Active Sessions
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save -->
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% url 'accounts:profile' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary">
+        <i class="fa-solid fa-floppy-disk"></i> Save Preferences
+      </button>
+    </div>
+
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Toggle Switch */
+.toggle-switch { position:relative; display:inline-block; width:42px; height:24px; flex-shrink:0; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; cursor:pointer; inset:0;
+  background:var(--border-strong); border-radius:999px;
+  transition:background 0.2s;
+}
+.toggle-slider::before {
+  content:''; position:absolute;
+  width:18px; height:18px; left:3px; bottom:3px;
+  background:white; border-radius:50%;
+  transition:transform 0.2s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.15);
+}
+.toggle-switch input:checked + .toggle-slider { background:var(--primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform:translateX(18px); }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectTheme(value) {
+  document.querySelectorAll('.theme-option').forEach(el => {
+    const isSelected = el.dataset.value === value;
+    el.style.borderColor = isSelected ? 'var(--primary)' : 'var(--border)';
+    el.style.background  = isSelected ? 'var(--primary-light)' : 'white';
+    el.querySelector('div:last-child').style.color = isSelected ? 'var(--primary)' : 'var(--text-secondary)';
+  });
+  const select = document.querySelector('select[name="theme"]');
+  if (select) select.value = value;
+}
+</script>
+{% endblock %}

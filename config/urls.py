@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 def root_redirect(request):
     if request.user.is_authenticated:
         return redirect('dashboard:index')
-    return redirect('accounts:login')
+    return redirect('accounts:splash')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

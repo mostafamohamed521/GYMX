@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Session Management — GymX{% endblock %}
+{% block page_breadcrumb %}Session Management{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Active Sessions</h1>
+    <p class="page-subtitle">View and manage all devices where your account is signed in</p>
+  </div>
+  {% if sessions.count > 1 %}
+  <form method="post" action="{% url 'accounts:revoke_all_sessions' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-gymx danger"
+      onclick="return confirm('Revoke all other sessions?')">
+      <i class="fa-solid fa-right-from-bracket"></i> Sign Out All Others
+    </button>
+  </form>
+  {% endif %}
+</div>
+
+<!-- Current session callout -->
+<div style="background:linear-gradient(135deg,#EFF6FF,#F0F9FF);border:1px solid #BFDBFE;border-radius:var(--radius-2xl);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
+  <i class="fa-solid fa-circle-check" style="color:var(--success);font-size:18px;"></i>
+  <div>
+    <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">You are currently signed in on this device</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">This is your active session — it cannot be revoked from here</div>
+  </div>
+</div>
+
+<div class="row g-3">
+  {% for session in sessions %}
+  <div class="col-lg-6">
+    <div class="card-gymx {% if session.session_key == current_key %}active-session{% endif %}"
+         style="{% if session.session_key == current_key %}border-color:#BFDBFE;{% endif %}">
+      <div class="card-body" style="padding:20px;">
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+
+          <!-- Device icon -->
+          <div style="width:46px;height:46px;border-radius:var(--radius-lg);background:{% if session.session_key == current_key %}#EFF6FF{% else %}var(--bg-muted){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {{ session.device_icon }}"
+               style="font-size:20px;color:{% if session.session_key == current_key %}var(--primary){% else %}var(--text-muted){% endif %};"></i>
+          </div>
+
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span style="font-size:14px;font-weight:600;color:var(--text-primary);">
+                {{ session.browser }} on {{ session.os }}
+              </span>
+              {% if session.session_key == current_key %}
+              <span class="badge-gymx green" style="font-size:10px;"><i class="fa-solid fa-circle" style="font-size:7px;"></i> Current</span>
+              {% endif %}
+            </div>
+
+            <div style="font-size:12px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+              <span><i class="fa-solid fa-location-dot" style="width:14px;"></i> {{ session.ip_address|default:"Unknown IP" }}</span>
+              <span><i class="fa-solid fa-clock" style="width:14px;"></i> Active {{ session.last_active|timesince }} ago</span>
+              <span><i class="fa-solid fa-calendar" style="width:14px;"></i> Started {{ session.created_at|date:"M d, Y" }}</span>
+            </div>
+
+            {% if session.session_key != current_key %}
+            <a href="{% url 'accounts:revoke_session' session.pk %}" class="btn-gymx outline"
+               style="font-size:12px;padding:6px 14px;text-decoration:none;"
+               onclick="return confirm('Revoke this session?')">
+              <i class="fa-solid fa-xmark"></i> Revoke Session
+            </a>
+            {% else %}
+            <span style="font-size:12px;color:var(--text-muted);">
+              <i class="fa-solid fa-lock" style="margin-right:4px;"></i>Cannot revoke current session
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div style="text-align:center;padding:48px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+      <i class="fa-solid fa-desktop" style="font-size:36px;color:var(--text-muted);margin-bottom:12px;display:block;"></i>
+      <div style="font-size:15px;font-weight:600;color:var(--text-primary);">No active sessions</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Session tracking starts after your next login</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Security tip -->
+<div style="margin-top:24px;background:var(--bg-muted);border-radius:var(--radius-2xl);padding:16px 20px;display:flex;align-items:flex-start;gap:12px;">
+  <i class="fa-solid fa-lightbulb" style="color:var(--warning);font-size:16px;margin-top:2px;"></i>
+  <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+    <strong style="color:var(--text-primary);">Security tip:</strong>
+    If you see an unrecognized session, revoke it immediately and
+    <a href="{% url 'accounts:change_password' %}" style="color:var(--primary);">change your password</a>.
+    Consider enabling <a href="{% url 'accounts:two_fa' %}" style="color:var(--primary);">Two-Factor Authentication</a> for extra protection.
+  </div>
+</div>
+{% endblock %}

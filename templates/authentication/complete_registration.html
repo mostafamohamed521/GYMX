@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Complete Registration — GymX{% endblock %}
+{% block page_breadcrumb %}Complete Registration{% endblock %}
+
+{% block content %}
+<!-- Progress bar -->
+<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:20px 24px;margin-bottom:24px;box-shadow:var(--shadow-sm);">
+  <div style="display:flex;align-items:center;gap:0;position:relative;">
+    {% for step, label in step_data %}{% endfor %}
+    <div style="display:flex;align-items:center;flex:1;gap:0;">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--success);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;"><i class="fa-solid fa-check"></i></div>
+      <div style="flex:1;height:2px;background:var(--success);"></div>
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--success);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;"><i class="fa-solid fa-check"></i></div>
+      <div style="flex:1;height:2px;background:var(--primary);"></div>
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">3</div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text-muted);font-weight:500;">
+    <span style="color:var(--success);">Account Created</span>
+    <span style="color:var(--success);">Email Verified</span>
+    <span style="color:var(--primary);">Complete Profile</span>
+  </div>
+</div>
+
+<div class="page-header">
+  <h1 class="page-title">Complete Your Profile</h1>
+  <p class="page-subtitle">Add the remaining details to finish setting up your account</p>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-image"></i> Profile Photo</span></div>
+        <div class="card-body" style="text-align:center;">
+          <div id="photoPreview" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:white;margin:0 auto 16px;overflow:hidden;box-shadow:var(--shadow-md);">
+            {{ request.user.get_initials }}
+          </div>
+          <label class="form-label">Upload Photo <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+          {{ form.profile_image }}
+          <small style="display:block;margin-top:6px;color:var(--text-muted);font-size:11px;">JPG or PNG, max 5MB</small>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-location-dot"></i> Address & Bio</span></div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            {{ form.address }}
+          </div>
+          <div>
+            <label class="form-label">Short Bio <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+            {{ form.bio }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-phone"></i> Emergency Contact</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Contact Name</label>
+              {{ form.emergency_contact_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Contact Phone</label>
+              {{ form.emergency_contact_phone }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'dashboard:index' %}" class="btn-gymx outline" style="text-decoration:none;">
+          Skip for now
+        </a>
+        <button type="submit" class="btn-gymx primary">
+          <i class="fa-solid fa-check"></i> Complete Registration
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const fileInput = document.querySelector('input[type="file"]');
+if (fileInput) {
+  fileInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('photoPreview').innerHTML =
+          '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+</script>
+{% endblock %}

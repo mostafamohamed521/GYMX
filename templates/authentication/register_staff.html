@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Staff — GymX{% endblock %}
+{% block page_breadcrumb %}Add Staff Member{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Add Staff Member</h1>
+    <p class="page-subtitle">Register a new staff account with the appropriate role</p>
+  </div>
+  <a href="{% url 'dashboard:index' %}" class="btn-gymx outline" style="text-decoration:none;">
+    <i class="fa-solid fa-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-user-tie"></i> Staff Information</span>
+        <span class="badge-gymx blue">Admin Access Required</span>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.first_name.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.last_name.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Username</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.username.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email Address</label>
+              {{ form.email }}
+              {% if form.email.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.email.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Gender</label>
+              {{ form.gender }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">Role</label>
+              {{ form.role }}
+              {% if form.role.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.role.errors|first }}</div>{% endif %}
+              <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px 14px;margin-top:8px;font-size:12.5px;color:var(--text-muted);">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i>
+                Staff accounts get system access based on their assigned role. Choose carefully.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Password</label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.password1.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Confirm Password</label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.password2.errors|first }}</div>{% endif %}
+            </div>
+            {% if form.non_field_errors %}
+            <div class="col-12">
+              <div class="alert-gymx error"><i class="fa-solid fa-circle-xmark"></i> {{ form.non_field_errors|first }}</div>
+            </div>
+            {% endif %}
+            <div class="col-12 d-flex justify-content-end gap-2 pt-2">
+              <a href="{% url 'dashboard:index' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+              <button type="submit" class="btn-gymx primary">
+                <i class="fa-solid fa-user-plus"></i> Add Staff Member
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Activity Log — GymX{% endblock %}
+{% block page_breadcrumb %}Activity Log{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Activity Log</h1>
+    <p class="page-subtitle">Complete history of all actions performed on your account</p>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow-xs);">
+  <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">
+    <i class="fa-solid fa-filter" style="margin-right:6px;"></i>Filter:
+  </span>
+  <a href="{% url 'accounts:activity_log' %}"
+     class="filter-pill {% if not filter_action %}active{% endif %}"
+     style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none;border:1px solid;transition:all 0.15s;
+     {% if not filter_action %}background:var(--primary);color:white;border-color:var(--primary);{% else %}background:white;color:var(--text-secondary);border-color:var(--border);{% endif %}">
+    All
+  </a>
+  {% for val, label in action_choices %}
+  <a href="?action={{ val }}"
+     class="filter-pill"
+     style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none;border:1px solid;transition:all 0.15s;
+     {% if filter_action == val %}background:var(--primary);color:white;border-color:var(--primary);{% else %}background:white;color:var(--text-secondary);border-color:var(--border);{% endif %}">
+    {{ label }}
+  </a>
+  {% endfor %}
+</div>
+
+<div class="card-gymx">
+  <div class="card-header">
+    <span class="card-header-title">
+      <i class="fa-solid fa-list-check"></i>
+      Activity Events
+    </span>
+    <span style="font-size:12px;color:var(--text-muted);">Showing last 100 events</span>
+  </div>
+  <div class="card-body" style="padding:0 20px;">
+
+    {% if logs %}
+    <!-- Timeline -->
+    <div style="position:relative;padding:20px 0;">
+      <!-- Vertical line -->
+      <div style="position:absolute;left:19px;top:0;bottom:0;width:2px;background:var(--border);"></div>
+
+      {% for log in logs %}
+      <div style="display:flex;gap:16px;margin-bottom:{% if not forloop.last %}20px{% else %}0{% endif %};position:relative;">
+
+        <!-- Dot -->
+        <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;position:relative;z-index:1;
+          {% if log.get_color == 'green' %}background:#ECFDF5;color:var(--success);
+          {% elif log.get_color == 'blue' %}background:#EFF6FF;color:var(--primary);
+          {% elif log.get_color == 'orange' %}background:#FFFBEB;color:var(--warning);
+          {% elif log.get_color == 'red' %}background:#FEF2F2;color:var(--danger);
+          {% else %}background:var(--bg-muted);color:var(--text-muted);{% endif %}
+          border:3px solid white;box-shadow:var(--shadow-xs);">
+          <i class="fa-solid {{ log.get_icon }}"></i>
+        </div>
+
+        <!-- Content -->
+        <div style="flex:1;padding-top:6px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+            <div>
+              <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">
+                {{ log.get_action_display }}
+              </div>
+              {% if log.description %}
+              <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">
+                {{ log.description }}
+              </div>
+              {% endif %}
+              {% if log.ip_address %}
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:6px;">
+                <i class="fa-solid fa-location-dot"></i> {{ log.ip_address }}
+              </div>
+              {% endif %}
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:12px;color:var(--text-secondary);font-weight:500;">
+                {{ log.created_at|date:"M d, Y" }}
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">
+                {{ log.created_at|date:"H:i:s" }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Empty state -->
+    <div style="text-align:center;padding:60px 24px;">
+      <div style="width:64px;height:64px;background:var(--bg-muted);border-radius:var(--radius-xl);display:inline-flex;align-items:center;justify-content:center;font-size:26px;color:var(--text-muted);margin-bottom:16px;">
+        <i class="fa-solid fa-list-check"></i>
+      </div>
+      <h3 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">No activity found</h3>
+      <p style="font-size:13px;color:var(--text-muted);">
+        {% if filter_action %}No events matching this filter.
+        <a href="{% url 'accounts:activity_log' %}" style="color:var(--primary);">Clear filter</a>
+        {% else %}Your account activity will be tracked here.{% endif %}
+      </p>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

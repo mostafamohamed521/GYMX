@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Notifications — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Notifications</h1>
+    <p class="page-subtitle">
+      {% if unread_count > 0 %}
+        You had <strong>{{ unread_count }}</strong> unread notification{{ unread_count|pluralize }}
+      {% else %}
+        All notifications have been read
+      {% endif %}
+    </p>
+  </div>
+  {% if notifications %}
+  <form method="post" action="{% url 'accounts:clear_notifications' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-gymx outline"
+      onclick="return confirm('Clear all notifications?')" style="font-size:13px;">
+      <i class="fa-solid fa-trash"></i> Clear All
+    </button>
+  </form>
+  {% endif %}
+</div>
+
+{% if notifications %}
+
+<!-- Group: Today -->
+{% regroup notifications by created_at|date:"Y-m-d" as grouped_notifs %}
+{% for day_group in grouped_notifs %}
+<div style="margin-bottom:28px;">
+  <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding:0 4px;">
+    {% if day_group.grouper == today|date:"Y-m-d" %}Today
+    {% else %}{{ day_group.grouper }}{% endif %}
+  </div>
+
+  <div class="card-gymx">
+    <div style="divide-y:1px solid var(--border);">
+      {% for notif in day_group.list %}
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};transition:background 0.15s;cursor:pointer;"
+           onmouseenter="this.style.background='var(--bg-muted)'"
+           onmouseleave="this.style.background='transparent'">
+
+        <!-- Icon -->
+        <div style="width:40px;height:40px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+          {% if notif.type == 'success' or notif.type == 'payment' %}background:#ECFDF5;color:var(--success);
+          {% elif notif.type == 'warning' %}background:#FFFBEB;color:var(--warning);
+          {% elif notif.type == 'danger' %}background:#FEF2F2;color:var(--danger);
+          {% elif notif.type == 'member' %}background:#EFF6FF;color:var(--primary);
+          {% elif notif.type == 'system' %}background:var(--bg-muted);color:var(--text-muted);
+          {% else %}background:#EFF6FF;color:var(--primary);{% endif %}">
+          <i class="fa-solid {{ notif.get_icon }}"></i>
+        </div>
+
+        <!-- Content -->
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div>
+              <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">
+                {{ notif.title }}
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">
+                {{ notif.message }}
+              </div>
+            </div>
+            <div style="flex-shrink:0;text-align:right;">
+              <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;">
+                {{ notif.created_at|timesince }} ago
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">
+                {{ notif.created_at|date:"H:i" }}
+              </div>
+            </div>
+          </div>
+          {% if notif.link %}
+          <a href="{{ notif.link }}" class="auth-link" style="font-size:12px;margin-top:6px;display:inline-flex;align-items:center;gap:4px;">
+            View details <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+          </a>
+          {% endif %}
+        </div>
+
+        <!-- Type badge -->
+        <div style="flex-shrink:0;">
+          <span class="badge-gymx {{ notif.get_color }}" style="font-size:10px;">
+            {{ notif.get_type_display }}
+          </span>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% else %}
+<!-- Empty state -->
+<div style="text-align:center;padding:80px 24px;">
+  <div style="width:72px;height:72px;background:var(--bg-muted);border-radius:var(--radius-xl);display:inline-flex;align-items:center;justify-content:center;font-size:30px;color:var(--text-muted);margin-bottom:20px;">
+    <i class="fa-solid fa-bell-slash"></i>
+  </div>
+  <h3 style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">No Notifications</h3>
+  <p style="font-size:14px;color:var(--text-muted);max-width:340px;margin:0 auto;line-height:1.6;">
+    You're all caught up. Notifications about your account activity will appear here.
+  </p>
+  <a href="{% url 'dashboard:index' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:24px;display:inline-flex;">
+    <i class="fa-solid fa-gauge"></i> Back to Dashboard
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

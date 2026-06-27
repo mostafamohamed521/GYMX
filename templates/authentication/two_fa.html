@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Two-Factor Authentication — GymX{% endblock %}
+{% block page_breadcrumb %}Two-Factor Authentication{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Two-Factor Authentication</h1>
+    <p class="page-subtitle">Add an extra layer of security to your account</p>
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <!-- Status Card -->
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-body" style="padding:32px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:var(--radius-xl);display:inline-flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;
+          {% if request.user.two_fa_enabled %}background:#ECFDF5;color:var(--success);{% else %}background:var(--bg-muted);color:var(--text-muted);{% endif %}">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+
+        <h3 style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">
+          2FA is {% if request.user.two_fa_enabled %}Enabled{% else %}Disabled{% endif %}
+        </h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;line-height:1.6;">
+          {% if request.user.two_fa_enabled %}
+            Your account is protected with two-factor authentication. A code will be required each time you sign in.
+          {% else %}
+            Two-factor authentication is not active. Enable it to significantly improve your account security.
+          {% endif %}
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+          {% if request.user.two_fa_enabled %}
+          <button type="submit" name="action" value="disable" class="btn-gymx danger" style="width:100%;justify-content:center;"
+            onclick="return confirm('Are you sure you want to disable 2FA? This will reduce your account security.')">
+            <i class="fa-solid fa-shield-xmark"></i> Disable 2FA
+          </button>
+          {% else %}
+          <button type="submit" name="action" value="enable" class="btn-gymx primary" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-shield-halved"></i> Enable 2FA
+          </button>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+
+    <!-- Security score -->
+    <div class="card-gymx mt-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-gauge-high"></i> Security Score</span>
+      </div>
+      <div class="card-body">
+        {% with score=0 %}
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--text-secondary);">
+              <i class="fa-solid fa-envelope" style="width:16px;color:var(--text-muted);"></i> Email Verified
+            </span>
+            {% if request.user.is_email_verified %}
+            <span class="badge-gymx green"><i class="fa-solid fa-check"></i> Verified</span>
+            {% else %}
+            <a href="{% url 'accounts:email_verification' %}" class="badge-gymx red" style="text-decoration:none;">Verify</a>
+            {% endif %}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--text-secondary);">
+              <i class="fa-solid fa-mobile-screen" style="width:16px;color:var(--text-muted);"></i> Phone Verified
+            </span>
+            {% if request.user.is_phone_verified %}
+            <span class="badge-gymx green"><i class="fa-solid fa-check"></i> Verified</span>
+            {% else %}
+            <a href="{% url 'accounts:phone_otp' %}" class="badge-gymx orange" style="text-decoration:none;">Verify</a>
+            {% endif %}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--text-secondary);">
+              <i class="fa-solid fa-shield-halved" style="width:16px;color:var(--text-muted);"></i> Two-Factor Auth
+            </span>
+            {% if request.user.two_fa_enabled %}
+            <span class="badge-gymx green"><i class="fa-solid fa-check"></i> Active</span>
+            {% else %}
+            <span class="badge-gymx red">Disabled</span>
+            {% endif %}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--text-secondary);">
+              <i class="fa-solid fa-key" style="width:16px;color:var(--text-muted);"></i> Strong Password
+            </span>
+            <span class="badge-gymx green"><i class="fa-solid fa-check"></i> Set</span>
+          </div>
+        </div>
+
+        <!-- Score bar -->
+        {% with email_ok=request.user.is_email_verified phone_ok=request.user.is_phone_verified twofa_ok=request.user.two_fa_enabled %}
+        {% if email_ok and phone_ok and twofa_ok %}{% with pct="100" clr="var(--success)" lbl="Excellent" %}
+        {% include "includes/_score_bar.html" with pct=pct clr=clr lbl=lbl %}{% endwith %}
+        {% elif email_ok and twofa_ok %}{% with pct="75" clr="var(--primary)" lbl="Good" %}
+        {% include "includes/_score_bar.html" with pct=pct clr=clr lbl=lbl %}{% endwith %}
+        {% elif email_ok %}{% with pct="50" clr="var(--warning)" lbl="Fair" %}
+        {% include "includes/_score_bar.html" with pct=pct clr=clr lbl=lbl %}{% endwith %}
+        {% else %}{% with pct="25" clr="var(--danger)" lbl="Weak" %}
+        {% include "includes/_score_bar.html" with pct=pct clr=clr lbl=lbl %}{% endwith %}
+        {% endif %}
+        {% endwith %}
+        {% endwith %}
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Panel -->
+  <div class="col-lg-7">
+    <div class="card-gymx mb-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-circle-info"></i> How It Works</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          {% for step in steps %}{% endfor %}
+          <div style="display:flex;gap:16px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">1</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Sign In with Password</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">Enter your username and password as usual to initiate the login process.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">2</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Receive Verification Code</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">A 6-digit code is sent to your registered email address or phone number.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">3</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Enter the Code</div>
+              <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">Enter the 6-digit code on the verification screen to complete your login.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-triangle-exclamation"></i> Important Notes</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {% for note in notes %}{% endfor %}
+          {% for item in "1234" %}
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg-muted);border-radius:var(--radius-lg);">
+            <i class="fa-solid {% cycle 'fa-envelope' 'fa-mobile-screen' 'fa-clock' 'fa-lock' %}"
+               style="color:var(--primary);font-size:13px;margin-top:2px;flex-shrink:0;width:16px;"></i>
+            <span style="font-size:13px;color:var(--text-secondary);line-height:1.5;">
+              {% cycle 'Make sure your email address is verified before enabling 2FA.' 'Having a verified phone number allows SMS fallback if email is unavailable.' 'Each verification code is valid for 10 minutes only.' 'You can disable 2FA at any time from this page.' %}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
