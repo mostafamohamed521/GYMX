@@ -28,7 +28,7 @@ def _log(request, action, desc):
 def _timeline(member, event_type, title, desc='', user=None):
     MemberTimeline.objects.create(
         member=member, event_type=event_type,
-        title=title, description=desc, user=request.user,
+        title=title, description=desc, created_by=user,
     )
 
 
@@ -131,7 +131,7 @@ def member_edit(request, pk):
         form = MemberForm(request.POST, request.FILES, instance=member)
         if form.is_valid():
             form.save()
-            _timeline(member, 'status_change', 'Member profile updated', created_by=request.user)
+            _timeline(member, 'status_change', 'Member profile updated', user=request.user)
             _log(request, 'member_updated', f'Updated member: {member.get_full_name()}')
             messages.success(request, 'Member updated successfully!')
             return redirect('members:detail', pk=pk)
@@ -168,7 +168,7 @@ def member_archive(request, pk):
         member.archived_at = timezone.now()
         member.archive_reason = reason
         member.save(update_fields=['status','archived_at','archive_reason'])
-        _timeline(member, 'status_change', 'Member archived', reason, request.user)
+        _timeline(member, 'status_change', 'Member archived', desc=reason, user=request.user)
         messages.success(request, f'{member.get_full_name()} archived.')
         return redirect('members:list')
     return render(request, 'members/member_archive.html', {'member': member})
@@ -182,7 +182,7 @@ def member_restore(request, pk):
         member.archived_at = None
         member.archive_reason = ''
         member.save(update_fields=['status','archived_at','archive_reason'])
-        _timeline(member, 'status_change', 'Member restored', created_by=request.user)
+        _timeline(member, 'status_change', 'Member restored', user=request.user)
         messages.success(request, f'{member.get_full_name()} restored to active.')
         return redirect('members:detail', pk=pk)
     return render(request, 'members/member_restore.html', {'member': member})
@@ -200,7 +200,7 @@ def member_freeze(request, pk):
             m.save()
             _timeline(member, 'frozen',
                       f"Account frozen until {m.freeze_end}",
-                      m.freeze_reason, request.user)
+                      desc=m.freeze_reason, user=request.user)
             messages.success(request, f'{member.get_full_name()} frozen successfully.')
             return redirect('members:detail', pk=pk)
     else:
@@ -217,7 +217,7 @@ def member_unfreeze(request, pk):
         member.freeze_end   = None
         member.freeze_reason = ''
         member.save(update_fields=['status','freeze_start','freeze_end','freeze_reason'])
-        _timeline(member, 'unfrozen', 'Account unfrozen', created_by=request.user)
+        _timeline(member, 'unfrozen', 'Account unfrozen', user=request.user)
         messages.success(request, f'{member.get_full_name()} unfrozen.')
         return redirect('members:detail', pk=pk)
     return render(request, 'members/member_unfreeze.html', {'member': member})
@@ -234,7 +234,7 @@ def member_blacklist(request, pk):
             m.status = Member.Status.BLACKLIST
             m.save()
             _timeline(member, 'status_change', 'Member blacklisted',
-                      m.blacklist_reason, request.user)
+                      desc=m.blacklist_reason, user=request.user)
             messages.warning(request, f'{member.get_full_name()} has been blacklisted.')
             return redirect('members:list')
     else:
@@ -273,7 +273,7 @@ def member_merge(request):
             duplicate.save(update_fields=['merged_into','status'])
             _timeline(primary, 'status_change',
                       f"Merged with {duplicate.get_full_name()} [{duplicate.member_id}]",
-                      created_by=request.user)
+                      user=request.user)
             messages.success(request, 'Members merged successfully.')
             return redirect('members:detail', pk=primary.pk)
     else:
@@ -303,7 +303,7 @@ def member_notes(request, pk):
             note.member     = member
             note.created_by = request.user
             note.save()
-            _timeline(member, 'note', f"Note added: {note.title}", created_by=request.user)
+            _timeline(member, 'note', f"Note added: {note.title}", user=request.user)
             messages.success(request, 'Note added.')
             return redirect('members:notes', pk=pk)
     else:
@@ -385,7 +385,7 @@ def member_measurements(request, pk):
             m.save()
             _timeline(member, 'measurement',
                       f"Measurements recorded — Weight: {m.weight_kg}kg",
-                      created_by=request.user)
+                      user=request.user)
             messages.success(request, 'Measurements saved.')
             return redirect('members:measurements', pk=pk)
     else:
@@ -457,7 +457,7 @@ def member_documents(request, pk):
             d.member      = member
             d.uploaded_by = request.user
             d.save()
-            _timeline(member, 'document', f"Document added: {d.title}", created_by=request.user)
+            _timeline(member, 'document', f"Document added: {d.title}", user=request.user)
             messages.success(request, 'Document uploaded.')
             return redirect('members:documents', pk=pk)
     else:
@@ -487,7 +487,7 @@ def member_assign(request, pk):
             if member.assigned_coach:
                 _timeline(member, 'coach_assigned',
                           f"Coach assigned: {member.assigned_coach.get_full_name()}",
-                          created_by=request.user)
+                          user=request.user)
             messages.success(request, 'Assignments updated.')
             return redirect('members:detail', pk=pk)
     else:
@@ -525,7 +525,7 @@ def member_goal_achieve(request, pk, goal_pk):
     goal.status      = MemberGoal.GoalStatus.ACHIEVED
     goal.achieved_at = timezone.now().date()
     goal.save(update_fields=['status','achieved_at'])
-    _timeline(member, 'goal_achieved', f"Goal achieved: {goal.title}", created_by=request.user)
+    _timeline(member, 'goal_achieved', f"Goal achieved: {goal.title}", user=request.user)
     messages.success(request, f'Goal "{goal.title}" marked as achieved!')
     return redirect('members:goals', pk=pk)
 
