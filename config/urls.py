@@ -14,6 +14,7 @@ urlpatterns = [
     path('', root_redirect),
     path('auth/', include('apps.accounts.urls', namespace='accounts')),
     path('dashboard/', include('apps.dashboard.urls', namespace='dashboard')),
+    path('members/',   include('apps.members.urls',   namespace='members')),
 ]
 
 if settings.DEBUG:

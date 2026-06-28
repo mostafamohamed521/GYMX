@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ action }}{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">{{ page_title }}</h1>
+    <p class="page-subtitle">{% if member %}Update member information{% else %}Register a new gym member{% endif %}</p>
+  </div>
+  <a href="{% if member %}{% url 'members:detail' member.pk %}{% else %}{% url 'members:list' %}{% endif %}"
+     class="btn-gymx outline" style="text-decoration:none;">
+    <i class="fa-solid fa-arrow-left"></i> Back
+  </a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row g-4">
+
+    <!-- Left column -->
+    <div class="col-lg-8">
+
+      <!-- Personal Info -->
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Personal Information</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name <span style="color:var(--danger);">*</span></label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.first_name.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name <span style="color:var(--danger);">*</span></label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.last_name.errors|first }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email Address</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Primary Phone</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Secondary Phone</label>
+              {{ form.phone_secondary }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Occupation</label>
+              {{ form.occupation }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Gender</label>
+              {{ form.gender }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Birth Date</label>
+              {{ form.birth_date }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Blood Type</label>
+              {{ form.blood_type }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nationality</label>
+              {{ form.nationality }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">National ID / Passport</label>
+              {{ form.national_id }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">Address</label>
+              {{ form.address }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fitness & Status -->
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dumbbell"></i> Fitness & Status</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Fitness Level</label>
+              {{ form.fitness_level }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Status</label>
+              {{ form.status }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Join Date</label>
+              {{ form.join_date }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">Internal Notes</label>
+              {{ form.notes }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="col-lg-4">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-image"></i> Profile Photo</span></div>
+        <div class="card-body" style="text-align:center;">
+          <div id="photoPreview" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:white;margin:0 auto 16px;overflow:hidden;box-shadow:var(--shadow-md);">
+            {% if member and member.profile_image %}
+              <img src="{{ member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />
+            {% else %}
+              <i class="fa-solid fa-user" style="font-size:28px;opacity:0.7;"></i>
+            {% endif %}
+          </div>
+          <label class="form-label">Upload Photo</label>
+          {{ form.profile_image }}
+          <small style="display:block;margin-top:6px;color:var(--text-muted);font-size:11px;">JPG or PNG, max 5MB</small>
+        </div>
+      </div>
+
+      {% if member %}
+      <!-- Quick Actions -->
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-bolt"></i> Quick Actions</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+          <a href="{% url 'members:freeze' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;font-size:13px;">
+            <i class="fa-solid fa-snowflake"></i> Freeze Account
+          </a>
+          <a href="{% url 'members:archive' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;font-size:13px;">
+            <i class="fa-solid fa-box-archive"></i> Archive Member
+          </a>
+          <a href="{% url 'members:transfer' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;font-size:13px;">
+            <i class="fa-solid fa-right-left"></i> Transfer
+          </a>
+          <a href="{% url 'members:blacklist' member.pk %}" class="btn-gymx danger" style="text-decoration:none;justify-content:center;font-size:13px;">
+            <i class="fa-solid fa-ban"></i> Blacklist
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Submit -->
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% if member %}{% url 'members:detail' member.pk %}{% else %}{% url 'members:list' %}{% endif %}"
+         class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary">
+        <i class="fa-solid fa-floppy-disk"></i>
+        {% if member %}Save Changes{% else %}Add Member{% endif %}
+      </button>
+    </div>
+
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const fi = document.querySelector('input[type="file"]');
+if (fi) {
+  fi.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const r = new FileReader();
+      r.onload = e => {
+        document.getElementById('photoPreview').innerHTML =
+          '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+      };
+      r.readAsDataURL(file);
+    }
+  });
+}
+</script>
+{% endblock %}

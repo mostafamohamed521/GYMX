@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Goals — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Goals{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Member Goals</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-trophy"></i> Goals ({{ goals|length }})</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for goal in goals %}
+        <div style="padding:16px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="badge-gymx {{ goal.get_status_color }}" style="font-size:10px;">{{ goal.get_status_display }}</span>
+                <span style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ goal.title }}</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);">{{ goal.get_goal_type_display }}{% if goal.target_date %} &middot; Due {{ goal.target_date|date:"M d, Y" }}{% endif %}</div>
+              {% if goal.description %}<div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">{{ goal.description }}</div>{% endif %}
+            </div>
+            <div style="display:flex;gap:4px;flex-shrink:0;">
+              {% if goal.status == 'in_progress' %}
+              <a href="{% url 'members:goal_achieve' member.pk goal.pk %}" class="navbar-btn" title="Mark achieved" style="width:28px;height:28px;border-radius:var(--radius-md);color:var(--success);text-decoration:none;">
+                <i class="fa-solid fa-check" style="font-size:11px;"></i>
+              </a>
+              {% endif %}
+              <a href="{% url 'members:goal_delete' member.pk goal.pk %}" onclick="return confirm('Delete goal?')" class="navbar-btn" title="Delete" style="width:28px;height:28px;border-radius:var(--radius-md);color:var(--danger);text-decoration:none;">
+                <i class="fa-solid fa-trash" style="font-size:11px;"></i>
+              </a>
+            </div>
+          </div>
+          {% if goal.target_value %}
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:5px;">
+              <span>Progress: {{ goal.current_value|default:0 }} / {{ goal.target_value }} {{ goal.unit }}</span>
+              <span>{{ goal.progress_pct }}%</span>
+            </div>
+            <div class="progress-gymx" style="height:6px;">
+              <div class="fill" style="width:{{ goal.progress_pct }}%;height:6px;background:{% if goal.status == 'achieved' %}var(--success){% elif goal.progress_pct >= 75 %}var(--primary){% elif goal.progress_pct >= 50 %}var(--warning){% else %}var(--danger){% endif %};"></div>
+            </div>
+          </div>
+          {% endif %}
+          {% if goal.achieved_at %}<div style="font-size:11px;color:var(--success);margin-top:6px;"><i class="fa-solid fa-trophy"></i> Achieved {{ goal.achieved_at|date:"M d, Y" }}</div>{% endif %}
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-trophy" style="font-size:32px;display:block;margin-bottom:10px;"></i>No goals set yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Goal</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Goal Type</label>{{ form.goal_type }}</div>
+          <div class="mb-3"><label class="form-label">Title</label>{{ form.title }}</div>
+          <div class="mb-3"><label class="form-label">Description</label>{{ form.description }}</div>
+          <div class="row g-2 mb-3">
+            <div class="col-4"><label class="form-label">Target</label>{{ form.target_value }}</div>
+            <div class="col-4"><label class="form-label">Current</label>{{ form.current_value }}</div>
+            <div class="col-4"><label class="form-label">Unit</label>{{ form.unit }}</div>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Target Date</label>{{ form.target_date }}</div>
+            <div class="col-6"><label class="form-label">Status</label>{{ form.status }}</div>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add Goal</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

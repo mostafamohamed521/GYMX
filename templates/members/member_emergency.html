@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Emergency Contacts — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Emergency{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Emergency Contacts</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-phone"></i> Contacts ({{ contacts|length }})</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for c in contacts %}
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:42px;height:42px;border-radius:50%;background:{% if c.is_primary %}var(--primary-light){% else %}var(--bg-muted){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid fa-user" style="color:{% if c.is_primary %}var(--primary){% else %}var(--text-muted){% endif %};"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ c.name }}</span>
+              {% if c.is_primary %}<span class="badge-gymx blue" style="font-size:10px;">Primary</span>{% endif %}
+              <span class="badge-gymx gray" style="font-size:10px;">{{ c.get_relationship_display }}</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-top:3px;">
+              <i class="fa-solid fa-phone" style="color:var(--text-muted);width:14px;"></i> {{ c.phone }}
+              {% if c.phone_alt %}&nbsp;&middot;&nbsp;<i class="fa-solid fa-phone" style="color:var(--text-muted);width:14px;"></i> {{ c.phone_alt }}{% endif %}
+            </div>
+            {% if c.email %}<div style="font-size:12px;color:var(--text-muted);margin-top:2px;"><i class="fa-solid fa-envelope" style="width:14px;"></i> {{ c.email }}</div>{% endif %}
+          </div>
+          <a href="{% url 'members:emergency_delete' member.pk c.pk %}" onclick="return confirm('Remove this contact?')" style="color:var(--danger);text-decoration:none;opacity:0.6;padding:4px;"><i class="fa-solid fa-trash" style="font-size:13px;"></i></a>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-phone" style="font-size:28px;display:block;margin-bottom:8px;"></i>No emergency contacts added</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Contact</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Full Name</label>{{ form.name }}</div>
+          <div class="mb-3"><label class="form-label">Relationship</label>{{ form.relationship }}</div>
+          <div class="mb-3"><label class="form-label">Phone</label>{{ form.phone }}</div>
+          <div class="mb-3"><label class="form-label">Alternative Phone</label>{{ form.phone_alt }}</div>
+          <div class="mb-3"><label class="form-label">Email</label>{{ form.email }}</div>
+          <div class="mb-3 form-check">{{ form.is_primary }} <label class="form-check-label">Set as primary contact</label></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add Contact</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

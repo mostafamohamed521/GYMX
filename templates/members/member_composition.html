@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Body Composition — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Composition{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Body Composition</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+
+{% if compositions %}
+{% with latest=compositions.0 %}
+<div class="row g-3 mb-4">
+  <div class="col-md col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-icon red" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-percent"></i></div><div class="stat-value" style="font-size:22px;">{{ latest.body_fat_pct|default:"—" }}<span style="font-size:11px;color:var(--text-muted);">%</span></div><div class="stat-label">Body Fat</div></div></div>
+  <div class="col-md col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value" style="font-size:22px;">{{ latest.muscle_mass_kg|default:"—" }}<span style="font-size:11px;color:var(--text-muted);">kg</span></div><div class="stat-label">Muscle Mass</div></div></div>
+  <div class="col-md col-6"><div class="stat-card cyan" style="padding:16px;"><div class="stat-icon cyan" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-droplet"></i></div><div class="stat-value" style="font-size:22px;">{{ latest.water_pct|default:"—" }}<span style="font-size:11px;color:var(--text-muted);">%</span></div><div class="stat-label">Water</div></div></div>
+  <div class="col-md col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-fire"></i></div><div class="stat-value" style="font-size:22px;">{{ latest.bmr_kcal|default:"—" }}<span style="font-size:11px;color:var(--text-muted);">kcal</span></div><div class="stat-label">BMR</div></div></div>
+  <div class="col-md col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-brain"></i></div><div class="stat-value" style="font-size:22px;">{{ latest.metabolic_age|default:"—" }}<span style="font-size:11px;color:var(--text-muted);">yrs</span></div><div class="stat-label">Metabolic Age</div></div></div>
+</div>
+{% endwith %}
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-table-list"></i> Composition History</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Date</th><th>Body Fat %</th><th>Muscle kg</th><th>Bone kg</th><th>Water %</th><th>Visceral</th><th>BMR</th></tr></thead>
+          <tbody>
+            {% for c in compositions %}
+            <tr>
+              <td style="font-weight:500;color:var(--text-primary);">{{ c.date|date:"M d, Y" }}</td>
+              <td>{{ c.body_fat_pct|default:"—" }}%</td>
+              <td>{{ c.muscle_mass_kg|default:"—" }}</td>
+              <td>{{ c.bone_mass_kg|default:"—" }}</td>
+              <td>{{ c.water_pct|default:"—" }}%</td>
+              <td>{{ c.visceral_fat|default:"—" }}</td>
+              <td>{{ c.bmr_kcal|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No records yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> New Record</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-2">
+            <div class="col-12"><label class="form-label">Date</label>{{ form.date }}</div>
+            <div class="col-6"><label class="form-label">Body Fat %</label>{{ form.body_fat_pct }}</div>
+            <div class="col-6"><label class="form-label">Muscle Mass kg</label>{{ form.muscle_mass_kg }}</div>
+            <div class="col-6"><label class="form-label">Bone Mass kg</label>{{ form.bone_mass_kg }}</div>
+            <div class="col-6"><label class="form-label">Water %</label>{{ form.water_pct }}</div>
+            <div class="col-6"><label class="form-label">Visceral Fat</label>{{ form.visceral_fat }}</div>
+            <div class="col-6"><label class="form-label">Metabolic Age</label>{{ form.metabolic_age }}</div>
+            <div class="col-12"><label class="form-label">BMR (kcal)</label>{{ form.bmr_kcal }}</div>
+            <div class="col-12"><label class="form-label">Notes</label>{{ form.notes }}</div>
+            <div class="col-12"><button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Save</button></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

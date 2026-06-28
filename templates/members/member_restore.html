@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Restore Member — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Restore{% endblock %}
+{% block content %}
+{% include 'members/_member_header_mini.html' %}
+<div class="row justify-content-center"><div class="col-lg-5">
+  <div class="card-gymx">
+    <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-rotate-left"></i> Restore Member</span></div>
+    <div class="card-body">
+      <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:20px;">This will restore <strong>{{ member.get_full_name }}</strong> to active status. They will regain access to their member account.</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+          <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-rotate-left"></i> Restore to Active</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

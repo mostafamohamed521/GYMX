@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Delete Member — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Delete{% endblock %}
+{% block content %}
+{% include 'members/_member_header_mini.html' %}
+<div class="row justify-content-center"><div class="col-lg-5">
+  <div class="card-gymx" style="border-color:#FECACA;">
+    <div class="card-header" style="background:#FEF2F2;"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-trash"></i> Delete Member</span></div>
+    <div class="card-body">
+      <div style="background:#FEF2F2;border-radius:var(--radius-xl);padding:14px 16px;margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--danger);margin-bottom:6px;"><i class="fa-solid fa-triangle-exclamation"></i> This action is irreversible</div>
+        <div style="font-size:13px;color:#7F1D1D;line-height:1.6;">All data for <strong>{{ member.get_full_name }}</strong> will be permanently deleted including measurements, documents, goals, and history. Consider <a href="{% url 'members:archive' member.pk %}" style="color:var(--danger);">archiving</a> instead.</div>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+          <button type="submit" class="btn-gymx danger"><i class="fa-solid fa-trash"></i> Delete Permanently</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

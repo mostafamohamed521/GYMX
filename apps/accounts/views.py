@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
+from django.contrib.auth import (
+    login, logout, update_session_auth_hash, get_user_model
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
-from django.db.models import Q
 
 from .models import LoginHistory, Notification, ActivityLog, UserSession
 from .forms import (
@@ -13,7 +14,16 @@ from .forms import (
     ProfileUpdateForm, CustomPasswordChangeForm,
     ForgotPasswordForm, ResetPasswordForm, UserPreferencesForm,
 )
-from .utils import log_login, log_activity, create_notification, track_session, get_client_ip
+from .utils import (
+    log_login, log_activity, create_notification,
+    track_session, get_client_ip,
+)
+from .notifications import (
+    send_otp, send_otp_email, send_otp_sms,
+    send_password_reset_email, send_password_reset_sms,
+    send_welcome_email, send_login_alert_email, send_login_alert_sms,
+    send_2fa_enabled_email,
+)
 
 User = get_user_model()
 
@@ -31,7 +41,7 @@ def welcome_view(request):
     return render(request, 'public/welcome.html')
 
 
-# ── Login / Logout ─────────────────────────────────────────
+# ── Login ──────────────────────────────────────────────────
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:index')
@@ -53,7 +63,10 @@ def login_view(request):
             else:
                 request.session.set_expiry(1209600)
 
-            user.last_login_ip = get_client_ip(request)
+            ip = get_client_ip(request)
+            ua = request.META.get('HTTP_USER_AGENT', '')
+
+            user.last_login_ip      = ip
             user.failed_login_count = 0
             user.save(update_fields=['last_login_ip', 'failed_login_count'])
 
@@ -61,10 +74,17 @@ def login_view(request):
             log_activity(request, user, 'login', 'Logged in successfully')
             track_session(request, user)
 
+            # Send login alert email (async-friendly: fire and forget)
+            if user.notif_email and user.email:
+                try:
+                    browser = _detect_browser(ua)
+                    send_login_alert_email(user, ip, browser)
+                except Exception:
+                    pass
+
             messages.success(request, f'Welcome back, {user.get_short_name()}!')
             return redirect(request.GET.get('next', 'dashboard:index'))
         else:
-            # Track failed attempts
             username = request.POST.get('username', '')
             try:
                 u = User.objects.get(username=username)
@@ -73,7 +93,8 @@ def login_view(request):
                     u.locked_until = timezone.now() + timezone.timedelta(minutes=15)
                     messages.error(request, 'Too many failed attempts. Account locked for 15 minutes.')
                 else:
-                    messages.error(request, f'Invalid credentials. {5 - u.failed_login_count} attempts remaining.')
+                    remaining = 5 - u.failed_login_count
+                    messages.error(request, f'Invalid credentials. {remaining} attempt{"s" if remaining != 1 else ""} remaining.')
                 u.save(update_fields=['failed_login_count', 'locked_until'])
                 log_login(request, u, 'failed')
             except User.DoesNotExist:
@@ -84,6 +105,7 @@ def login_view(request):
     return render(request, 'authentication/login.html', {'form': form})
 
 
+# ── Logout ─────────────────────────────────────────────────
 def logout_view(request):
     if request.user.is_authenticated:
         log_activity(request, request.user, 'logout', 'Logged out')
@@ -96,57 +118,99 @@ def logout_view(request):
     return redirect('accounts:login')
 
 
-# ── Registration ───────────────────────────────────────────
+# ── Register Member ────────────────────────────────────────
 def register_member_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:index')
+
     if request.method == 'POST':
         form = MemberRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             otp  = user.generate_otp()
+
+            # Store user in session for verification
             request.session['verify_user_id'] = user.pk
             request.session['verify_type']    = 'email'
+
+            # Send OTP via email + SMS
+            result = send_otp(user, otp, channel='both')
+
             log_activity(request, user, 'register', 'New member registered')
-            create_notification(user, 'success', 'Welcome to GymX!',
-                                'Your account has been created. Please verify your email.')
-            messages.success(request, 'Account created! Please verify your email.')
+            create_notification(
+                user, 'success',
+                'Welcome to GymX!',
+                'Your account was created. Please verify your email.'
+            )
+
+            if result.get('email') or result.get('sms'):
+                messages.success(
+                    request,
+                    f'Account created! Verification code sent to '
+                    f'{"your email" if result.get("email") else ""}'
+                    f'{" and phone" if result.get("email") and result.get("sms") else ""}'
+                    f'{"your phone" if not result.get("email") and result.get("sms") else ""}.'
+                )
+            else:
+                messages.warning(
+                    request,
+                    f'Account created but we could not send the code. '
+                    f'Your OTP is: {otp}'  # fallback for dev
+                )
+
             return redirect('accounts:email_verification')
         else:
             messages.error(request, 'Please fix the errors below.')
     else:
         form = MemberRegisterForm()
+
     return render(request, 'authentication/register_member.html', {'form': form})
 
 
+# ── Register Staff ─────────────────────────────────────────
 @login_required
 def register_staff_view(request):
     if not request.user.can_manage_members:
         messages.error(request, 'You do not have permission to add staff.')
         return redirect('dashboard:index')
+
     if request.method == 'POST':
         form = StaffRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            log_activity(request, request.user, 'member_added',
-                         f'Staff member added: {user.get_full_name()} ({user.get_role_display()})')
+            # Send welcome email
+            try:
+                send_welcome_email(user)
+            except Exception:
+                pass
+            log_activity(
+                request, request.user, 'member_added',
+                f'Staff added: {user.get_full_name()} ({user.get_role_display()})'
+            )
             messages.success(request, f'Staff member {user.get_full_name()} added successfully!')
             return redirect('dashboard:index')
         else:
             messages.error(request, 'Please fix the errors below.')
     else:
         form = StaffRegisterForm()
+
     return render(request, 'authentication/register_staff.html', {'form': form})
 
 
+# ── Complete Registration ──────────────────────────────────
 @login_required
 def complete_registration_view(request):
     if request.method == 'POST':
         form = CompleteRegistrationForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
+            # Send welcome email after completion
+            try:
+                send_welcome_email(request.user)
+            except Exception:
+                pass
             log_activity(request, request.user, 'profile_update', 'Completed registration')
-            messages.success(request, 'Registration completed!')
+            messages.success(request, 'Registration completed! Welcome to GymX.')
             return redirect('dashboard:index')
     else:
         form = CompleteRegistrationForm(instance=request.user)
@@ -163,12 +227,12 @@ def email_verification_view(request):
     if request.method == 'POST':
         form = OTPVerifyForm(request.POST)
         if form.is_valid():
-            otp = form.cleaned_data['otp']
+            otp = form.cleaned_data['otp'].strip()
             if user.is_otp_valid(otp, 'email'):
                 user.is_email_verified = True
                 user.clear_otp()
                 user.save(update_fields=['is_email_verified'])
-                log_activity(request, user, 'email_verified', 'Email verified successfully')
+                log_activity(request, user, 'email_verified', 'Email verified')
                 login(request, user)
                 del request.session['verify_user_id']
                 messages.success(request, 'Email verified! Welcome to GymX.')
@@ -179,9 +243,10 @@ def email_verification_view(request):
         form = OTPVerifyForm()
 
     return render(request, 'authentication/email_verification.html', {
-        'form': form,
-        'email': user.email,
+        'form':         form,
+        'email':        user.email,
         'masked_email': _mask_email(user.email),
+        'has_phone':    bool(user.phone),
     })
 
 
@@ -189,8 +254,12 @@ def resend_otp_view(request):
     user_id = request.session.get('verify_user_id')
     if user_id:
         user = get_object_or_404(User, pk=user_id)
-        user.generate_otp()
-        messages.success(request, 'A new code has been sent.')
+        otp  = user.generate_otp()
+        result = send_otp(user, otp, channel='both')
+        if result.get('email') or result.get('sms'):
+            messages.success(request, 'New verification code sent.')
+        else:
+            messages.warning(request, f'Could not send code. OTP: {otp}')
     return redirect('accounts:email_verification')
 
 
@@ -201,45 +270,59 @@ def phone_otp_view(request):
     if request.method == 'POST':
         form = OTPVerifyForm(request.POST)
         if form.is_valid():
-            otp = form.cleaned_data['otp']
+            otp = form.cleaned_data['otp'].strip()
             if user.is_otp_valid(otp, 'phone'):
                 user.is_phone_verified = True
                 user.clear_otp()
                 user.save(update_fields=['is_phone_verified'])
-                log_activity(request, user, 'phone_verified', 'Phone verified successfully')
+                log_activity(request, user, 'phone_verified', 'Phone verified')
                 messages.success(request, 'Phone number verified!')
                 return redirect('accounts:profile')
             else:
                 messages.error(request, 'Invalid or expired code.')
     else:
-        user.generate_otp()
+        otp = user.generate_otp()
+        result = send_otp_sms(user, otp)
+        if not result:
+            messages.warning(request, f'Could not send SMS. Dev OTP: {otp}')
         form = OTPVerifyForm()
 
     return render(request, 'authentication/phone_otp.html', {
-        'form': form,
+        'form':         form,
         'masked_phone': _mask_phone(user.phone),
     })
 
 
-# ── Forgot / Reset Password ────────────────────────────────
+# ── Forgot Password ────────────────────────────────────────
 def forgot_password_view(request):
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             try:
-                u = User.objects.get(email=email)
+                u   = User.objects.get(email=email)
                 otp = u.generate_otp()
                 request.session['reset_user_id'] = u.pk
+
+                # Send reset code via email + SMS
+                send_password_reset_email(u, otp)
+                if u.phone:
+                    send_password_reset_sms(u, otp)
             except User.DoesNotExist:
-                pass
-            messages.success(request, 'If that email exists, a reset code has been sent.')
+                pass  # Security: don't reveal if email exists
+
+            messages.success(
+                request,
+                'If that email is registered, a reset code has been sent.'
+            )
             return redirect('accounts:reset_password', token='verify')
     else:
         form = ForgotPasswordForm()
+
     return render(request, 'authentication/forgot_password.html', {'form': form})
 
 
+# ── Reset Password ─────────────────────────────────────────
 def reset_password_view(request, token=None):
     user_id = request.session.get('reset_user_id')
     if not user_id:
@@ -247,21 +330,53 @@ def reset_password_view(request, token=None):
     user = get_object_or_404(User, pk=user_id)
 
     if request.method == 'POST':
-        form = ResetPasswordForm(request.POST)
-        if form.is_valid():
-            user.set_password(form.cleaned_data['new_password'])
-            user.save()
-            user.clear_otp()
-            del request.session['reset_user_id']
-            log_activity(request, user, 'password_change', 'Password reset via email')
-            messages.success(request, 'Password reset successfully. Please sign in.')
-            return redirect('accounts:login')
-    else:
-        form = ResetPasswordForm()
-    return render(request, 'authentication/reset_password.html', {'form': form})
+        # Step 1: verify OTP
+        if 'otp' in request.POST and 'new_password' not in request.POST:
+            otp = request.POST.get('otp', '').strip()
+            if user.is_otp_valid(otp, 'email'):
+                request.session['reset_otp_verified'] = True
+                return render(request, 'authentication/reset_password.html', {
+                    'otp_verified': True,
+                    'form': ResetPasswordForm(),
+                    'user': user,
+                })
+            else:
+                messages.error(request, 'Invalid or expired code.')
+                return render(request, 'authentication/reset_password.html', {
+                    'otp_verified': False,
+                    'masked_email': _mask_email(user.email),
+                    'user': user,
+                })
+
+        # Step 2: set new password
+        if request.session.get('reset_otp_verified'):
+            form = ResetPasswordForm(request.POST)
+            if form.is_valid():
+                user.set_password(form.cleaned_data['new_password'])
+                user.save()
+                user.clear_otp()
+                del request.session['reset_user_id']
+                del request.session['reset_otp_verified']
+                log_activity(request, user, 'password_change', 'Password reset via email')
+                messages.success(request, 'Password reset successfully. Please sign in.')
+                return redirect('accounts:login')
+            else:
+                return render(request, 'authentication/reset_password.html', {
+                    'otp_verified': True,
+                    'form': form,
+                    'user': user,
+                })
+
+    return render(request, 'authentication/reset_password.html', {
+        'otp_verified':  request.session.get('reset_otp_verified', False),
+        'masked_email':  _mask_email(user.email),
+        'masked_phone':  _mask_phone(user.phone) if user.phone else None,
+        'form':          ResetPasswordForm(),
+        'user':          user,
+    })
 
 
-# ── Password Change ────────────────────────────────────────
+# ── Change Password ────────────────────────────────────────
 @login_required
 def change_password_view(request):
     if request.method == 'POST':
@@ -289,6 +404,11 @@ def two_fa_view(request):
             user.two_fa_enabled = True
             user.save(update_fields=['two_fa_enabled'])
             log_activity(request, user, '2fa_enabled', '2FA enabled')
+            # Send confirmation email
+            try:
+                send_2fa_enabled_email(user)
+            except Exception:
+                pass
             messages.success(request, 'Two-Factor Authentication enabled!')
         elif action == 'disable':
             user.two_fa_enabled = False
@@ -304,8 +424,6 @@ def two_fa_view(request):
 def profile_view(request):
     stats = {
         'login_count': request.user.login_history.filter(status='success').count(),
-        'last_password_change': request.user.login_history.filter(
-            status='success').order_by('-created_at').first(),
     }
     return render(request, 'authentication/profile.html', {'stats': stats})
 
@@ -326,7 +444,7 @@ def profile_edit_view(request):
     return render(request, 'authentication/profile_edit.html', {'form': form})
 
 
-# ── User Preferences ──────────────────────────────────────
+# ── Preferences ────────────────────────────────────────────
 @login_required
 def preferences_view(request):
     if request.method == 'POST':
@@ -346,7 +464,7 @@ def preferences_view(request):
 # ── Sessions ───────────────────────────────────────────────
 @login_required
 def session_management_view(request):
-    sessions = UserSession.objects.filter(user=request.user, is_active=True)
+    sessions    = UserSession.objects.filter(user=request.user, is_active=True)
     current_key = request.session.session_key
     return render(request, 'authentication/session_management.html', {
         'sessions':    sessions,
@@ -368,10 +486,8 @@ def revoke_all_sessions_view(request):
     if request.method == 'POST':
         UserSession.objects.filter(
             user=request.user, is_active=True
-        ).exclude(
-            session_key=request.session.session_key
-        ).update(is_active=False)
-        messages.success(request, 'All other sessions have been revoked.')
+        ).exclude(session_key=request.session.session_key).update(is_active=False)
+        messages.success(request, 'All other sessions revoked.')
     return redirect('accounts:session_management')
 
 
@@ -385,13 +501,13 @@ def login_history_view(request):
 # ── Notifications ──────────────────────────────────────────
 @login_required
 def notifications_view(request):
-    notifications = Notification.objects.filter(user=request.user)
-    unread_count  = notifications.filter(is_read=False).count()
-    # Mark all as read when page is opened
-    notifications.filter(is_read=False).update(is_read=True)
+    notifs       = Notification.objects.filter(user=request.user)
+    unread_count = notifs.filter(is_read=False).count()
+    notifs.filter(is_read=False).update(is_read=True)
     return render(request, 'authentication/notifications.html', {
-        'notifications': notifications,
+        'notifications': notifs,
         'unread_count':  unread_count,
+        'today':         timezone.now().date(),
     })
 
 
@@ -421,23 +537,32 @@ def activity_log_view(request):
     if filter_action:
         logs = logs.filter(action=filter_action)
     return render(request, 'authentication/activity_log.html', {
-        'logs':          logs[:100],
-        'filter_action': filter_action,
+        'logs':           logs[:100],
+        'filter_action':  filter_action,
         'action_choices': ActivityLog.Action.choices,
     })
 
 
 # ── Helpers ────────────────────────────────────────────────
-def _mask_email(email):
+def _mask_email(email: str) -> str:
     try:
         local, domain = email.split('@')
-        masked = local[0] + '*' * (len(local) - 2) + local[-1] if len(local) > 2 else local[0] + '*'
+        masked = local[0] + '*' * max(len(local)-2, 1) + (local[-1] if len(local) > 1 else '')
         return f"{masked}@{domain}"
     except Exception:
         return email
 
 
-def _mask_phone(phone):
+def _mask_phone(phone: str) -> str:
     if not phone or len(phone) < 4:
         return phone
-    return phone[:3] + '*' * (len(phone) - 6) + phone[-3:]
+    return phone[:3] + '*' * max(len(phone)-6, 0) + phone[-3:]
+
+
+def _detect_browser(ua: str) -> str:
+    ua = ua.lower()
+    if 'chrome' in ua and 'edg' not in ua:  return 'Chrome'
+    if 'firefox' in ua:                      return 'Firefox'
+    if 'safari' in ua and 'chrome' not in ua:return 'Safari'
+    if 'edg' in ua:                          return 'Edge'
+    return 'Unknown Browser'

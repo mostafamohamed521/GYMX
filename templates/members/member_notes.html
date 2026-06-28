@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Notes — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Notes{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Member Notes</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-note-sticky"></i> Notes ({{ notes|length }})</span></div>
+      <div class="card-body">
+        {% for note in notes %}
+        <div style="border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;margin-bottom:12px;{% if note.is_pinned %}border-color:#FDE68A;background:#FFFBEB;{% endif %}">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                {% if note.is_pinned %}<i class="fa-solid fa-thumbtack" style="color:var(--warning);font-size:11px;"></i>{% endif %}
+                <span class="badge-gymx {{ note.get_priority_color }}" style="font-size:10px;">{{ note.get_priority_display }}</span>
+                <span style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ note.title }}</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">{{ note.body }}</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">
+                {% if note.created_by %}{{ note.created_by.get_short_name }} &middot; {% endif %}{{ note.created_at|date:"M d, Y H:i" }}
+              </div>
+            </div>
+            <a href="{% url 'members:note_delete' member.pk note.pk %}" onclick="return confirm('Delete this note?')"
+               style="color:var(--danger);padding:4px;border-radius:var(--radius-md);text-decoration:none;opacity:0.6;" title="Delete">
+              <i class="fa-solid fa-trash" style="font-size:12px;"></i>
+            </a>
+          </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:40px;color:var(--text-muted);">
+          <i class="fa-solid fa-note-sticky" style="font-size:28px;display:block;margin-bottom:8px;"></i>No notes yet
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Note</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Title</label>{{ form.title }}</div>
+          <div class="mb-3"><label class="form-label">Priority</label>{{ form.priority }}</div>
+          <div class="mb-3"><label class="form-label">Note</label>{{ form.body }}</div>
+          <div class="mb-3 form-check">{{ form.is_pinned }} <label class="form-check-label" for="{{ form.is_pinned.id_for_label }}">Pin this note</label></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add Note</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

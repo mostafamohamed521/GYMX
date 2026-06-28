@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Transfer Member — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Transfer{% endblock %}
+{% block content %}
+{% include 'members/_member_header_mini.html' %}
+<div class="row justify-content-center"><div class="col-lg-5">
+  <div class="card-gymx">
+    <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-right-left"></i> Transfer Member</span></div>
+    <div class="card-body">
+      <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:20px;">Transfer <strong>{{ member.get_full_name }}</strong> to another branch. This records the transfer and notifies the target branch.</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3"><label class="form-label">Target Branch</label>{{ form.target_branch }}</div>
+        <div class="mb-3"><label class="form-label">Transfer Date</label>{{ form.transfer_date }}</div>
+        <div class="mb-3"><label class="form-label">Reason</label>{{ form.reason }}</div>
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+          <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-right-left"></i> Transfer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

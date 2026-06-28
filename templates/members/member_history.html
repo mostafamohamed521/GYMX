@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ history_type }} History — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / {{ history_type }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ history_type }} History</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+<div class="card-gymx">
+  <div class="card-body" style="text-align:center;padding:64px 24px;">
+    <div style="width:64px;height:64px;background:#EFF6FF;border-radius:var(--radius-xl);display:inline-flex;align-items:center;justify-content:center;font-size:26px;color:var(--{{ color }});margin-bottom:20px;">
+      <i class="fa-solid {{ icon }}"></i>
+    </div>
+    <h3 style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">{{ history_type }} History</h3>
+    <p style="font-size:14px;color:var(--text-muted);max-width:400px;margin:0 auto 24px;line-height:1.6;">{{ message }}</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back to Member</a>
+      <a href="{% url 'members:timeline' member.pk %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-clock-rotate-left"></i> View Timeline</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

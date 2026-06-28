@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Progress Photos — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Photos{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Progress Photos</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-camera"></i> Photos ({{ photos|length }})</span></div>
+      <div class="card-body">
+        {% if photos %}
+        <div class="row g-3">
+          {% for photo in photos %}
+          <div class="col-md-4 col-6">
+            <div style="border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;position:relative;group;">
+              <img src="{{ photo.photo.url }}" alt="{{ photo.get_view_display }}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;" />
+              <div style="position:absolute;top:8px;left:8px;">
+                <span class="badge-gymx blue" style="font-size:10px;">{{ photo.get_view_display }}</span>
+              </div>
+              <div style="padding:10px 12px;background:white;">
+                <div style="font-size:12px;font-weight:600;color:var(--text-primary);">{{ photo.date|date:"M d, Y" }}</div>
+                {% if photo.weight_kg %}<div style="font-size:11px;color:var(--text-muted);">{{ photo.weight_kg }} kg</div>{% endif %}
+              </div>
+              <a href="{% url 'members:photo_delete' member.pk photo.pk %}" onclick="return confirm('Delete this photo?')"
+                 style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.9);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;">
+                <i class="fa-solid fa-trash" style="font-size:10px;"></i>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:48px;color:var(--text-muted);">
+          <i class="fa-solid fa-camera" style="font-size:32px;display:block;margin-bottom:10px;"></i>No progress photos yet
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-upload"></i> Upload Photo</span></div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <div id="photoPreview" style="width:100%;aspect-ratio:3/4;background:var(--bg-muted);border:2px dashed var(--border);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin-bottom:12px;" onclick="document.getElementById('id_photo').click()">
+              <div style="text-align:center;color:var(--text-muted);">
+                <i class="fa-solid fa-camera" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                <div style="font-size:13px;">Click to upload</div>
+              </div>
+            </div>
+            <div style="display:none;">{{ form.photo }}</div>
+          </div>
+          <div class="mb-3"><label class="form-label">View</label>{{ form.view }}</div>
+          <div class="mb-3"><label class="form-label">Date</label>{{ form.date }}</div>
+          <div class="mb-3"><label class="form-label">Weight at time (kg)</label>{{ form.weight_kg }}</div>
+          <div class="mb-3"><label class="form-label">Notes</label>{{ form.notes }}</div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const inp = document.getElementById('id_photo');
+if (inp) {
+  inp.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const r = new FileReader();
+      r.onload = e => {
+        document.getElementById('photoPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;" />';
+      };
+      r.readAsDataURL(file);
+    }
+  });
+}
+</script>
+{% endblock %}

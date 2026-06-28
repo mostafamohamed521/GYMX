@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Merge Members — GymX{% endblock %}
+{% block page_breadcrumb %}Members / Merge{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Merge Members</h1><p class="page-subtitle">Combine duplicate member records into one</p></div>
+  <a href="{% url 'members:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx" style="border-color:#FECACA;">
+    <div class="card-header" style="background:#FEF2F2;"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-code-merge"></i> Merge Members</span></div>
+    <div class="card-body">
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius-xl);padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400E;"><i class="fa-solid fa-triangle-exclamation"></i> This is irreversible. The duplicate member will be archived and their ID merged into the primary record.</div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-4"><label class="form-label">Primary Member <span style="color:var(--success);">(keep)</span></label>{{ form.primary_member }}{% if form.primary_member.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.primary_member.errors|first }}</div>{% endif %}<div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ form.primary_member.help_text }}</div></div>
+        <div class="mb-4"><label class="form-label">Duplicate Member <span style="color:var(--danger);">(will be archived)</span></label>{{ form.duplicate_member }}{% if form.duplicate_member.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.duplicate_member.errors|first }}</div>{% endif %}</div>
+        <div class="mb-4 form-check"><input type="checkbox" class="form-check-input" name="confirm" required id="confirmMerge"><label class="form-check-label" for="confirmMerge" style="font-size:13px;color:var(--text-secondary);">I confirm this action is irreversible</label></div>
+        {% if form.non_field_errors %}<div class="alert-gymx error mb-3"><i class="fa-solid fa-circle-xmark"></i>{{ form.non_field_errors|first }}</div>{% endif %}
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'members:list' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+          <button type="submit" class="btn-gymx danger"><i class="fa-solid fa-code-merge"></i> Merge Members</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

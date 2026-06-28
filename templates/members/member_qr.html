@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}QR Code — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / QR Code{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">QR Code</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <div class="card-gymx" style="text-align:center;">
+      <div class="card-body" style="padding:32px;">
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;display:inline-block;margin-bottom:20px;">
+          {% if member.qr_code %}
+          <img src="{{ member.qr_code.url }}" alt="QR Code" style="width:200px;height:200px;" />
+          {% else %}
+          <div style="width:200px;height:200px;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);">
+            <i class="fa-solid fa-qrcode" style="font-size:48px;color:var(--text-muted);"></i>
+          </div>
+          {% endif %}
+        </div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">{{ member.get_full_name }}</div>
+        <div style="font-size:13px;color:var(--text-muted);font-family:monospace;margin-bottom:20px;">{{ member.member_id }}</div>
+        {% if member.qr_code %}
+        <a href="{{ member.qr_code.url }}" download="qr_{{ member.member_id }}.png" class="btn-gymx primary" style="text-decoration:none;justify-content:center;">
+          <i class="fa-solid fa-download"></i> Download QR
+        </a>
+        {% endif %}
+        <a href="{% url 'members:barcode' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;margin-top:8px;">
+          <i class="fa-solid fa-barcode"></i> View Barcode
+        </a>
+        <a href="{% url 'members:card' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;margin-top:8px;">
+          <i class="fa-solid fa-id-card"></i> Member Card
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-Django==5.0.6
-psycopg2[binary]
+Django==4.2.27
+psycopg2-binary==2.9.9
 python-decouple==3.8
-Pillow>=11.2.1
+Pillow==10.4.0

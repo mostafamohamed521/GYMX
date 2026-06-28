@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- Member Header -->
+<div style="background:linear-gradient(135deg,#1D4ED8,#0369A1);border-radius:var(--radius-2xl);padding:24px 28px;margin-bottom:24px;position:relative;overflow:hidden;">
+  <div style="position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+  <div style="position:absolute;right:60px;bottom:-60px;width:140px;height:140px;background:rgba(255,255,255,0.04);border-radius:50%;"></div>
+  <div style="position:relative;z-index:1;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+    <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.15);border:3px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:white;overflow:hidden;flex-shrink:0;">
+      {% if member.profile_image %}
+        <img src="{{ member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />
+      {% else %}{{ member.get_initials }}{% endif %}
+    </div>
+    <div style="flex:1;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+        <h2 style="font-size:22px;font-weight:800;color:white;margin:0;">{{ member.get_full_name }}</h2>
+        <span style="background:rgba(255,255,255,0.15);color:white;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;">{{ member.get_status_display }}</span>
+        <span style="color:rgba(255,255,255,0.6);font-size:12px;font-family:monospace;">{{ member.member_id }}</span>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:rgba(255,255,255,0.65);">
+        {% if member.email %}<span><i class="fa-solid fa-envelope"></i> {{ member.email }}</span>{% endif %}
+        {% if member.phone %}<span><i class="fa-solid fa-phone"></i> {{ member.phone }}</span>{% endif %}
+        {% if member.get_age %}<span><i class="fa-solid fa-cake-candles"></i> {{ member.get_age }} years old</span>{% endif %}
+        <span><i class="fa-solid fa-calendar"></i> Joined {{ member.join_date|date:"M d, Y" }}</span>
+        <span><i class="fa-solid fa-dumbbell"></i> {{ member.get_fitness_level_display }}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="{% url 'members:edit' member.pk %}" class="btn-gymx outline" style="text-decoration:none;background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);color:white;font-size:13px;">
+        <i class="fa-solid fa-pen"></i> Edit
+      </a>
+      <a href="{% url 'members:card' member.pk %}" class="btn-gymx primary" style="text-decoration:none;background:white;color:#1D4ED8;font-size:13px;">
+        <i class="fa-solid fa-id-card"></i> Member Card
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Sub Navigation -->
+<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);margin-bottom:24px;overflow:hidden;box-shadow:var(--shadow-xs);">
+  <div style="display:flex;overflow-x:auto;scrollbar-width:none;">
+    {% for href, icon, label in nav_tabs %}{% endfor %}
+    {% with tabs=nav_tabs %}
+    {% for href, icon, label in tabs %}{% endfor %}
+    {% endwith %}
+    {% for item in "overview,timeline,notes,medical,emergency,measurements,composition,photos,documents,assign,goals,history,qr" %}{% endfor %}
+    <!-- Inline tabs for detail page -->
+    <a href="#overview" class="tab-link active-tab" data-tab="overview" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--primary);border-bottom:2px solid var(--primary);" onclick="switchTab(event,'overview')"><i class="fa-solid fa-gauge" style="font-size:12px;"></i>Overview</a>
+    <a href="{% url 'members:timeline' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-clock-rotate-left" style="font-size:12px;"></i>Timeline</a>
+    <a href="{% url 'members:notes' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-note-sticky" style="font-size:12px;"></i>Notes</a>
+    <a href="{% url 'members:medical' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-heart-pulse" style="font-size:12px;"></i>Medical</a>
+    <a href="{% url 'members:emergency' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-phone" style="font-size:12px;"></i>Emergency</a>
+    <a href="{% url 'members:measurements' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-ruler" style="font-size:12px;"></i>Measurements</a>
+    <a href="{% url 'members:composition' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-percent" style="font-size:12px;"></i>Composition</a>
+    <a href="{% url 'members:photos' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-camera" style="font-size:12px;"></i>Photos</a>
+    <a href="{% url 'members:documents' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-file" style="font-size:12px;"></i>Documents</a>
+    <a href="{% url 'members:goals' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-trophy" style="font-size:12px;"></i>Goals</a>
+    <a href="{% url 'members:qr' member.pk %}" style="display:flex;align-items:center;gap:6px;padding:12px 16px;font-size:12.5px;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--text-muted);border-bottom:2px solid transparent;"><i class="fa-solid fa-qrcode" style="font-size:12px;"></i>QR / Card</a>
+  </div>
+</div>
+
+<!-- Overview Grid -->
+<div class="row g-4">
+
+  <!-- Personal Info -->
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-id-card"></i> Personal Details</span>
+        <a href="{% url 'members:edit' member.pk %}" style="font-size:12px;color:var(--primary);font-weight:500;text-decoration:none;">Edit</a>
+      </div>
+      <div class="card-body">
+        {% for label, value in detail_fields %}{% endfor %}
+        {% with fields=detail_fields %}{% endwith %}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          {% for label,value in forloop_pairs %}{% endfor %}
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Gender</div>
+            <div style="font-size:13.5px;color:var(--text-primary);">{{ member.get_gender_display|default:"—" }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Birth Date</div>
+            <div style="font-size:13.5px;color:var(--text-primary);">{{ member.birth_date|date:"M d, Y"|default:"—" }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Nationality</div>
+            <div style="font-size:13.5px;color:var(--text-primary);">{{ member.nationality|default:"—" }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Blood Type</div>
+            <div style="font-size:13.5px;color:var(--danger);font-weight:600;">{{ member.blood_type|default:"—" }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Fitness Level</div>
+            <div style="font-size:13.5px;color:var(--text-primary);">{{ member.get_fitness_level_display }}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Occupation</div>
+            <div style="font-size:13.5px;color:var(--text-primary);">{{ member.occupation|default:"—" }}</div>
+          </div>
+          {% if member.address %}
+          <div style="grid-column:1/-1;">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Address</div>
+            <div style="font-size:13.5px;color:var(--text-primary);">{{ member.address }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Latest Measurements -->
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-ruler"></i> Latest Measurements</span>
+        <a href="{% url 'members:measurements' member.pk %}" style="font-size:12px;color:var(--primary);font-weight:500;text-decoration:none;">All records</a>
+      </div>
+      <div class="card-body">
+        {% if latest_measurement %}
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">
+          Recorded on {{ latest_measurement.date|date:"M d, Y" }}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          {% for label, val, unit in measurement_items %}{% endfor %}
+          {% for label,val,unit in forloop_items %}{% endfor %}
+          {% with m=latest_measurement %}
+          {% for label,attr,unit in "Weight,weight_kg,kg|Height,height_cm,cm|Chest,chest_cm,cm|Waist,waist_cm,cm|Hips,hips_cm,cm|Bicep,bicep_cm,cm"|split:"|" %}{% endfor %}
+          {% for item in "weight,height,chest,waist,hips,bicep" %}{% endfor %}
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--primary);">{{ latest_measurement.weight_kg|default:"—" }}<span style="font-size:11px;font-weight:400;color:var(--text-muted);">kg</span></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Weight</div>
+          </div>
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--primary);">{{ latest_measurement.height_cm|default:"—" }}<span style="font-size:11px;font-weight:400;color:var(--text-muted);">cm</span></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Height</div>
+          </div>
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:{% if latest_measurement.bmi %}{% if latest_measurement.bmi < 18.5 %}var(--accent){% elif latest_measurement.bmi < 25 %}var(--success){% elif latest_measurement.bmi < 30 %}var(--warning){% else %}var(--danger){% endif %}{% else %}var(--text-muted){% endif %};">{{ latest_measurement.bmi|default:"—" }}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">BMI</div>
+          </div>
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--primary);">{{ latest_measurement.chest_cm|default:"—" }}<span style="font-size:11px;font-weight:400;color:var(--text-muted);">cm</span></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Chest</div>
+          </div>
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--primary);">{{ latest_measurement.waist_cm|default:"—" }}<span style="font-size:11px;font-weight:400;color:var(--text-muted);">cm</span></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Waist</div>
+          </div>
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:12px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--primary);">{{ latest_measurement.hips_cm|default:"—" }}<span style="font-size:11px;font-weight:400;color:var(--text-muted);">cm</span></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Hips</div>
+          </div>
+          {% endwith %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:32px;color:var(--text-muted);">
+          <i class="fa-solid fa-ruler" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+          No measurements recorded yet
+          <div style="margin-top:10px;">
+            <a href="{% url 'members:measurements' member.pk %}" class="btn-gymx primary" style="font-size:12px;padding:7px 16px;text-decoration:none;">Add Measurements</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Goals -->
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-trophy"></i> Active Goals</span>
+        <a href="{% url 'members:goals' member.pk %}" style="font-size:12px;color:var(--primary);font-weight:500;text-decoration:none;">Manage goals</a>
+      </div>
+      <div class="card-body">
+        {% if active_goals %}
+        {% for goal in active_goals %}
+        <div style="margin-bottom:{% if not forloop.last %}16px{% else %}0{% endif %};">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ goal.title }}</span>
+            <span style="font-size:12px;color:var(--text-muted);">{{ goal.progress_pct }}%</span>
+          </div>
+          <div class="progress-gymx">
+            <div class="fill" style="width:{{ goal.progress_pct }}%;background:{% if goal.progress_pct >= 100 %}var(--success){% elif goal.progress_pct >= 50 %}var(--primary){% else %}var(--warning){% endif %};"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">
+            {{ goal.get_goal_type_display }}
+            {% if goal.target_date %} &middot; Due {{ goal.target_date|date:"M d" }}{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align:center;padding:28px;color:var(--text-muted);">
+          <i class="fa-solid fa-trophy" style="font-size:24px;display:block;margin-bottom:8px;"></i>
+          No active goals
+          <div style="margin-top:10px;">
+            <a href="{% url 'members:goals' member.pk %}" class="btn-gymx primary" style="font-size:12px;padding:7px 16px;text-decoration:none;">Add Goal</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments & Recent Notes -->
+  <div class="col-lg-6">
+    <div class="card-gymx mb-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-person-running"></i> Assignments</span>
+        <a href="{% url 'members:assign' member.pk %}" style="font-size:12px;color:var(--primary);font-weight:500;text-decoration:none;">Edit</a>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;gap:16px;">
+          <div style="flex:1;padding:14px;background:var(--bg-muted);border-radius:var(--radius-xl);">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Coach</div>
+            {% if member.assigned_coach %}
+            <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ member.assigned_coach.get_full_name }}</div>
+            <div style="font-size:11px;color:var(--text-muted);">{{ member.assigned_coach.phone|default:"" }}</div>
+            {% else %}
+            <div style="font-size:13px;color:var(--text-muted);">Not assigned</div>
+            {% endif %}
+          </div>
+          <div style="flex:1;padding:14px;background:var(--bg-muted);border-radius:var(--radius-xl);">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Nutritionist</div>
+            {% if member.assigned_nutritionist %}
+            <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ member.assigned_nutritionist.get_full_name }}</div>
+            {% else %}
+            <div style="font-size:13px;color:var(--text-muted);">Not assigned</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Notes -->
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-note-sticky"></i> Recent Notes</span>
+        <a href="{% url 'members:notes' member.pk %}" style="font-size:12px;color:var(--primary);font-weight:500;text-decoration:none;">View all</a>
+      </div>
+      <div class="card-body">
+        {% if recent_notes %}
+        {% for note in recent_notes %}
+        <div style="{% if not forloop.last %}border-bottom:1px solid var(--border);margin-bottom:12px;padding-bottom:12px;{% endif %}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span class="badge-gymx {{ note.get_priority_color }}" style="font-size:10px;">{{ note.get_priority_display }}</span>
+            {% if note.is_pinned %}<i class="fa-solid fa-thumbtack" style="color:var(--warning);font-size:11px;"></i>{% endif %}
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ note.title }}</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--text-secondary);">{{ note.body|truncatechars:80 }}</div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">No notes yet</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- History Quick Links -->
+  <div class="col-12">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> History</span></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-6 col-md">
+            <a href="{% url 'members:membership_history' member.pk %}" class="quick-action qc-1" style="text-decoration:none;">
+              <div class="quick-action-icon"><i class="fa-solid fa-id-card"></i></div>Memberships
+            </a>
+          </div>
+          <div class="col-6 col-md">
+            <a href="{% url 'members:attendance_history' member.pk %}" class="quick-action qc-2" style="text-decoration:none;">
+              <div class="quick-action-icon"><i class="fa-solid fa-calendar-check"></i></div>Attendance
+            </a>
+          </div>
+          <div class="col-6 col-md">
+            <a href="{% url 'members:payment_history' member.pk %}" class="quick-action qc-3" style="text-decoration:none;">
+              <div class="quick-action-icon"><i class="fa-solid fa-credit-card"></i></div>Payments
+            </a>
+          </div>
+          <div class="col-6 col-md">
+            <a href="{% url 'members:workout_history' member.pk %}" class="quick-action qc-5" style="text-decoration:none;">
+              <div class="quick-action-icon"><i class="fa-solid fa-dumbbell"></i></div>Workouts
+            </a>
+          </div>
+          <div class="col-6 col-md">
+            <a href="{% url 'members:nutrition_history' member.pk %}" class="quick-action qc-2" style="text-decoration:none;">
+              <div class="quick-action-icon"><i class="fa-solid fa-bowl-food"></i></div>Nutrition
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="col-12">
+    <div class="card-gymx" style="border-color:#FECACA;">
+      <div class="card-header" style="background:#FEF2F2;">
+        <span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="{% url 'members:freeze' member.pk %}" class="btn-gymx outline" style="text-decoration:none;font-size:13px;">
+            <i class="fa-solid fa-snowflake"></i> Freeze Account
+          </a>
+          <a href="{% url 'members:archive' member.pk %}" class="btn-gymx outline" style="text-decoration:none;font-size:13px;">
+            <i class="fa-solid fa-box-archive"></i> Archive
+          </a>
+          <a href="{% url 'members:transfer' member.pk %}" class="btn-gymx outline" style="text-decoration:none;font-size:13px;">
+            <i class="fa-solid fa-right-left"></i> Transfer
+          </a>
+          <a href="{% url 'members:blacklist' member.pk %}" class="btn-gymx danger" style="text-decoration:none;font-size:13px;">
+            <i class="fa-solid fa-ban"></i> Blacklist
+          </a>
+          <a href="{% url 'members:delete' member.pk %}" class="btn-gymx danger" style="text-decoration:none;font-size:13px;">
+            <i class="fa-solid fa-trash"></i> Delete
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

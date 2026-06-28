@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Members — GymX{% endblock %}
+{% block page_breadcrumb %}Members{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Members</h1>
+    <p class="page-subtitle">Manage all gym members</p>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'members:merge' %}" class="btn-gymx outline" style="text-decoration:none;">
+      <i class="fa-solid fa-code-merge"></i> Merge
+    </a>
+    <a href="{% url 'members:add' %}" class="btn-gymx primary" style="text-decoration:none;">
+      <i class="fa-solid fa-user-plus"></i> Add Member
+    </a>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md">
+    <div class="stat-card blue" style="padding:16px;">
+      <div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.total }}</div>
+      <div class="stat-label">Total</div>
+    </div>
+  </div>
+  <div class="col-6 col-md">
+    <div class="stat-card green" style="padding:16px;">
+      <div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-user-check"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.active }}</div>
+      <div class="stat-label">Active</div>
+    </div>
+  </div>
+  <div class="col-6 col-md">
+    <div class="stat-card blue" style="padding:16px;">
+      <div class="stat-icon cyan" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-snowflake"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.frozen }}</div>
+      <div class="stat-label">Frozen</div>
+    </div>
+  </div>
+  <div class="col-6 col-md">
+    <div class="stat-card orange" style="padding:16px;">
+      <div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-box-archive"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.archived }}</div>
+      <div class="stat-label">Archived</div>
+    </div>
+  </div>
+  <div class="col-6 col-md">
+    <div class="stat-card red" style="padding:16px;">
+      <div class="stat-icon red" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-ban"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.blacklist }}</div>
+      <div class="stat-label">Blacklisted</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<form method="get" class="card-gymx mb-4">
+  <div class="card-body" style="padding:16px 20px;">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label">Search</label>
+        {{ form.q }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Status</label>
+        {{ form.status }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Fitness Level</label>
+        {{ form.fitness_level }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Gender</label>
+        {{ form.gender }}
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Table -->
+<div class="card-gymx">
+  <div class="card-header">
+    <span class="card-header-title"><i class="fa-solid fa-users"></i> Members ({{ members|length }})</span>
+    <div style="display:flex;gap:8px;">
+      <button onclick="toggleView('table')" id="btn-table" class="navbar-btn" title="Table view" style="background:var(--primary-light);border-color:var(--primary);color:var(--primary);">
+        <i class="fa-solid fa-table-list"></i>
+      </button>
+      <button onclick="toggleView('grid')" id="btn-grid" class="navbar-btn" title="Grid view">
+        <i class="fa-solid fa-grip"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Table View -->
+  <div id="view-table" style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>ID</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Level</th>
+          <th>Coach</th>
+          <th>Joined</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if m.profile_image %}
+                  <img src="{{ m.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />
+                {% else %}
+                  {{ m.get_initials }}
+                {% endif %}
+              </div>
+              <div>
+                <a href="{% url 'members:detail' m.pk %}" style="font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.get_full_name }}</a>
+                {% if m.gender %}<div style="font-size:11px;color:var(--text-muted);">{{ m.get_gender_display }}</div>{% endif %}
+              </div>
+            </div>
+          </td>
+          <td><span style="font-family:monospace;font-size:12px;color:var(--primary);">{{ m.member_id }}</span></td>
+          <td>
+            {% if m.email %}<div style="font-size:12.5px;">{{ m.email }}</div>{% endif %}
+            {% if m.phone %}<div style="font-size:12px;color:var(--text-muted);">{{ m.phone }}</div>{% endif %}
+          </td>
+          <td><span class="badge-gymx {{ m.get_status_color }}">{{ m.get_status_display }}</span></td>
+          <td><span style="font-size:12.5px;color:var(--text-secondary);">{{ m.get_fitness_level_display }}</span></td>
+          <td>
+            {% if m.assigned_coach %}
+            <span style="font-size:12.5px;color:var(--text-secondary);">{{ m.assigned_coach.get_short_name }}</span>
+            {% else %}
+            <span style="font-size:12px;color:var(--text-muted);">—</span>
+            {% endif %}
+          </td>
+          <td style="font-size:12.5px;">{{ m.join_date|date:"M d, Y" }}</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <a href="{% url 'members:detail' m.pk %}" class="navbar-btn" title="View" style="width:30px;height:30px;border-radius:var(--radius-md);"><i class="fa-solid fa-eye" style="font-size:12px;"></i></a>
+              <a href="{% url 'members:edit' m.pk %}" class="navbar-btn" title="Edit" style="width:30px;height:30px;border-radius:var(--radius-md);"><i class="fa-solid fa-pen" style="font-size:12px;"></i></a>
+              <a href="{% url 'members:qr' m.pk %}" class="navbar-btn" title="QR Code" style="width:30px;height:30px;border-radius:var(--radius-md);"><i class="fa-solid fa-qrcode" style="font-size:12px;"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" style="text-align:center;padding:48px;color:var(--text-muted);">
+            <i class="fa-solid fa-users" style="font-size:32px;display:block;margin-bottom:10px;"></i>
+            No members found
+            <div style="margin-top:10px;"><a href="{% url 'members:add' %}" class="btn-gymx primary" style="text-decoration:none;font-size:13px;">Add First Member</a></div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Grid View -->
+  <div id="view-grid" style="display:none;padding:20px;">
+    <div class="row g-3">
+      {% for m in members %}
+      <div class="col-md-4 col-lg-3">
+        <div style="background:var(--bg-muted);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:20px;text-align:center;transition:all 0.2s;cursor:pointer;"
+             onmouseenter="this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'"
+             onmouseleave="this.style.boxShadow='none';this.style.borderColor='var(--border)'">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;margin:0 auto 12px;overflow:hidden;">
+            {% if m.profile_image %}
+              <img src="{{ m.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />
+            {% else %}
+              {{ m.get_initials }}
+            {% endif %}
+          </div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">{{ m.get_full_name }}</div>
+          <div style="font-size:11px;color:var(--text-muted);font-family:monospace;margin-bottom:8px;">{{ m.member_id }}</div>
+          <span class="badge-gymx {{ m.get_status_color }}">{{ m.get_status_display }}</span>
+          <div style="display:flex;gap:6px;margin-top:12px;justify-content:center;">
+            <a href="{% url 'members:detail' m.pk %}" class="btn-gymx primary" style="font-size:12px;padding:5px 12px;text-decoration:none;">View</a>
+            <a href="{% url 'members:edit' m.pk %}" class="btn-gymx outline" style="font-size:12px;padding:5px 12px;text-decoration:none;">Edit</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleView(v) {
+  document.getElementById('view-table').style.display = v==='table' ? 'block' : 'none';
+  document.getElementById('view-grid').style.display  = v==='grid'  ? 'block' : 'none';
+  document.getElementById('btn-table').style.background = v==='table' ? 'var(--primary-light)' : '';
+  document.getElementById('btn-table').style.color      = v==='table' ? 'var(--primary)' : '';
+  document.getElementById('btn-grid').style.background  = v==='grid'  ? 'var(--primary-light)' : '';
+  document.getElementById('btn-grid').style.color       = v==='grid'  ? 'var(--primary)' : '';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Barcode — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Members / {{ member.get_full_name }} / Barcode{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Barcode</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% include 'members/_member_header_mini.html' %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card-gymx" style="text-align:center;">
+      <div class="card-body" style="padding:32px;">
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px 32px;display:inline-block;margin-bottom:20px;">
+          {% if member.barcode_image %}
+          <img src="{{ member.barcode_image.url }}" alt="Barcode" style="max-width:300px;width:100%;" />
+          {% else %}
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px;">
+            <i class="fa-solid fa-barcode" style="font-size:64px;color:var(--text-muted);"></i>
+            <div style="font-size:13px;color:var(--text-muted);">Barcode not generated</div>
+          </div>
+          {% endif %}
+          <div style="font-size:14px;font-family:monospace;color:var(--text-primary);margin-top:12px;letter-spacing:3px;">{{ member.member_id }}</div>
+        </div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">{{ member.get_full_name }}</div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+          {% if member.barcode_image %}
+          <a href="{{ member.barcode_image.url }}" download="barcode_{{ member.member_id }}.png" class="btn-gymx primary" style="text-decoration:none;justify-content:center;">
+            <i class="fa-solid fa-download"></i> Download Barcode
+          </a>
+          {% endif %}
+          <a href="{% url 'members:qr' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;">
+            <i class="fa-solid fa-qrcode"></i> View QR Code
+          </a>
+          <a href="{% url 'members:card' member.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;">
+            <i class="fa-solid fa-id-card"></i> Member Card
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
