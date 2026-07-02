@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Coupons — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Coupons{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Coupons</h1><p class="page-subtitle">Manage discount coupon codes</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'memberships:discounts' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-percent"></i> Discounts</a>
+    <a href="{% url 'memberships:offers' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-gift"></i> Offers</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tag"></i> All Coupons ({{ coupons|length }})</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Code</th><th>Discount</th><th>Member</th><th>Used</th><th>Expires</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {% for c in coupons %}
+            <tr>
+              <td><span style="font-family:monospace;font-size:14px;font-weight:700;color:var(--primary);letter-spacing:1px;background:var(--primary-light);padding:4px 10px;border-radius:var(--radius-md);">{{ c.code }}</span></td>
+              <td>
+                <div style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ c.discount.name }}</div>
+                <div style="font-size:11px;color:var(--text-muted);">{% if c.discount.discount_type == 'percentage' %}{{ c.discount.value }}% off{% else %}{{ c.discount.value }} EGP off{% endif %}</div>
+              </td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.member.get_full_name|default:"Public" }}</td>
+              <td>
+                <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ c.times_used }}</span>
+                {% if c.is_single_use %}<span class="badge-gymx gray" style="font-size:10px;margin-left:4px;">Single use</span>{% endif %}
+              </td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.valid_until|date:"M d, Y"|default:"—" }}</td>
+              <td>{% if c.is_valid %}<span class="badge-gymx green" style="font-size:11px;">Valid</span>{% else %}<span class="badge-gymx red" style="font-size:11px;">Invalid</span>{% endif %}</td>
+              <td><a href="{% url 'memberships:coupon_delete' c.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);color:var(--danger);text-decoration:none;" onclick="return confirm('Delete coupon?')"><i class="fa-solid fa-trash" style="font-size:11px;"></i></a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No coupons created yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Create Coupon</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.name == 'code' %}<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Code will be converted to uppercase automatically</div>{% endif %}
+            {% if field.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ field.errors|first }}</div>{% endif %}
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-tag"></i> Create Coupon</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Pending Renewals — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Pending Renewals{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Pending Renewals</h1><p class="page-subtitle">Memberships expiring within 14 days</p></div>
+</div>
+
+{% if subscriptions %}
+<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> <strong>{{ subscriptions|length }}</strong> membership{{ subscriptions|length|pluralize }} require{{ subscriptions|length|pluralize:"s," }} renewal action.</div>
+{% endif %}
+
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-rotate" style="color:var(--warning);"></i> Expiring Soon</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Plan</th><th>Expires</th><th>Days Left</th><th>Payment</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for sub in subscriptions %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if sub.member.profile_image %}<img src="{{ sub.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ sub.member.get_initials }}{% endif %}
+              </div>
+              <div>
+                <a href="{% url 'members:detail' sub.member.pk %}" style="font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ sub.member.get_full_name }}</a>
+                <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ sub.member.member_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td><div style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ sub.plan.name }}</div></td>
+          <td style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ sub.end_date|date:"M d, Y" }}</td>
+          <td>
+            <span style="font-size:14px;font-weight:800;color:{% if sub.days_remaining <= 3 %}var(--danger){% elif sub.days_remaining <= 7 %}var(--warning){% else %}var(--text-secondary){% endif %};">{{ sub.days_remaining }}d</span>
+          </td>
+          <td><span class="badge-gymx {% if sub.payment_status == 'paid' %}green{% elif sub.payment_status == 'unpaid' %}red{% else %}orange{% endif %}" style="font-size:11px;">{{ sub.get_payment_status_display }}</span></td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <a href="{% url 'memberships:renew' sub.pk %}" class="btn-gymx primary" style="text-decoration:none;font-size:12px;padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Renew</a>
+              <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;font-size:12px;padding:6px 12px;"><i class="fa-solid fa-eye"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-circle-check" style="font-size:32px;color:var(--success);display:block;margin-bottom:10px;"></i>No pending renewals — all memberships are up to date!</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

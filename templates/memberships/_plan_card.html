@@ -1,0 +1,83 @@
+{% load static %}
+<div class="col-md-6 col-xl-4">
+  <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;transition:all 0.2s;box-shadow:var(--shadow-xs);"
+       onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'"
+       onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow-xs)';this.style.borderColor='var(--border)'">
+
+    <!-- Top stripe -->
+    <div style="height:4px;background:{% if plan.plan_type == 'premium' %}linear-gradient(90deg,#8B5CF6,#A78BFA){% elif plan.plan_type == 'vip' %}linear-gradient(90deg,#F59E0B,#FCD34D){% elif plan.plan_type == 'family' %}linear-gradient(90deg,#EC4899,#F9A8D4){% elif plan.plan_type == 'corporate' %}linear-gradient(90deg,#6B7280,#9CA3AF){% else %}linear-gradient(90deg,var(--primary),var(--accent)){% endif %};"></div>
+
+    <div style="padding:20px;">
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:15px;font-weight:700;color:var(--text-primary);">{{ plan.name }}</span>
+            {% if plan.is_featured %}
+            <span class="badge-gymx orange" style="font-size:10px;"><i class="fa-solid fa-star"></i> Featured</span>
+            {% endif %}
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge-gymx {{ plan.get_type_color }}" style="font-size:10px;">{{ plan.get_plan_type_display }}</span>
+            <span class="badge-gymx gray" style="font-size:10px;">{{ plan.get_billing_cycle_display }}</span>
+            {% if not plan.is_active %}<span class="badge-gymx red" style="font-size:10px;">Inactive</span>{% endif %}
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:800;color:var(--primary);letter-spacing:-0.5px;">{{ plan.price|floatformat:0 }}</div>
+          <div style="font-size:11px;color:var(--text-muted);">EGP / {{ plan.duration_days }}d</div>
+        </div>
+      </div>
+
+      {% if plan.description %}
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">{{ plan.description|truncatechars:80 }}</div>
+      {% endif %}
+
+      <!-- Features -->
+      {% if plan.features %}
+      <div style="margin-bottom:14px;">
+        {% for feat in plan.features|slice:":3" %}
+        <div style="display:flex;align-items:center;gap:7px;padding:3px 0;font-size:12.5px;color:var(--text-secondary);">
+          <i class="fa-solid fa-check" style="color:var(--success);font-size:11px;width:14px;"></i>
+          {{ feat }}
+        </div>
+        {% endfor %}
+        {% if plan.features|length > 3 %}
+        <div style="font-size:11px;color:var(--text-muted);padding-top:2px;">+{{ plan.features|length|add:"-3" }} more features</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Stats strip -->
+      <div style="display:flex;gap:16px;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:14px;">
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);">{{ plan.active_subscriptions_count }}</div>
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Active</div>
+        </div>
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);">{{ plan.max_freeze_days }}d</div>
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Max Freeze</div>
+        </div>
+        {% if plan.setup_fee %}
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);">{{ plan.setup_fee|floatformat:0 }}</div>
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Setup Fee</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:8px;">
+        <a href="{% url 'memberships:plan_detail' plan.pk %}" class="btn-gymx primary" style="text-decoration:none;flex:1;justify-content:center;font-size:12.5px;">
+          <i class="fa-solid fa-eye"></i> View
+        </a>
+        <a href="{% url 'memberships:plan_edit' plan.pk %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;font-size:12.5px;padding:9px 14px;">
+          <i class="fa-solid fa-pen"></i>
+        </a>
+        <a href="{% url 'memberships:subscription_add' %}?plan={{ plan.pk }}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;font-size:12.5px;padding:9px 14px;" title="Assign to member">
+          <i class="fa-solid fa-user-plus"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Membership Plans — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Membership Plans</h1>
+    <p class="page-subtitle">Manage all gym membership plans and categories</p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'memberships:categories' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-tags"></i> Categories</a>
+    <a href="{% url 'memberships:statistics' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-chart-pie"></i> Statistics</a>
+    <a href="{% url 'memberships:plan_add' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Plan</a>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card blue" style="padding:16px;">
+      <div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-id-card"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.total_plans }}</div>
+      <div class="stat-label">Total Plans</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card green" style="padding:16px;">
+      <div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.active_plans }}</div>
+      <div class="stat-label">Active Plans</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card purple" style="padding:16px;">
+      <div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.total_subs }}</div>
+      <div class="stat-label">Active Subscriptions</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card orange" style="padding:16px;">
+      <div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.total_revenue|floatformat:0 }}</div>
+      <div class="stat-label">Total Revenue (EGP)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick subscription nav -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+  <a href="{% url 'memberships:active' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-circle-check" style="color:var(--success);"></i> Active</a>
+  <a href="{% url 'memberships:expired' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-calendar-xmark" style="color:var(--danger);"></i> Expired</a>
+  <a href="{% url 'memberships:frozen' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-snowflake" style="color:var(--accent);"></i> Frozen</a>
+  <a href="{% url 'memberships:cancelled' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-xmark" style="color:var(--text-muted);"></i> Cancelled</a>
+  <a href="{% url 'memberships:pending_renewals' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-rotate" style="color:var(--warning);"></i> Pending Renewals</a>
+  <a href="{% url 'memberships:subscription_add' %}" class="btn-gymx primary" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-plus"></i> New Subscription</a>
+</div>
+
+<!-- Filter -->
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:14px 20px;">
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:200px;">
+        <label class="form-label">Search Plans</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by name..." />
+      </div>
+      <div style="min-width:160px;">
+        <label class="form-label">Plan Type</label>
+        <select name="type" class="form-select">
+          <option value="">All Types</option>
+          {% for val, label in plan_types %}
+          <option value="{{ val }}" {% if plan_type == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-magnifying-glass"></i> Filter</button>
+      {% if q or plan_type %}<a href="{% url 'memberships:plans' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Plans Grid -->
+{% if categories and not q and not plan_type %}
+{% for cat in categories %}
+{% if cat.plans.exists %}
+<div style="margin-bottom:32px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <div style="width:32px;height:32px;border-radius:var(--radius-md);background:{{ cat.color }}20;display:flex;align-items:center;justify-content:center;">
+      <i class="fa-solid {{ cat.icon }}" style="color:{{ cat.color }};font-size:14px;"></i>
+    </div>
+    <h3 style="font-size:15px;font-weight:700;color:var(--text-primary);margin:0;">{{ cat.name }}</h3>
+    <span class="badge-gymx gray" style="font-size:10px;">{{ cat.plans.count }} plans</span>
+  </div>
+  <div class="row g-3">
+    {% for plan in cat.plans.all %}
+    {% include 'memberships/_plan_card.html' %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+{% else %}
+<div class="row g-3">
+  {% for plan in plans %}
+  {% include 'memberships/_plan_card.html' %}
+  {% empty %}
+  <div class="col-12">
+    <div style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+      <i class="fa-solid fa-id-card" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;"></i>
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">No plans found</div>
+      <a href="{% url 'memberships:plan_add' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Add First Plan</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

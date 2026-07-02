@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / New Subscription{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ page_title }}</h1><p class="page-subtitle">Assign a membership plan to a member</p></div>
+  <a href="{% url 'memberships:active' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form method="post" id="subForm">
+      {% csrf_token %}
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Member & Plan</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12"><label class="form-label">Member <span style="color:var(--danger);">*</span></label>{{ form.member }}{% if form.member.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.member.errors|first }}</div>{% endif %}</div>
+            <div class="col-12"><label class="form-label">Membership Plan <span style="color:var(--danger);">*</span></label>{{ form.plan }}{% if form.plan.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.plan.errors|first }}</div>{% endif %}</div>
+            <div class="col-md-6"><label class="form-label">Start Date</label>{{ form.start_date }}</div>
+            <div class="col-md-6"><label class="form-label">End Date <span style="font-size:11px;color:var(--text-muted);">(auto-calculated)</span></label>{{ form.end_date }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tag"></i> Coupon / Discount</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Coupon Code</label>
+              <div style="display:flex;gap:8px;">
+                {{ form.coupon_code }}
+                <button type="button" onclick="validateCoupon()" class="btn-gymx outline" style="white-space:nowrap;"><i class="fa-solid fa-tag"></i> Apply</button>
+              </div>
+              <div id="couponResult" style="margin-top:8px;font-size:13px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-credit-card"></i> Payment</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Payment Status</label>{{ form.payment_status }}</div>
+            <div class="col-md-6"><label class="form-label">Amount Paid (EGP)</label>{{ form.amount_paid }}</div>
+            <div class="col-12 form-check" style="padding-left:20px;margin-top:8px;">{{ form.auto_renew }} <label class="form-check-label" style="font-size:13px;color:var(--text-secondary);">Enable Auto-Renew</label></div>
+            <div class="col-12"><label class="form-label">Notes</label>{{ form.notes }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'memberships:active' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-check"></i> Activate Membership</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card-gymx" id="planPreview" style="display:none;">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-eye"></i> Plan Preview</span></div>
+      <div class="card-body" id="planPreviewContent"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const planSelect = document.querySelector('[name="plan"]');
+const startInput = document.querySelector('[name="start_date"]');
+const endInput   = document.querySelector('[name="end_date"]');
+
+// Auto-set today as start date
+if (!startInput.value) {
+  const t = new Date();
+  startInput.value = t.toISOString().split('T')[0];
+}
+
+// When plan changes, fetch duration and compute end_date
+planSelect?.addEventListener('change', function() {
+  const planId = this.value;
+  if (!planId) return;
+  const opt = this.options[this.selectedIndex];
+  // We'll rely on server to calculate, just show preview
+  updatePlanPreview(planId);
+});
+
+startInput?.addEventListener('change', function() {
+  const planId = planSelect?.value;
+  if (planId) updateEndDate(planId);
+});
+
+function updateEndDate(planId) {
+  // Simple client-side approach using duration from option text
+  // Server will handle final calculation
+}
+
+function updatePlanPreview(planId) {
+  document.getElementById('planPreview').style.display = 'block';
+  document.getElementById('planPreviewContent').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading plan details...</div>';
+}
+
+function validateCoupon() {
+  const code = document.querySelector('[name="coupon_code"]')?.value.trim().toUpperCase();
+  const result = document.getElementById('couponResult');
+  if (!code) { result.innerHTML = '<span style="color:var(--danger);">Enter a coupon code.</span>'; return; }
+  result.innerHTML = '<span style="color:var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Validating...</span>';
+  setTimeout(() => {
+    result.innerHTML = '<span style="color:var(--success);"><i class="fa-solid fa-check"></i> Coupon will be validated on submission.</span>';
+  }, 500);
+}
+</script>
+{% endblock %}

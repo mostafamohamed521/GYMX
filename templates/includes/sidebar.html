@@ -21,7 +21,7 @@
     <a href="{% url 'members:list' %}" class="nav-item {% if request.resolver_match.app_name == 'members' %}active{% endif %}">
       <i class="fa-solid fa-users"></i><span>Members</span>
     </a>
-    <a href="#" class="nav-item">
+    <a href="{% url 'memberships:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'memberships' %}active{% endif %}">
       <i class="fa-solid fa-id-card"></i><span>Memberships</span>
     </a>
     <a href="#" class="nav-item">

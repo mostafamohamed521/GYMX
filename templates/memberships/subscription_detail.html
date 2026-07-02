@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Subscription — {{ sub.member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Subscription #{{ sub.pk }}{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Subscription #{{ sub.pk }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ sub.get_status_color }}">{{ sub.get_status_display }}</span>
+      <span class="badge-gymx {% if sub.payment_status == 'paid' %}green{% elif sub.payment_status == 'unpaid' %}red{% else %}orange{% endif %}">{{ sub.get_payment_status_display }}</span>
+      {% if sub.is_expiring_soon %}<span class="badge-gymx red"><i class="fa-solid fa-triangle-exclamation"></i> Expiring Soon</span>{% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'memberships:renew' sub.pk %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-rotate"></i> Renew</a>
+    <a href="{% url 'memberships:upgrade' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-up"></i> Upgrade/Downgrade</a>
+    <a href="{% url 'memberships:freeze' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-snowflake"></i> Freeze</a>
+    <a href="{% url 'memberships:transfer' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-right-left"></i> Transfer</a>
+    {% if sub.status == 'active' %}
+    <a href="{% url 'memberships:cancel' sub.pk %}" class="btn-gymx danger" style="text-decoration:none;"><i class="fa-solid fa-xmark"></i> Cancel</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <!-- Left: member + progress -->
+  <div class="col-lg-4">
+
+    <!-- Member card -->
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:24px;">
+        <a href="{% url 'members:detail' sub.member.pk %}" style="text-decoration:none;">
+          <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;margin:0 auto 12px;overflow:hidden;box-shadow:var(--shadow-md);">
+            {% if sub.member.profile_image %}<img src="{{ sub.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ sub.member.get_initials }}{% endif %}
+          </div>
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);">{{ sub.member.get_full_name }}</div>
+        </a>
+        <div style="font-size:12px;color:var(--text-muted);font-family:monospace;margin-top:4px;">{{ sub.member.member_id }}</div>
+        {% if sub.member.email %}<div style="font-size:12.5px;color:var(--text-secondary);margin-top:8px;"><i class="fa-solid fa-envelope" style="color:var(--text-muted);width:14px;"></i> {{ sub.member.email }}</div>{% endif %}
+        {% if sub.member.phone %}<div style="font-size:12.5px;color:var(--text-secondary);margin-top:4px;"><i class="fa-solid fa-phone" style="color:var(--text-muted);width:14px;"></i> {{ sub.member.phone }}</div>{% endif %}
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-line"></i> Membership Progress</span></div>
+      <div class="card-body" style="text-align:center;">
+        <!-- Circle progress -->
+        <div style="position:relative;width:120px;height:120px;margin:0 auto 16px;">
+          <svg viewBox="0 0 120 120" style="transform:rotate(-90deg);width:120px;height:120px;">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg-muted)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--primary)" stroke-width="10"
+              stroke-dasharray="{{ sub.progress_pct|floatformat:0|add:'0' }} 314"
+              stroke-linecap="round"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-size:22px;font-weight:800;color:var(--text-primary);">{{ sub.progress_pct }}%</div>
+            <div style="font-size:10px;color:var(--text-muted);">used</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:10px;text-align:center;">
+            <div style="font-size:18px;font-weight:700;color:var(--success);">{{ sub.days_remaining }}</div>
+            <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Days Left</div>
+          </div>
+          <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:10px;text-align:center;">
+            <div style="font-size:18px;font-weight:700;color:var(--text-secondary);">{{ sub.days_elapsed }}</div>
+            <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Days Used</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Freeze info -->
+    {% if sub.status == 'frozen' %}
+    <div class="card-gymx" style="border-color:#BFDBFE;">
+      <div class="card-body" style="background:#EFF6FF;border-radius:var(--radius-2xl);">
+        <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;"><i class="fa-solid fa-snowflake"></i> Account Frozen</div>
+        <div style="font-size:12.5px;color:var(--text-secondary);">From: {{ sub.freeze_start|date:"M d, Y" }}</div>
+        <div style="font-size:12.5px;color:var(--text-secondary);">Until: {{ sub.freeze_end|date:"M d, Y" }}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ sub.freeze_days_used }} / {{ sub.plan.max_freeze_days }} freeze days used</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right: details -->
+  <div class="col-lg-8">
+
+    <!-- Plan + Pricing -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-id-card"></i> Subscription Details</span></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Plan</div>
+            <a href="{% url 'memberships:plan_detail' sub.plan.pk %}" style="font-size:14px;font-weight:600;color:var(--primary);text-decoration:none;">{{ sub.plan.name }}</a>
+            <div style="font-size:12px;color:var(--text-muted);">{{ sub.plan.get_billing_cycle_display }}</div>
+          </div>
+          <div class="col-md-6">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Duration</div>
+            <div style="font-size:14px;color:var(--text-primary);">{{ sub.start_date|date:"M d, Y" }} — {{ sub.end_date|date:"M d, Y" }}</div>
+            <div style="font-size:12px;color:var(--text-muted);">{{ sub.plan.duration_days }} days</div>
+          </div>
+          {% if sub.previous_plan %}
+          <div class="col-md-6">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Previous Plan</div>
+            <div style="font-size:14px;color:var(--text-primary);">{{ sub.previous_plan.name }}</div>
+            <span class="badge-gymx {% if sub.upgrade_type == 'upgrade' %}green{% else %}orange{% endif %}" style="font-size:10px;">{{ sub.upgrade_type|title }}</span>
+          </div>
+          {% endif %}
+          <div class="col-md-6">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Auto Renew</div>
+            <div>{% if sub.auto_renew %}<span class="badge-gymx green">Enabled</span>{% else %}<span class="badge-gymx gray">Disabled</span>{% endif %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing breakdown -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-receipt"></i> Pricing Breakdown</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:13.5px;color:var(--text-secondary);">Original Price</span>
+            <span style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ sub.original_price|floatformat:2 }} EGP</span>
+          </div>
+          {% if sub.discount_amount %}
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:13.5px;color:var(--success);">Discount {% if sub.coupon %}({{ sub.coupon.code }}){% elif sub.discount %}({{ sub.discount.name }}){% endif %}</span>
+            <span style="font-size:13.5px;font-weight:600;color:var(--success);">- {{ sub.discount_amount|floatformat:2 }} EGP</span>
+          </div>
+          {% endif %}
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:15px;font-weight:700;color:var(--text-primary);">Total</span>
+            <span style="font-size:18px;font-weight:800;color:var(--primary);">{{ sub.final_price|floatformat:2 }} EGP</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:13.5px;color:var(--text-secondary);">Amount Paid</span>
+            <span style="font-size:13.5px;font-weight:600;color:var(--success);">{{ sub.amount_paid|floatformat:2 }} EGP</span>
+          </div>
+          {% if sub.amount_due > 0 %}
+          <div style="display:flex;justify-content:space-between;padding:8px 0;">
+            <span style="font-size:13.5px;color:var(--danger);font-weight:600;">Amount Due</span>
+            <span style="font-size:14px;font-weight:700;color:var(--danger);">{{ sub.amount_due|floatformat:2 }} EGP</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    {% if sub.notes %}
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-note-sticky"></i> Notes</span></div>
+      <div class="card-body"><p style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;margin:0;">{{ sub.notes }}</p></div>
+    </div>
+    {% endif %}
+
+    <!-- Meta -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock"></i> Record Info</span></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Created By</div>
+            <div style="font-size:13px;color:var(--text-primary);">{{ sub.created_by.get_full_name|default:"System" }}</div>
+          </div>
+          <div class="col-md-4">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Created</div>
+            <div style="font-size:13px;color:var(--text-primary);">{{ sub.created_at|date:"M d, Y H:i" }}</div>
+          </div>
+          <div class="col-md-4">
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Last Updated</div>
+            <div style="font-size:13px;color:var(--text-primary);">{{ sub.updated_at|date:"M d, Y H:i" }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

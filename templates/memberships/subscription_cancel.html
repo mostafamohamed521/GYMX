@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Cancel Membership — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Cancel{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Cancel Membership</h1><p class="page-subtitle">{{ sub.member.get_full_name }}</p></div>
+  <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div class="card-gymx" style="border-color:#FECACA;">
+      <div class="card-header" style="background:#FEF2F2;"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-xmark"></i> Cancel Membership</span></div>
+      <div class="card-body">
+        <div style="background:#FEF2F2;border-radius:var(--radius-xl);padding:14px;margin-bottom:20px;font-size:13px;color:#7F1D1D;">Cancelling will immediately deactivate <strong>{{ sub.member.get_full_name }}'s</strong> {{ sub.plan.name }} membership (expires {{ sub.end_date|date:"M d, Y" }}).</div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Cancellation Reason</label>
+            <textarea name="reason" class="form-control" rows="3" placeholder="Reason for cancellation..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;">Keep Membership</a>
+            <button type="submit" class="btn-gymx danger" onclick="return confirm('Are you sure?')"><i class="fa-solid fa-xmark"></i> Cancel Membership</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

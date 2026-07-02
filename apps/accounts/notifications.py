@@ -7,10 +7,9 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from typing import Union
-
 
 logger = logging.getLogger(__name__)
+
 
 
 # ── SMS via Twilio ─────────────────────────────────────────
@@ -41,12 +40,14 @@ def send_sms(to_phone: str, message: str) -> bool:
         return False
 
 
+
+from typing import Union, List, Optional
 # ── Email via Django/SMTP ──────────────────────────────────
 def send_email(
-    to: Union[str, list], 
+    to: Union[str, List[str]],
     subject: str,
     html_content: str,
-    text_content: str = None,
+    text_content: Optional[str] = None,
 ) -> bool:
     """Send HTML email. Returns True on success."""
     if not to:

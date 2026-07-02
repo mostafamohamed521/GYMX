@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Freeze Membership — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Freeze{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Freeze Membership</h1><p class="page-subtitle">{{ sub.member.get_full_name }} — {{ sub.plan.name }}</p></div>
+  <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:24px;">
+  <div style="font-size:13px;color:var(--primary);">Max freeze allowed: <strong>{{ sub.plan.max_freeze_days }}</strong> days &nbsp;&middot;&nbsp; Already used: <strong>{{ sub.freeze_days_used }}</strong> days &nbsp;&middot;&nbsp; Remaining: <strong>{{ sub.plan.max_freeze_days|add:"-0" }}</strong> days</div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-snowflake"></i> Freeze Period</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Freeze Start <span style="color:var(--danger);">*</span></label>{{ form.freeze_start }}{% if form.freeze_start.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.freeze_start.errors|first }}</div>{% endif %}</div>
+          <div class="mb-3"><label class="form-label">Freeze End <span style="color:var(--danger);">*</span></label>{{ form.freeze_end }}{% if form.freeze_end.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.freeze_end.errors|first }}</div>{% endif %}</div>
+          <div class="mb-3"><label class="form-label">Reason</label>{{ form.reason }}</div>
+          {% if form.non_field_errors %}<div class="alert-gymx error mb-3"><i class="fa-solid fa-circle-xmark"></i> {{ form.non_field_errors|first }}</div>{% endif %}
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-snowflake"></i> Freeze Membership</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Transfer Membership — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Transfer{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Transfer Membership</h1><p class="page-subtitle">Current holder: {{ sub.member.get_full_name }}</p></div>
+  <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-right-left"></i> Transfer Details</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Transfer To Member <span style="color:var(--danger);">*</span></label>{{ form.target_member }}</div>
+          <div class="mb-3"><label class="form-label">Reason <span style="color:var(--danger);">*</span></label>{{ form.reason }}</div>
+          <div class="alert-gymx warning mb-3"><i class="fa-solid fa-triangle-exclamation"></i> This will reassign the membership to the target member immediately.</div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-right-left"></i> Transfer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

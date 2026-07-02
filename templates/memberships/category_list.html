@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Membership Categories — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Categories{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Membership Categories</h1><p class="page-subtitle">Organise plans into logical groups</p></div>
+  <a href="{% url 'memberships:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back to Plans</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tags"></i> Categories ({{ categories|length }})</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for cat in categories %}
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:{{ cat.color }}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {{ cat.icon }}" style="color:{{ cat.color }};font-size:16px;"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ cat.name }}</div>
+            {% if cat.description %}<div style="font-size:12.5px;color:var(--text-muted);">{{ cat.description|truncatechars:60 }}</div>{% endif %}
+          </div>
+          <span class="badge-gymx blue" style="font-size:11px;">{{ cat.plan_count }} plans</span>
+          <div style="display:flex;gap:6px;">
+            <a href="{% url 'memberships:category_edit' cat.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;" title="Edit"><i class="fa-solid fa-pen" style="font-size:11px;"></i></a>
+            <a href="{% url 'memberships:category_delete' cat.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);color:var(--danger);text-decoration:none;" title="Delete" onclick="return confirm('Delete this category?')"><i class="fa-solid fa-trash" style="font-size:11px;"></i></a>
+          </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-solid fa-tags" style="font-size:28px;display:block;margin-bottom:8px;"></i>No categories yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Category</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Name</label>{{ form.name }}</div>
+          <div class="mb-3"><label class="form-label">Description</label>{{ form.description }}</div>
+          <div class="row g-3 mb-3">
+            <div class="col-6"><label class="form-label">Color</label>{{ form.color }}</div>
+            <div class="col-6"><label class="form-label">Icon (FA class)</label>{{ form.icon }}</div>
+          </div>
+          <div class="mb-3"><label class="form-label">Sort Order</label>{{ form.sort_order }}</div>
+          <div class="mb-3 form-check">{{ form.is_active }} <label class="form-check-label" style="font-size:13px;">Active</label></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add Category</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

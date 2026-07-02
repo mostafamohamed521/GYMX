@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / {{ action }} Plan{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">{{ page_title }}</h1>
+    <p class="page-subtitle">{% if plan %}Update plan configuration{% else %}Create a new membership plan{% endif %}</p>
+  </div>
+  <a href="{% url 'memberships:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="row g-4">
+
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-id-card"></i> Plan Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8"><label class="form-label">Plan Name <span style="color:var(--danger);">*</span></label>{{ form.name }}{% if form.name.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.name.errors|first }}</div>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label">Plan Type</label>{{ form.plan_type }}</div>
+            <div class="col-md-6"><label class="form-label">Category</label>{{ form.category }}</div>
+            <div class="col-md-6"><label class="form-label">Billing Cycle</label>{{ form.billing_cycle }}</div>
+            <div class="col-md-4"><label class="form-label">Duration (days) <span style="color:var(--danger);">*</span></label>{{ form.duration_days }}</div>
+            <div class="col-md-4"><label class="form-label">Price (EGP) <span style="color:var(--danger);">*</span></label>{{ form.price }}{% if form.price.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.price.errors|first }}</div>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label">Setup Fee (EGP)</label>{{ form.setup_fee }}</div>
+            <div class="col-12"><label class="form-label">Description</label>{{ form.description }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list-check"></i> Features</span></div>
+        <div class="card-body">
+          <label class="form-label">{{ form.features_text.label }}</label>
+          {{ form.features_text }}
+          <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ form.features_text.help_text }}</div>
+
+          <!-- Live preview -->
+          <div id="featurePreview" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-gear"></i> Advanced Settings</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Max Freeze Days</label>{{ form.max_freeze_days }}</div>
+            <div class="col-md-4"><label class="form-label">Max Members</label>{{ form.max_members }}<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">For family/corporate plans</div></div>
+            <div class="col-md-4"><label class="form-label">Sort Order</label>{{ form.sort_order }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-toggle-on"></i> Visibility</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+          {% for field in form.is_active, form.is_featured, form.is_public %}
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);">{{ field.label }}</div>
+            </div>
+            {{ field }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Price preview -->
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Price Preview</span></div>
+        <div class="card-body" style="text-align:center;padding:24px;">
+          <div id="pricePreview" style="font-size:36px;font-weight:800;color:var(--primary);letter-spacing:-1px;">0</div>
+          <div style="font-size:12px;color:var(--text-muted);">EGP</div>
+          <div id="pricePerDay" style="font-size:13px;color:var(--text-muted);margin-top:8px;"></div>
+          <div id="setupPreview" style="font-size:12px;color:var(--warning);margin-top:4px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% if plan %}{% url 'memberships:plan_detail' plan.pk %}{% else %}{% url 'memberships:plans' %}{% endif %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> {% if plan %}Save Changes{% else %}Create Plan{% endif %}</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Live price preview
+const priceInput    = document.querySelector('[name="price"]');
+const daysInput     = document.querySelector('[name="duration_days"]');
+const setupInput    = document.querySelector('[name="setup_fee"]');
+const pricePreview  = document.getElementById('pricePreview');
+const pricePerDay   = document.getElementById('pricePerDay');
+const setupPreview  = document.getElementById('setupPreview');
+
+function updatePreview() {
+  const p = parseFloat(priceInput?.value) || 0;
+  const d = parseInt(daysInput?.value)    || 30;
+  const s = parseFloat(setupInput?.value) || 0;
+  pricePreview.textContent = p.toFixed(0);
+  pricePerDay.textContent  = d ? `${(p/d).toFixed(2)} EGP / day` : '';
+  setupPreview.textContent = s > 0 ? `+ ${s} EGP setup fee` : '';
+}
+priceInput?.addEventListener('input', updatePreview);
+daysInput?.addEventListener('input', updatePreview);
+setupInput?.addEventListener('input', updatePreview);
+updatePreview();
+
+// Live features preview
+const featTA   = document.querySelector('[name="features_text"]');
+const featPrev = document.getElementById('featurePreview');
+function updateFeatures() {
+  const lines = featTA?.value.split('\n').map(l=>l.trim()).filter(l=>l);
+  if (!lines?.length) { featPrev.innerHTML=''; return; }
+  featPrev.innerHTML = '<div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:14px 16px;border:1px dashed var(--border);">'
+    + '<div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">Preview</div>'
+    + lines.map(f=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:13px;color:var(--text-secondary);"><i class="fa-solid fa-check" style="color:var(--success);font-size:11px;"></i>${f}</div>`).join('')
+    + '</div>';
+}
+featTA?.addEventListener('input', updateFeatures);
+updateFeatures();
+</script>
+{% endblock %}

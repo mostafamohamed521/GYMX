@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Membership Statistics — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Statistics{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div>
+    <h1 class="page-title">Membership Statistics</h1>
+    <p class="page-subtitle">Comprehensive overview of membership performance</p>
+  </div>
+  <a href="{% url 'memberships:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back to Plans</a>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card green" style="padding:18px;">
+      <div class="stat-icon green" style="width:36px;height:36px;font-size:15px;margin-bottom:12px;"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.total_active }}</div>
+      <div class="stat-label">Active</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +{{ stats.new_this_month }} this month</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card red" style="padding:18px;">
+      <div class="stat-icon red" style="width:36px;height:36px;font-size:15px;margin-bottom:12px;"><i class="fa-solid fa-calendar-xmark"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.total_expired }}</div>
+      <div class="stat-label">Expired</div>
+      <div class="stat-change down"><i class="fa-solid fa-triangle-exclamation"></i> {{ stats.expiring_7days }} expiring soon</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card orange" style="padding:18px;">
+      <div class="stat-icon orange" style="width:36px;height:36px;font-size:15px;margin-bottom:12px;"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div class="stat-value" style="font-size:24px;">{{ stats.total_revenue|floatformat:0 }}</div>
+      <div class="stat-label">Total Revenue (EGP)</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Avg {{ stats.avg_price|floatformat:0 }} EGP/plan</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card red" style="padding:18px;">
+      <div class="stat-icon red" style="width:36px;height:36px;font-size:15px;margin-bottom:12px;"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.pending_payment }}</div>
+      <div class="stat-label">Unpaid Active</div>
+      <div class="stat-change down"><i class="fa-solid fa-triangle-exclamation"></i> Requires collection</div>
+    </div>
+  </div>
+</div>
+
+<!-- Secondary KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card blue" style="padding:16px;">
+      <div class="stat-icon blue" style="width:32px;height:32px;font-size:13px;margin-bottom:10px;"><i class="fa-solid fa-snowflake"></i></div>
+      <div class="stat-value" style="font-size:22px;">{{ stats.total_frozen }}</div>
+      <div class="stat-label">Frozen</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card gray" style="padding:16px;">
+      <div class="stat-icon" style="width:32px;height:32px;font-size:13px;margin-bottom:10px;background:var(--bg-muted);color:var(--text-muted);"><i class="fa-solid fa-xmark"></i></div>
+      <div class="stat-value" style="font-size:22px;">{{ stats.total_cancelled }}</div>
+      <div class="stat-label">Cancelled</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card orange" style="padding:16px;">
+      <div class="stat-icon orange" style="width:32px;height:32px;font-size:13px;margin-bottom:10px;"><i class="fa-solid fa-rotate"></i></div>
+      <div class="stat-value" style="font-size:22px;">{{ stats.expiring_7days }}</div>
+      <div class="stat-label">Expiring (7 days)</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card green" style="padding:16px;">
+      <div class="stat-icon green" style="width:32px;height:32px;font-size:13px;margin-bottom:10px;"><i class="fa-solid fa-percent"></i></div>
+      <div class="stat-value" style="font-size:22px;">{{ stats.total_discount|floatformat:0 }}</div>
+      <div class="stat-label">Total Discount (EGP)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+
+  <!-- Monthly trend -->
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-chart-line"></i> Monthly Trend (Last 6 Months)</span>
+      </div>
+      <div class="card-body">
+        <div style="height:240px;"><canvas id="trendChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status distribution -->
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> Status Distribution</span></div>
+      <div class="card-body">
+        <div style="height:180px;display:flex;align-items:center;justify-content:center;">
+          <canvas id="statusChart"></canvas>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+          {% for label, val, clr in status_legend %}{% endfor %}
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);"><span style="width:10px;height:10px;border-radius:3px;background:var(--success);display:inline-block;"></span>Active</div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ stats.total_active }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);"><span style="width:10px;height:10px;border-radius:3px;background:var(--danger);display:inline-block;"></span>Expired</div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ stats.total_expired }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);"><span style="width:10px;height:10px;border-radius:3px;background:var(--accent);display:inline-block;"></span>Frozen</div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ stats.total_frozen }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);"><span style="width:10px;height:10px;border-radius:3px;background:var(--text-muted);display:inline-block;"></span>Cancelled</div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ stats.total_cancelled }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Plan Performance -->
+<div class="card-gymx">
+  <div class="card-header">
+    <span class="card-header-title"><i class="fa-solid fa-trophy"></i> Plan Performance</span>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Active Subs</th>
+          <th>Revenue (EGP)</th>
+          <th>Performance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plan in plan_stats %}
+        <tr>
+          <td>
+            <a href="{% url 'memberships:plan_detail' plan.pk %}" style="font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ plan.name }}</a>
+            {% if plan.is_featured %}<span class="badge-gymx orange" style="font-size:10px;margin-left:6px;"><i class="fa-solid fa-star"></i></span>{% endif %}
+          </td>
+          <td><span class="badge-gymx {{ plan.get_type_color }}" style="font-size:11px;">{{ plan.get_plan_type_display }}</span></td>
+          <td style="font-size:13.5px;font-weight:600;color:var(--primary);">{{ plan.price|floatformat:0 }} EGP</td>
+          <td>
+            <span style="font-size:15px;font-weight:700;color:var(--text-primary);">{{ plan.sub_count|default:0 }}</span>
+            <span style="font-size:11px;color:var(--text-muted);margin-left:4px;">subscribers</span>
+          </td>
+          <td style="font-size:13.5px;font-weight:600;color:var(--success);">{{ plan.revenue|default:0|floatformat:0 }}</td>
+          <td style="min-width:120px;">
+            <div class="progress-gymx">
+              <div class="fill" style="width:{% if plan_stats.0.sub_count > 0 %}{% widthratio plan.sub_count plan_stats.0.sub_count 100 %}{% else %}0{% endif %}%;"></div>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">No plan data yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const months  = [{% for m in monthly_data %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const counts  = [{% for m in monthly_data %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const revs    = [{% for m in monthly_data %}{{ m.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+// Trend chart
+const tCtx = document.getElementById('trendChart').getContext('2d');
+const tGrad = tCtx.createLinearGradient(0,0,0,240);
+tGrad.addColorStop(0,'rgba(59,130,246,0.15)');
+tGrad.addColorStop(1,'rgba(59,130,246,0)');
+
+new Chart(tCtx, {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'New Subscriptions',
+        data: counts,
+        borderColor: '#3B82F6',
+        backgroundColor: tGrad,
+        borderWidth: 2,
+        pointBackgroundColor: 'white',
+        pointBorderColor: '#3B82F6',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        tension: 0.4,
+        fill: true,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Revenue (EGP)',
+        data: revs,
+        borderColor: '#10B981',
+        borderWidth: 2,
+        pointBackgroundColor: 'white',
+        pointBorderColor: '#10B981',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        tension: 0.4,
+        fill: false,
+        yAxisID: 'y1',
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 12 } } },
+      tooltip: { backgroundColor: 'white', borderColor: '#E2E8F0', borderWidth: 1, titleColor: '#0F172A', bodyColor: '#64748B', padding: 10, cornerRadius: 12 }
+    },
+    scales: {
+      x: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } } },
+      y: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } }, beginAtZero: true },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#10B981', font: { family: 'Inter', size: 11 }, callback: v => v.toLocaleString() } }
+    }
+  }
+});
+
+// Status doughnut
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Active', 'Expired', 'Frozen', 'Cancelled'],
+    datasets: [{
+      data: [{{ stats.total_active }}, {{ stats.total_expired }}, {{ stats.total_frozen }}, {{ stats.total_cancelled }}],
+      backgroundColor: ['#10B981', '#EF4444', '#0EA5E9', '#94A3B8'],
+      borderColor: 'white',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '70%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor: 'white', borderColor: '#E2E8F0', borderWidth: 1, titleColor: '#0F172A', bodyColor: '#64748B', padding: 10, cornerRadius: 12 }
+    }
+  }
+});
+</script>
+{% endblock %}

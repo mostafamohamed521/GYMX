@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ plan.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">{{ plan.name }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ plan.get_type_color }}">{{ plan.get_plan_type_display }}</span>
+      <span class="badge-gymx gray">{{ plan.get_billing_cycle_display }}</span>
+      {% if plan.is_featured %}<span class="badge-gymx orange"><i class="fa-solid fa-star"></i> Featured</span>{% endif %}
+      {% if not plan.is_active %}<span class="badge-gymx red">Inactive</span>{% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'memberships:subscription_add' %}?plan={{ plan.pk }}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-user-plus"></i> Assign to Member</a>
+    <a href="{% url 'memberships:plan_edit' plan.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-pen"></i> Edit</a>
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <!-- Plan Info -->
+  <div class="col-lg-4">
+    <!-- Pricing Card -->
+    <div style="background:linear-gradient(135deg,#1D4ED8,#0369A1);border-radius:var(--radius-2xl);padding:28px;margin-bottom:20px;text-align:center;color:white;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(29,78,216,0.3);">
+      <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+      <div style="font-size:42px;font-weight:800;letter-spacing:-1px;">{{ plan.price|floatformat:0 }}</div>
+      <div style="font-size:14px;opacity:0.7;margin-bottom:16px;">EGP / {{ plan.duration_days }} days</div>
+      {% if plan.setup_fee %}<div style="font-size:13px;background:rgba(255,255,255,0.15);border-radius:999px;padding:4px 14px;display:inline-block;margin-bottom:12px;">+ {{ plan.setup_fee|floatformat:0 }} EGP setup fee</div>{% endif %}
+      <div style="font-size:13px;opacity:0.6;">{{ plan.price_per_day }} EGP / day</div>
+    </div>
+
+    <!-- Key details -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> Plan Details</span></div>
+      <div class="card-body">
+        {% for label,val in plan_details %}{% endfor %}
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Duration</span><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ plan.duration_days }} days</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Max Freeze</span><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ plan.max_freeze_days }} days</span></div>
+          {% if plan.max_members %}<div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Max Members</span><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ plan.max_members }}</span></div>{% endif %}
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Category</span><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ plan.category.name|default:"—" }}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Public Visible</span>{% if plan.is_public %}<span class="badge-gymx green" style="font-size:10px;">Yes</span>{% else %}<span class="badge-gymx gray" style="font-size:10px;">No</span>{% endif %}</div>
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Created</span><span style="font-size:13px;color:var(--text-primary);">{{ plan.created_at|date:"M d, Y" }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    {% if plan.features %}
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list-check"></i> Features</span></div>
+      <div class="card-body">
+        {% for feat in plan.features %}
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
+          <i class="fa-solid fa-check" style="color:var(--success);font-size:12px;flex-shrink:0;"></i>
+          <span style="font-size:13.5px;color:var(--text-secondary);">{{ feat }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Subscriptions -->
+  <div class="col-lg-8">
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6">
+        <div class="stat-card green" style="padding:16px;">
+          <div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-user-check"></i></div>
+          <div class="stat-value" style="font-size:22px;">{{ stats.active }}</div>
+          <div class="stat-label">Active Subscribers</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-card orange" style="padding:16px;">
+          <div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dollar-sign"></i></div>
+          <div class="stat-value" style="font-size:22px;">{{ stats.revenue|floatformat:0 }}</div>
+          <div class="stat-label">Revenue (EGP)</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-card red" style="padding:16px;">
+          <div class="stat-icon red" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-xmark"></i></div>
+          <div class="stat-value" style="font-size:22px;">{{ stats.expired }}</div>
+          <div class="stat-label">Expired</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-card blue" style="padding:16px;">
+          <div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-snowflake"></i></div>
+          <div class="stat-value" style="font-size:22px;">{{ stats.frozen }}</div>
+          <div class="stat-label">Frozen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscriptions table -->
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-users"></i> Subscribers ({{ subscriptions|length }})</span>
+        <a href="{% url 'memberships:subscription_add' %}?plan={{ plan.pk }}" class="btn-gymx primary" style="font-size:12px;padding:6px 14px;text-decoration:none;"><i class="fa-solid fa-plus"></i> Add</a>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Member</th><th>Status</th><th>Start</th><th>End</th><th>Days Left</th><th>Payment</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for sub in subscriptions %}
+            <tr>
+              <td>
+                <a href="{% url 'members:detail' sub.member.pk %}" style="font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ sub.member.get_full_name }}</a>
+                <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ sub.member.member_id }}</div>
+              </td>
+              <td><span class="badge-gymx {{ sub.get_status_color }}" style="font-size:11px;">{{ sub.get_status_display }}</span></td>
+              <td style="font-size:12.5px;">{{ sub.start_date|date:"M d, Y" }}</td>
+              <td style="font-size:12.5px;">{{ sub.end_date|date:"M d, Y" }}</td>
+              <td>
+                {% if sub.days_remaining > 0 %}
+                <span style="font-size:13px;font-weight:600;color:{% if sub.days_remaining <= 7 %}var(--danger){% elif sub.days_remaining <= 14 %}var(--warning){% else %}var(--success){% endif %};">{{ sub.days_remaining }}d</span>
+                {% else %}—{% endif %}
+              </td>
+              <td><span class="badge-gymx {% if sub.payment_status == 'paid' %}green{% elif sub.payment_status == 'unpaid' %}red{% else %}orange{% endif %}" style="font-size:11px;">{{ sub.get_payment_status_display }}</span></td>
+              <td>
+                <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="navbar-btn" title="View" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);">No subscribers yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="card-gymx mt-4" style="border-color:#FECACA;">
+      <div class="card-header" style="background:#FEF2F2;"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</span></div>
+      <div class="card-body"><a href="{% url 'memberships:plan_delete' plan.pk %}" class="btn-gymx danger" style="text-decoration:none;font-size:13px;"><i class="fa-solid fa-trash"></i> Delete Plan</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

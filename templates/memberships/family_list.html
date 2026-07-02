@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Family Memberships — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Family{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Family Memberships</h1><p class="page-subtitle">Manage group family subscriptions</p></div>
+  <a href="{% url 'memberships:family_add' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Family Group</a>
+</div>
+<div class="row g-3">
+  {% for family in families %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card-gymx">
+      <div class="card-body" style="padding:20px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:18px;color:white;flex-shrink:0;"><i class="fa-solid fa-users"></i></div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ family.name }}</div>
+            <div style="font-size:12px;color:var(--text-muted);">{{ family.plan.name }}</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12.5px;color:var(--text-muted);">Primary Member</span>
+            <span style="font-size:12.5px;font-weight:600;color:var(--text-primary);">{{ family.primary_member.get_full_name }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12.5px;color:var(--text-muted);">Members</span>
+            <span style="font-size:12.5px;font-weight:600;color:var(--text-primary);">{{ family.member_count }} / {{ family.max_members }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="font-size:12.5px;color:var(--text-muted);">Discount/Member</span>
+            <span style="font-size:12.5px;font-weight:600;color:var(--success);">{{ family.discount_per_member }}%</span>
+          </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="progress-gymx" style="margin-top:12px;">
+          <div class="fill" style="width:{% widthratio family.member_count family.max_members 100 %}%;background:{% if family.member_count >= family.max_members %}var(--danger){% else %}var(--primary){% endif %};"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">{{ family.slots_remaining }} slot{{ family.slots_remaining|pluralize }} remaining</div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+      <i class="fa-solid fa-users" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;"></i>
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">No family memberships yet</div>
+      <a href="{% url 'memberships:family_add' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Create First Family Group</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

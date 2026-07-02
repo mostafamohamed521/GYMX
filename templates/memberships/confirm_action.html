@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Confirm{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div class="card-gymx" style="border-color:#FECACA;">
+      <div class="card-header" style="background:#FEF2F2;">
+        <span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> {{ title }}</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">
+          Are you sure you want to <strong>{{ title|lower }}</strong>: <strong style="color:var(--text-primary);">{{ object_name }}</strong>?
+        </p>
+        {% if warning %}
+        <div class="alert-gymx warning mb-4">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{ warning }}
+        </div>
+        {% endif %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url back_url %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx danger"><i class="fa-solid fa-trash"></i> Confirm Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
