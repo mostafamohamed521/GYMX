@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Attendance Calendar — GymX{% endblock %}
+{% block page_breadcrumb %}Attendance / Calendar{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Attendance Calendar</h1>
+    <p class="page-subtitle">{{ month_name }} {{ year }}</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn-gymx outline" style="text-decoration:none;padding:8px 12px;"><i class="fa-solid fa-chevron-left"></i></a>
+    <span style="font-size:14px;font-weight:600;color:var(--text-primary);min-width:120px;text-align:center;">{{ month_name }} {{ year }}</span>
+    <a href="?year={{ next_year }}&month={{ next_month }}" class="btn-gymx outline" style="text-decoration:none;padding:8px 12px;"><i class="fa-solid fa-chevron-right"></i></a>
+  </div>
+</div>
+
+<div class="card-gymx">
+  <div class="card-body" style="padding:24px;">
+    <!-- Day headers -->
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;">
+      {% for day in "Mon,Tue,Wed,Thu,Fri,Sat,Sun"|split:"," %}{% endfor %}
+      {% for d in "Mon Tue Wed Thu Fri Sat Sun"|split:" " %}
+      <div style="text-align:center;font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;padding:8px 0;">{{ d }}</div>
+      {% endfor %}
+    </div>
+    <!-- Calendar grid -->
+    {% for week in cal_weeks %}
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
+      {% for day in week %}
+      {% if day == 0 %}
+      <div style="min-height:80px;border-radius:var(--radius-lg);background:var(--bg-muted);opacity:0.3;"></div>
+      {% else %}
+        {% with cell_date=year|stringformat:"s" %}
+        {% comment %}Build date for comparison{% endcomment %}
+        {% endwith %}
+        <div style="min-height:80px;border-radius:var(--radius-lg);border:1.5px solid {% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--border){% endif %};padding:8px;background:{% if day == today.day and month == today.month and year == today.year %}#EFF6FF{% else %}white{% endif %};cursor:pointer;transition:all 0.15s;"
+             onclick="window.location='{% url 'attendance:history' %}?from={{ year }}-{{ month|stringformat:'02d' }}-{{ day|stringformat:'02d' }}&to={{ year }}-{{ month|stringformat:'02d' }}-{{ day|stringformat:'02d' }}'">
+          <div style="font-size:13px;font-weight:{% if day == today.day and month == today.month and year == today.year %}800{% else %}500{% endif %};color:{% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--text-primary){% endif %};margin-bottom:6px;">{{ day }}</div>
+          {% with lookup=year|stringformat:"s" %}
+          {% comment %}Django template can't build date objects, so we use a workaround in context{% endcomment %}
+          {% endwith %}
+          {% for d, count in counts_map.items %}{% if d.day == day and d.month == month and d.year == year %}
+            <div style="background:{% if count >= 30 %}#DCFCE7;color:#166534{% elif count >= 15 %}#DBEAFE;color:#1E40AF{% elif count > 0 %}#FEF9C3;color:#854D0E{% else %}var(--bg-muted);color:var(--text-muted){% endif %};border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;display:inline-block;">
+              {{ count }}
+            </div>
+          {% endif %}{% endfor %}
+        </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <!-- Legend -->
+    <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:14px;height:14px;border-radius:3px;background:#FEF9C3;border:1px solid #FDE047;display:inline-block;"></span> 1–14 visitors</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:14px;height:14px;border-radius:3px;background:#DBEAFE;border:1px solid #93C5FD;display:inline-block;"></span> 15–29 visitors</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:14px;height:14px;border-radius:3px;background:#DCFCE7;border:1px solid #86EFAC;display:inline-block;"></span> 30+ visitors</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:14px;height:14px;border-radius:3px;border:1.5px solid var(--primary);background:#EFF6FF;display:inline-block;"></span> Today</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

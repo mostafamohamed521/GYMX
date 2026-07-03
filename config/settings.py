@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'apps.dashboard',
     'apps.members',
     'apps.memberships',
+    'apps.attendance',
 ]
 
 MIDDLEWARE = [
@@ -50,8 +51,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'gymx.db',
+    }
+}
 
- # PostgreSQL (uncomment when ready):
+# PostgreSQL (uncomment when ready):
 DATABASES = {
      'default': {
          'ENGINE': 'django.db.backends.postgresql',
@@ -61,7 +68,7 @@ DATABASES = {
          'HOST': config('DB_HOST', default='localhost'),
          'PORT': config('DB_PORT', default='5432'),
      }
- }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

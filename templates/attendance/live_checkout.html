@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Live Check-Out — GymX{% endblock %}
+{% block page_breadcrumb %}Attendance / Check Out{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Live Check-Out</h1>
+    <p class="page-subtitle">{{ count }} member{{ count|pluralize }} currently inside</p>
+  </div>
+  <a href="{% url 'attendance:live_checkin' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-right-to-bracket"></i> Check In</a>
+</div>
+{% if messages %}{% for msg in messages %}<div class="alert-gymx {{ msg.tags }} mb-3"><i class="fa-solid {% if 'success' in msg.tags %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %}"></i> {{ msg }}</div>{% endfor %}{% endif %}
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-right-from-bracket" style="color:var(--danger);"></i> Members Inside — Select to Check Out</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Check-In</th><th>Duration</th><th>Status</th><th>Method</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for r in inside %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if r.member.profile_image %}<img src="{{ r.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ r.member.get_initials }}{% endif %}
+              </div>
+              <div>
+                <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ r.member.get_full_name }}</div>
+                <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ r.member.member_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ r.check_in|date:"H:i" }}</td>
+          <td>
+            <span style="font-size:13px;color:var(--text-secondary);">{{ r.duration_display }}</span>
+          </td>
+          <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
+          <td><i class="fa-solid {{ r.get_method_icon }}" style="color:var(--text-muted);font-size:13px;"></i></td>
+          <td>
+            <form method="post" style="display:inline;">
+              {% csrf_token %}
+              <input type="hidden" name="record_id" value="{{ r.pk }}" />
+              <input type="hidden" name="method" value="manual" />
+              <button type="submit" class="btn-gymx primary" style="font-size:12.5px;padding:7px 16px;">
+                <i class="fa-solid fa-right-from-bracket"></i> Check Out
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:56px;color:var(--text-muted);">
+          <i class="fa-solid fa-circle-check" style="font-size:36px;color:var(--success);display:block;margin-bottom:10px;opacity:0.5;"></i>
+          No members currently inside
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

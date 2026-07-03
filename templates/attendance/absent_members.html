@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Absent Members — GymX{% endblock %}
+{% block page_breadcrumb %}Attendance / Absent Members{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Absent Members</h1><p class="page-subtitle">{{ count }} active member{{ count|pluralize }} absent on {{ date_f }}</p></div>
+  <a href="{% url 'attendance:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:14px 20px;">
+    <form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+      <div><label class="form-label">Select Date</label><input type="date" name="date" value="{{ date_f }}" class="form-control" /></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> View</button>
+    </form>
+  </div>
+</div>
+
+<!-- Chronic absentees alert -->
+{% if chronic %}
+<div class="alert-gymx warning mb-4">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  <strong>{{ chronic|length }}</strong> member{{ chronic|length|pluralize }} absent for <strong>3+ consecutive days</strong> — may need follow-up.
+</div>
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> Consecutive Absentees (3+ days)</span></div>
+  <div class="card-body" style="padding:0;">
+    {% for item in chronic %}
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+        {% if item.member.profile_image %}<img src="{{ item.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ item.member.get_initials }}{% endif %}
+      </div>
+      <div style="flex:1;">
+        <a href="{% url 'attendance:member' item.member.pk %}" style="font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ item.member.get_full_name }}</a>
+        <div style="font-size:11px;color:var(--text-muted);">{{ item.member.member_id }}</div>
+      </div>
+      <span class="badge-gymx red" style="font-size:11px;">{{ item.days }} days absent</span>
+      <a href="{% url 'members:detail' item.member.pk %}" class="btn-gymx outline" style="font-size:11px;padding:5px 10px;text-decoration:none;">Contact</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- All absent -->
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user-minus" style="color:var(--danger);"></i> All Absent ({{ count }})</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Status</th><th>Last Visit</th><th>Phone</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for m in absent %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if m.profile_image %}<img src="{{ m.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ m.get_initials }}{% endif %}
+              </div>
+              <div>
+                <a href="{% url 'members:detail' m.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.get_full_name }}</a>
+                <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ m.member_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge-gymx {{ m.get_status_color }}" style="font-size:11px;">{{ m.get_status_display }}</span></td>
+          <td>
+            {% with last=m.attendance_records.first %}
+            <span style="font-size:12.5px;color:var(--text-muted);">{% if last %}{{ last.date|date:"M d, Y" }}{% else %}Never{% endif %}</span>
+            {% endwith %}
+          </td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ m.phone|default:"—" }}</td>
+          <td>
+            <a href="{% url 'attendance:member' m.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;" title="Attendance history"><i class="fa-solid fa-chart-line" style="font-size:11px;"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:56px;color:var(--text-muted);">
+          <i class="fa-solid fa-circle-check" style="font-size:36px;color:var(--success);display:block;margin-bottom:10px;opacity:0.5;"></i>
+          All active members attended on {{ date_f }}!
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

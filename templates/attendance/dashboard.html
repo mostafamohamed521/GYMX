@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Attendance Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Attendance{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Attendance Dashboard</h1>
+    <p class="page-subtitle">{{ today|date:"l, F j, Y" }} &nbsp;·&nbsp; <span id="liveTime">{{ now|date:"H:i:s" }}</span></p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'attendance:live_checkin' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-right-to-bracket"></i> Check In</a>
+    <a href="{% url 'attendance:live_checkout' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-right-from-bracket"></i> Check Out</a>
+    <a href="{% url 'attendance:qr_scanner' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-qrcode"></i> QR Scan</a>
+  </div>
+</div>
+
+<!-- Live KPI -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card green" style="padding:18px;">
+      <div class="stat-icon green" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-value" style="font-size:32px;" id="insideCount">{{ stats.inside_now }}</div>
+      <div class="stat-label">Inside Now</div>
+      <div class="stat-change up"><i class="fa-solid fa-circle" style="color:var(--success);font-size:8px;animation:pulse 2s infinite;"></i> Live</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card blue" style="padding:18px;">
+      <div class="stat-icon blue" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-calendar-day"></i></div>
+      <div class="stat-value" style="font-size:32px;">{{ stats.today_total }}</div>
+      <div class="stat-label">Today's Visitors</div>
+      <div class="stat-change"><i class="fa-solid fa-right-from-bracket"></i> {{ stats.checked_out }} checked out</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card orange" style="padding:18px;">
+      <div class="stat-icon orange" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-value" style="font-size:32px;">{{ stats.late_today }}</div>
+      <div class="stat-label">Late Today</div>
+      <div class="stat-change down"><i class="fa-solid fa-triangle-exclamation"></i> Arrived late</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card purple" style="padding:18px;">
+      <div class="stat-icon purple" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-chart-simple"></i></div>
+      <div class="stat-value" style="font-size:32px;">{{ stats.avg_per_day }}</div>
+      <div class="stat-label">Avg/Day (30d)</div>
+      <div class="stat-change"><i class="fa-solid fa-fire"></i> Peak: {{ stats.peak_hour }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <!-- Weekly chart -->
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Weekly Attendance</span>
+        <div style="display:flex;gap:6px;">
+          <a href="{% url 'attendance:reports' %}" class="btn-gymx outline" style="font-size:12px;padding:5px 12px;text-decoration:none;">Full Report</a>
+        </div>
+      </div>
+      <div class="card-body"><div style="height:220px;"><canvas id="weeklyChart"></canvas></div></div>
+    </div>
+
+    <!-- Quick nav -->
+    <div class="row g-3 mt-0">
+      {% for icon, label, url, clr in nav_items %}{% endfor %}
+      <div class="col-4"><a href="{% url 'attendance:today' %}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);text-decoration:none;transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.background='#EFF6FF'" onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"><i class="fa-solid fa-calendar-day" style="font-size:22px;color:var(--primary);"></i><span style="font-size:12.5px;font-weight:600;color:var(--text-secondary);">Today</span></a></div>
+      <div class="col-4"><a href="{% url 'attendance:calendar' %}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);text-decoration:none;transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.background='#EFF6FF'" onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"><i class="fa-solid fa-calendar" style="font-size:22px;color:var(--accent);"></i><span style="font-size:12.5px;font-weight:600;color:var(--text-secondary);">Calendar</span></a></div>
+      <div class="col-4"><a href="{% url 'attendance:statistics' %}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);text-decoration:none;transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.background='#EFF6FF'" onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"><i class="fa-solid fa-chart-pie" style="font-size:22px;color:var(--success);"></i><span style="font-size:12.5px;font-weight:600;color:var(--text-secondary);">Statistics</span></a></div>
+      <div class="col-4"><a href="{% url 'attendance:late' %}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);text-decoration:none;transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--warning)';this.style.background='#FFFBEB'" onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"><i class="fa-solid fa-clock" style="font-size:22px;color:var(--warning);"></i><span style="font-size:12.5px;font-weight:600;color:var(--text-secondary);">Late</span></a></div>
+      <div class="col-4"><a href="{% url 'attendance:absent' %}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);text-decoration:none;transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--danger)';this.style.background='#FEF2F2'" onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"><i class="fa-solid fa-user-minus" style="font-size:22px;color:var(--danger);"></i><span style="font-size:12.5px;font-weight:600;color:var(--text-secondary);">Absent</span></a></div>
+      <div class="col-4"><a href="{% url 'attendance:history' %}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);text-decoration:none;transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--text-muted)';this.style.background='var(--bg-muted)'" onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"><i class="fa-solid fa-clock-rotate-left" style="font-size:22px;color:var(--text-muted);"></i><span style="font-size:12.5px;font-weight:600;color:var(--text-secondary);">History</span></a></div>
+    </div>
+  </div>
+
+  <!-- Right: live feed -->
+  <div class="col-lg-4">
+    <!-- Currently inside -->
+    <div class="card-gymx mb-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-circle" style="color:var(--success);font-size:8px;animation:pulse 2s infinite;"></i> Currently Inside</span>
+        <span style="font-size:12px;color:var(--text-muted);" id="liveInsideCount">{{ stats.inside_now }}</span>
+      </div>
+      <div class="card-body" style="padding:0;max-height:220px;overflow-y:auto;">
+        {% for r in inside_members %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+            {% if r.member.profile_image %}<img src="{{ r.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ r.member.get_initials }}{% endif %}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.member.get_full_name }}</div>
+            <div style="font-size:11px;color:var(--text-muted);">In: {{ r.check_in|date:"H:i" }} · {{ r.duration_display }}</div>
+          </div>
+          {% if r.status == 'late' %}<span class="badge-gymx orange" style="font-size:10px;flex-shrink:0;">Late</span>{% endif %}
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">No members currently inside</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-bolt"></i> Recent Activity</span></div>
+      <div class="card-body" style="padding:0;max-height:220px;overflow-y:auto;">
+        {% for r in recent %}
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:28px;height:28px;border-radius:50%;background:{% if r.check_out %}var(--bg-muted){% else %}var(--primary-light){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {% if r.check_out %}fa-right-from-bracket{% else %}fa-right-to-bracket{% endif %}" style="font-size:11px;color:{% if r.check_out %}var(--text-muted){% else %}var(--primary){% endif %};"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.member.get_full_name }}</div>
+            <div style="font-size:11px;color:var(--text-muted);">{% if r.check_out %}Out {{ r.check_out|date:"H:i" }}{% else %}In {{ r.check_in|date:"H:i" }}{% endif %}</div>
+          </div>
+          <i class="fa-solid {{ r.get_method_icon }}" style="font-size:11px;color:var(--text-muted);"></i>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">No activity today</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Live clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('liveTime').textContent =
+    now.toTimeString().slice(0,8);
+}
+setInterval(updateClock, 1000);
+
+// Live inside count polling
+function pollCount() {
+  fetch('{% url "attendance:ajax_live_count" %}')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('insideCount').textContent     = d.count;
+      document.getElementById('liveInsideCount').textContent = d.count;
+    })
+    .catch(() => {});
+}
+setInterval(pollCount, 30000);
+
+// Weekly chart
+const labels = [{% for d in weekly %}"{{ d.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const counts = [{% for d in weekly %}{{ d.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const today  = "{{ today|date:'D' }}";
+
+const ctx = document.getElementById('weeklyChart').getContext('2d');
+const grad = ctx.createLinearGradient(0, 0, 0, 220);
+grad.addColorStop(0, 'rgba(59,130,246,0.25)');
+grad.addColorStop(1, 'rgba(59,130,246,0)');
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{
+      data: counts,
+      backgroundColor: labels.map(l =>
+        l === today ? '#3B82F6' : 'rgba(59,130,246,0.2)'
+      ),
+      borderColor: labels.map(l =>
+        l === today ? '#1D4ED8' : 'rgba(59,130,246,0.4)'
+      ),
+      borderWidth: 1.5,
+      borderRadius: 8,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0F172A', bodyColor:'#64748B', callbacks:{ label: c => `${c.raw} visitors` } }
+    },
+    scales: {
+      x: { grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ family:'Inter', size:12 } } },
+      y: { grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', font:{ family:'Inter', size:11 }, stepSize:1 }, beginAtZero:true }
+    }
+  }
+});
+</script>
+{% endblock %}
