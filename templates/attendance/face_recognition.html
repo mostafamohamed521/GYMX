@@ -7,29 +7,16 @@
   <div><h1 class="page-title">Face Recognition</h1><p class="page-subtitle">AI-powered facial check-in system</p></div>
   <a href="{% url 'attendance:live_checkin' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
 </div>
-<div class="row justify-content-center">
-  <div class="col-lg-5">
-    <div class="card-gymx" style="text-align:center;">
-      <div class="card-body" style="padding:48px 32px;">
-        <div style="width:80px;height:80px;background:linear-gradient(135deg,#8B5CF6,#A78BFA);border-radius:var(--radius-2xl);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(139,92,246,0.3);">
-          <i class="fa-solid fa-face-smile" style="font-size:36px;color:white;"></i>
-        </div>
-        <h2 style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">Coming Soon</h2>
-        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:24px;">
-          Face recognition check-in is planned for a future release. This feature will allow members to check in automatically using facial recognition technology.
-        </p>
-        <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:var(--radius-xl);padding:16px;margin-bottom:24px;text-align:left;">
-          <div style="font-size:12px;font-weight:700;color:#6D28D9;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Planned Features</div>
-          {% for feat in "Automatic face detection,Real-time recognition,Multi-face support,Anti-spoofing protection,Offline capability" %}
-          {% endfor %}
-          <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;margin-bottom:6px;"><i class="fa-solid fa-check" style="color:#8B5CF6;font-size:11px;"></i> Automatic face detection</div>
-          <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;margin-bottom:6px;"><i class="fa-solid fa-check" style="color:#8B5CF6;font-size:11px;"></i> Real-time recognition</div>
-          <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;margin-bottom:6px;"><i class="fa-solid fa-check" style="color:#8B5CF6;font-size:11px;"></i> Anti-spoofing protection</div>
-          <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-check" style="color:#8B5CF6;font-size:11px;"></i> Works offline</div>
-        </div>
-        <a href="{% url 'attendance:qr_scanner' %}" class="btn-gymx primary" style="text-decoration:none;justify-content:center;width:100%;"><i class="fa-solid fa-qrcode"></i> Use QR Scanner Instead</a>
+<div class="row justify-content-center"><div class="col-lg-5">
+  <div class="card-gymx" style="text-align:center;">
+    <div class="card-body" style="padding:48px 32px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#8B5CF6,#A78BFA);border-radius:var(--radius-2xl);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(139,92,246,0.3);">
+        <i class="fa-solid fa-face-smile" style="font-size:36px;color:white;"></i>
       </div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">Coming Soon</h2>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:24px;">Face recognition check-in is planned for a future release. Members will check in automatically using facial recognition.</p>
+      <a href="{% url 'attendance:qr_scanner' %}" class="btn-gymx primary" style="text-decoration:none;justify-content:center;width:100%;"><i class="fa-solid fa-qrcode"></i> Use QR Scanner Instead</a>
     </div>
   </div>
-</div>
+</div></div>
 {% endblock %}

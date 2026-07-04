@@ -1,13 +1,14 @@
 import json
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta, datetime, time
+from calendar import monthrange, monthcalendar
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Count, Avg, F
-from django.db.models.functions import TruncDate, TruncHour
+from django.db.models.functions import TruncHour, ExtractWeekDay
 from django.utils import timezone
-from django.views.decorators.http import require_POST
 
 from .models import AttendanceRecord, AttendanceSession, AttendanceSettings
 from apps.members.models import Member
@@ -15,259 +16,246 @@ from apps.memberships.models import MemberSubscription
 
 
 # ── Helpers ────────────────────────────────────────────────
-def _get_or_create_session():
-    today   = timezone.now().date()
-    session = AttendanceSession.objects.filter(date=today, is_open=True).first()
-    if not session:
-        session = AttendanceSession.objects.create(date=today, is_open=True)
+def _session_today():
+    today = timezone.now().date()
+    session, _ = AttendanceSession.objects.get_or_create(date=today, is_open=True)
     return session
 
 
-def _checkin_member(member, method='manual', user=None):
-    """
-    Check in a member. Returns (record, error_msg).
-    """
+def _do_checkin(member, method='manual', user=None):
+    """Returns (record, error_str)"""
     settings = AttendanceSettings.get()
     today    = timezone.now().date()
 
-    # Check active membership
     if settings.require_membership:
-        has_active = MemberSubscription.objects.filter(
-            member=member, status='active'
-        ).exists()
-        if not has_active:
+        if not MemberSubscription.objects.filter(member=member, status='active').exists():
             return None, f"{member.get_full_name()} has no active membership."
 
-    # Already checked in today?
-    existing = AttendanceRecord.objects.filter(
-        member=member, date=today, check_out__isnull=True
-    ).first()
-    if existing:
+    if AttendanceRecord.objects.filter(member=member, date=today, check_out__isnull=True).exists():
         return None, f"{member.get_full_name()} is already checked in."
 
-    # Determine status (late?)
     now      = timezone.now()
-    open_dt  = datetime.combine(today, settings.gym_open_time)
-    open_dt  = timezone.make_aware(open_dt) if timezone.is_naive(open_dt) else open_dt
-    late_min = settings.late_threshold_min
-    status   = 'late' if (now - open_dt).seconds // 60 > late_min else 'present'
+    open_dt  = timezone.make_aware(datetime.combine(today, settings.gym_open_time))
+    mins_late = int((now - open_dt).total_seconds() // 60)
+    status   = 'late' if mins_late > settings.late_threshold_min else 'present'
 
-    session = _get_or_create_session()
-    record  = AttendanceRecord.objects.create(
-        member          = member,
-        session         = session,
-        date            = today,
-        check_in        = now,
-        check_in_method = method,
-        status          = status,
-        recorded_by     = user,
+    record = AttendanceRecord.objects.create(
+        member=member, session=_session_today(),
+        date=today, check_in=now,
+        check_in_method=method, status=status,
+        recorded_by=user,
     )
     return record, None
 
 
-# ── 1. Live Check-In ───────────────────────────────────────
-@login_required
-def live_checkin(request):
-    today   = timezone.now().date()
-    session = _get_or_create_session()
-
-    if request.method == 'POST':
-        member_id = request.POST.get('member_id', '').strip()
-        method    = request.POST.get('method', 'manual')
-
-        # Resolve member by member_id code or pk
-        member = (
-            Member.objects.filter(member_id=member_id).first() or
-            Member.objects.filter(pk=member_id).first()
-        )
-        if not member:
-            messages.error(request, f'Member "{member_id}" not found.')
+def _streak(member):
+    today, streak, d = timezone.now().date(), 0, timezone.now().date()
+    while streak <= 365:
+        if AttendanceRecord.objects.filter(member=member, date=d).exists():
+            streak += 1
+            d -= timedelta(days=1)
         else:
-            record, err = _checkin_member(member, method=method, user=request.user)
-            if err:
-                messages.warning(request, err)
-            else:
-                messages.success(
-                    request,
-                    f'✓ {member.get_full_name()} checked in successfully! '
-                    f'({"Late" if record.status == "late" else "On time"})'
-                )
-        return redirect('attendance:live_checkin')
+            break
+    return streak
 
-    # Today's checked-in members (still inside)
-    inside = AttendanceRecord.objects.filter(
-        date=today, check_out__isnull=True
-    ).select_related('member').order_by('-check_in')
 
-    recent = AttendanceRecord.objects.filter(
-        date=today
-    ).select_related('member').order_by('-check_in')[:20]
+def _peak_hour():
+    try:
+        r = (AttendanceRecord.objects
+             .filter(check_in__isnull=False)
+             .annotate(h=TruncHour('check_in'))
+             .values('h').annotate(c=Count('id'))
+             .order_by('-c').first())
+        return r['h'].strftime('%H:00') if r and r['h'] else '—'
+    except Exception:
+        return '—'
 
-    members = Member.objects.filter(status='active').order_by('first_name')
 
-    return render(request, 'attendance/live_checkin.html', {
-        'session':    session,
-        'inside':     inside,
-        'inside_count': inside.count(),
-        'recent':     recent,
-        'members':    members,
-        'today':      today,
-        'now':        timezone.now(),
+# ── 1. Dashboard ───────────────────────────────────────────
+@login_required
+def dashboard(request):
+    today    = timezone.now().date()
+    week_ago = today - timedelta(days=7)
+    month_ago= today - timedelta(days=30)
+
+    today_qs = AttendanceRecord.objects.filter(date=today)
+    inside   = today_qs.filter(check_out__isnull=True)
+
+    total_month = AttendanceRecord.objects.filter(date__gte=month_ago).count()
+    stats = {
+        'inside_now':   inside.count(),
+        'today_total':  today_qs.count(),
+        'checked_out':  today_qs.filter(check_out__isnull=False).count(),
+        'late_today':   today_qs.filter(status='late').count(),
+        'this_week':    AttendanceRecord.objects.filter(date__gte=week_ago).count(),
+        'this_month':   total_month,
+        'avg_per_day':  round(total_month / 30, 1),
+        'peak_hour':    _peak_hour(),
+    }
+
+    weekly = []
+    for i in range(6, -1, -1):
+        d = today - timedelta(days=i)
+        weekly.append({'label': d.strftime('%a'), 'count': AttendanceRecord.objects.filter(date=d).count()})
+
+    inside_members = inside.select_related('member').order_by('-check_in')[:10]
+    recent         = AttendanceRecord.objects.select_related('member').order_by('-check_in')[:8]
+
+    return render(request, 'attendance/dashboard.html', {
+        'stats': stats, 'weekly': weekly,
+        'inside_members': inside_members, 'recent': recent,
+        'today': today, 'now': timezone.now(),
     })
 
 
-# ── 2. Live Check-Out ──────────────────────────────────────
+# ── 2. Live Check-In ───────────────────────────────────────
+@login_required
+def live_checkin(request):
+    today = timezone.now().date()
+
+    if request.method == 'POST':
+        mid    = request.POST.get('member_id', '').strip()
+        method = request.POST.get('method', 'manual')
+        member = (Member.objects.filter(member_id=mid).first() or
+                  Member.objects.filter(pk=mid if mid.isdigit() else 0).first())
+        if not member:
+            messages.error(request, f'Member "{mid}" not found.')
+        else:
+            rec, err = _do_checkin(member, method=method, user=request.user)
+            if err:
+                messages.warning(request, err)
+            else:
+                label = 'Late' if rec.status == 'late' else 'On time'
+                messages.success(request, f'✓ {member.get_full_name()} checked in — {label}')
+        return redirect('attendance:live_checkin')
+
+    inside  = AttendanceRecord.objects.filter(date=today, check_out__isnull=True).select_related('member').order_by('-check_in')
+    recent  = AttendanceRecord.objects.filter(date=today).select_related('member').order_by('-check_in')[:20]
+    members = Member.objects.filter(status='active').order_by('first_name')
+
+    return render(request, 'attendance/live_checkin.html', {
+        'inside': inside, 'inside_count': inside.count(),
+        'recent': recent, 'members': members,
+        'today': today, 'now': timezone.now(),
+    })
+
+
+# ── 3. Live Check-Out ──────────────────────────────────────
 @login_required
 def live_checkout(request):
     today = timezone.now().date()
 
     if request.method == 'POST':
-        record_pk = request.POST.get('record_id')
-        method    = request.POST.get('method', 'manual')
-        record    = get_object_or_404(AttendanceRecord, pk=record_pk)
-        record.do_checkout(method=method, recorded_by=request.user)
-        messages.success(
-            request,
-            f'✓ {record.member.get_full_name()} checked out. '
-            f'Duration: {record.duration_display}'
-        )
+        rec = get_object_or_404(AttendanceRecord, pk=request.POST.get('record_id'))
+        rec.do_checkout(method=request.POST.get('method', 'manual'), recorded_by=request.user)
+        messages.success(request, f'✓ {rec.member.get_full_name()} checked out — {rec.duration_display}')
         return redirect('attendance:live_checkout')
 
-    inside = AttendanceRecord.objects.filter(
-        date=today, check_out__isnull=True
-    ).select_related('member').order_by('-check_in')
-
+    inside = AttendanceRecord.objects.filter(date=today, check_out__isnull=True).select_related('member').order_by('-check_in')
     return render(request, 'attendance/live_checkout.html', {
-        'inside': inside,
-        'count':  inside.count(),
-        'today':  today,
-        'now':    timezone.now(),
+        'inside': inside, 'count': inside.count(),
+        'today': today, 'now': timezone.now(),
     })
 
 
-# ── 3. QR Scanner ──────────────────────────────────────────
+# ── 4. QR Scanner ──────────────────────────────────────────
 @login_required
 def qr_scanner(request):
     return render(request, 'attendance/qr_scanner.html')
 
 
-# ── 4. Barcode Scanner ─────────────────────────────────────
+# ── 5. Barcode Scanner ─────────────────────────────────────
 @login_required
 def barcode_scanner(request):
     return render(request, 'attendance/barcode_scanner.html')
 
 
-# ── 5. Face Recognition (Future) ───────────────────────────
+# ── 6. Face Recognition ────────────────────────────────────
 @login_required
 def face_recognition(request):
     return render(request, 'attendance/face_recognition.html')
 
 
-# ── 6. Today's Attendance ──────────────────────────────────
+# ── 7. Today's Attendance ──────────────────────────────────
 @login_required
 def today_attendance(request):
     today   = timezone.now().date()
-    records = AttendanceRecord.objects.filter(
-        date=today
-    ).select_related('member').order_by('-check_in')
+    records = AttendanceRecord.objects.filter(date=today).select_related('member').order_by('-check_in')
 
     q = request.GET.get('q', '')
     if q:
         records = records.filter(
-            Q(member__first_name__icontains=q) |
-            Q(member__last_name__icontains=q)  |
-            Q(member__member_id__icontains=q)
+            Q(member__first_name__icontains=q) | Q(member__last_name__icontains=q) | Q(member__member_id__icontains=q)
         )
 
     stats = {
-        'total':    records.count(),
-        'inside':   records.filter(check_out__isnull=True).count(),
-        'left':     records.filter(check_out__isnull=False).count(),
-        'late':     records.filter(status='late').count(),
-        'on_time':  records.filter(status='present').count(),
+        'total':   records.count(),
+        'inside':  records.filter(check_out__isnull=True).count(),
+        'left':    records.filter(check_out__isnull=False).count(),
+        'late':    records.filter(status='late').count(),
+        'on_time': records.filter(status='present').count(),
     }
 
-    # Hourly breakdown
-    hourly = (
+    hourly = list(
         records.filter(check_in__isnull=False)
         .annotate(hour=TruncHour('check_in'))
-        .values('hour')
-        .annotate(count=Count('id'))
-        .order_by('hour')
+        .values('hour').annotate(count=Count('id')).order_by('hour')
     )
 
     return render(request, 'attendance/today_attendance.html', {
-        'records': records,
-        'stats':   stats,
-        'today':   today,
-        'q':       q,
-        'hourly':  list(hourly),
+        'records': records, 'stats': stats,
+        'today': today, 'q': q, 'hourly': hourly,
     })
 
 
-# ── 7. Attendance Calendar ─────────────────────────────────
+# ── 8. Attendance Calendar ─────────────────────────────────
 @login_required
-def attendance_calendar(request):
-    today    = timezone.now().date()
-    year     = int(request.GET.get('year',  today.year))
-    month    = int(request.GET.get('month', today.month))
+def att_calendar(request):
+    today = timezone.now().date()
+    year  = int(request.GET.get('year',  today.year))
+    month = int(request.GET.get('month', today.month))
 
-    # Daily counts for the month
-    from calendar import monthrange, monthcalendar
     _, days_in_month = monthrange(year, month)
     start = date(year, month, 1)
     end   = date(year, month, days_in_month)
 
-    daily_counts = (
-        AttendanceRecord.objects
-        .filter(date__gte=start, date__lte=end)
-        .values('date')
-        .annotate(count=Count('id'))
-    )
-    counts_map = {row['date']: row['count'] for row in daily_counts}
+    daily = (AttendanceRecord.objects
+             .filter(date__gte=start, date__lte=end)
+             .values('date').annotate(count=Count('id')))
+    counts_map = {row['date']: row['count'] for row in daily}
 
-    # Build calendar grid
-    cal_weeks = monthcalendar(year, month)
-
-    # Prev / next navigation
     if month == 1:
-        prev_year, prev_month = year - 1, 12
+        prev_y, prev_m = year - 1, 12
     else:
-        prev_year, prev_month = year, month - 1
+        prev_y, prev_m = year, month - 1
     if month == 12:
-        next_year, next_month = year + 1, 1
+        next_y, next_m = year + 1, 1
     else:
-        next_year, next_month = year, month + 1
+        next_y, next_m = year, month + 1
 
     return render(request, 'attendance/attendance_calendar.html', {
         'year': year, 'month': month,
         'month_name': start.strftime('%B'),
-        'cal_weeks':  cal_weeks,
+        'cal_weeks': monthcalendar(year, month),
         'counts_map': counts_map,
-        'today':      today,
-        'prev_year': prev_year, 'prev_month': prev_month,
-        'next_year': next_year, 'next_month': next_month,
+        'today': today,
+        'prev_year': prev_y, 'prev_month': prev_m,
+        'next_year': next_y, 'next_month': next_m,
     })
 
 
-# ── 8. Attendance History ──────────────────────────────────
+# ── 9. Attendance History ──────────────────────────────────
 @login_required
-def attendance_history(request):
-    records = AttendanceRecord.objects.select_related('member').order_by('-date', '-check_in')
-
-    # Filters
-    q          = request.GET.get('q', '')
-    date_from  = request.GET.get('from', '')
-    date_to    = request.GET.get('to', '')
-    status_f   = request.GET.get('status', '')
-    method_f   = request.GET.get('method', '')
+def att_history(request):
+    records   = AttendanceRecord.objects.select_related('member').order_by('-date', '-check_in')
+    q         = request.GET.get('q', '')
+    date_from = request.GET.get('from', '')
+    date_to   = request.GET.get('to', '')
+    status_f  = request.GET.get('status', '')
+    method_f  = request.GET.get('method', '')
 
     if q:
-        records = records.filter(
-            Q(member__first_name__icontains=q) |
-            Q(member__last_name__icontains=q)  |
-            Q(member__member_id__icontains=q)
-        )
+        records = records.filter(Q(member__first_name__icontains=q) | Q(member__last_name__icontains=q) | Q(member__member_id__icontains=q))
     if date_from:
         records = records.filter(date__gte=date_from)
     if date_to:
@@ -277,252 +265,109 @@ def attendance_history(request):
     if method_f:
         records = records.filter(check_in_method=method_f)
 
+    total = records.count()
     return render(request, 'attendance/attendance_history.html', {
-        'records':   records[:200],
-        'total':     records.count(),
-        'q':         q,
-        'date_from': date_from,
-        'date_to':   date_to,
-        'status_f':  status_f,
-        'method_f':  method_f,
-        'statuses':  AttendanceRecord.Status.choices,
-        'methods':   AttendanceRecord.CheckInMethod.choices,
+        'records': records[:200], 'total': total,
+        'q': q, 'date_from': date_from, 'date_to': date_to,
+        'status_f': status_f, 'method_f': method_f,
+        'statuses': AttendanceRecord.Status.choices,
+        'methods':  AttendanceRecord.CheckInMethod.choices,
     })
 
 
-# ── 9. Member Attendance ───────────────────────────────────
+# ── 10. Member Attendance ──────────────────────────────────
 @login_required
 def member_attendance(request, pk):
-    member  = get_object_or_404(Member, pk=pk)
-    records = AttendanceRecord.objects.filter(
-        member=member
-    ).order_by('-date', '-check_in')
-
-    today = timezone.now().date()
+    member    = get_object_or_404(Member, pk=pk)
+    records   = AttendanceRecord.objects.filter(member=member).order_by('-date', '-check_in')
+    today     = timezone.now().date()
     month_ago = today - timedelta(days=30)
 
     stats = {
-        'total_visits':    records.count(),
-        'this_month':      records.filter(date__gte=month_ago).count(),
-        'on_time':         records.filter(status='present').count(),
-        'late':            records.filter(status='late').count(),
-        'avg_duration':    records.filter(
-                               check_in__isnull=False, check_out__isnull=False
-                           ).aggregate(
-                               avg=Avg(F('check_out') - F('check_in'))
-                           )['avg'],
-        'last_visit':      records.first(),
-        'streak':          _calc_streak(member),
+        'total_visits': records.count(),
+        'this_month':   records.filter(date__gte=month_ago).count(),
+        'on_time':      records.filter(status='present').count(),
+        'late':         records.filter(status='late').count(),
+        'last_visit':   records.first(),
+        'streak':       _streak(member),
     }
 
-    # Monthly trend — last 6 months
     monthly = []
     for i in range(5, -1, -1):
         d = today.replace(day=1) - timedelta(days=i * 30)
-        c = records.filter(date__year=d.year, date__month=d.month).count()
-        monthly.append({'label': d.strftime('%b'), 'count': c})
+        monthly.append({'label': d.strftime('%b'), 'count': records.filter(date__year=d.year, date__month=d.month).count()})
 
     return render(request, 'attendance/member_attendance.html', {
-        'member':  member,
-        'records': records[:50],
-        'stats':   stats,
-        'monthly': monthly,
-        'today':   today,
+        'member': member, 'records': records[:50],
+        'stats': stats, 'monthly': monthly, 'today': today,
     })
 
 
-def _calc_streak(member):
-    """Calculate current consecutive days streak."""
-    today   = timezone.now().date()
-    streak  = 0
-    current = today
-    while True:
-        exists = AttendanceRecord.objects.filter(
-            member=member, date=current
-        ).exists()
-        if exists:
-            streak  += 1
-            current -= timedelta(days=1)
-        else:
-            break
-        if streak > 365:
-            break
-    return streak
-
-
-# ── 10. Attendance Dashboard ───────────────────────────────
+# ── 11. Reports ────────────────────────────────────────────
 @login_required
-def attendance_dashboard(request):
-    today     = timezone.now().date()
-    week_ago  = today - timedelta(days=7)
-    month_ago = today - timedelta(days=30)
-
-    # Today's live stats
-    today_records = AttendanceRecord.objects.filter(date=today)
-    inside_now    = today_records.filter(check_out__isnull=True)
-
-    stats = {
-        'today_total':   today_records.count(),
-        'inside_now':    inside_now.count(),
-        'checked_out':   today_records.filter(check_out__isnull=False).count(),
-        'late_today':    today_records.filter(status='late').count(),
-        'this_week':     AttendanceRecord.objects.filter(date__gte=week_ago).count(),
-        'this_month':    AttendanceRecord.objects.filter(date__gte=month_ago).count(),
-        'avg_per_day':   round(
-                             AttendanceRecord.objects.filter(date__gte=month_ago).count() / 30, 1
-                         ),
-        'peak_hour':     _get_peak_hour(),
-    }
-
-    # Weekly trend
-    weekly = []
-    for i in range(6, -1, -1):
-        d = today - timedelta(days=i)
-        c = AttendanceRecord.objects.filter(date=d).count()
-        weekly.append({'label': d.strftime('%a'), 'count': c, 'date': str(d)})
-
-    # Hourly today
-    hourly = (
-        today_records.filter(check_in__isnull=False)
-        .annotate(hour=TruncHour('check_in'))
-        .values('hour')
-        .annotate(count=Count('id'))
-        .order_by('hour')
-    )
-    hourly_data = [
-        {'hour': row['hour'].strftime('%H:00') if row['hour'] else '?',
-         'count': row['count']}
-        for row in hourly
-    ]
-
-    # Members currently inside
-    inside_members = inside_now.select_related('member').order_by('-check_in')[:10]
-
-    # Recent activity
-    recent = AttendanceRecord.objects.select_related('member').order_by('-check_in')[:8]
-
-    return render(request, 'attendance/dashboard.html', {
-        'stats':          stats,
-        'weekly':         weekly,
-        'hourly':         hourly_data,
-        'inside_members': inside_members,
-        'recent':         recent,
-        'today':          today,
-        'now':            timezone.now(),
-    })
-
-
-def _get_peak_hour():
-    try:
-        result = (
-            AttendanceRecord.objects
-            .filter(check_in__isnull=False)
-            .annotate(hour=TruncHour('check_in'))
-            .values('hour')
-            .annotate(count=Count('id'))
-            .order_by('-count')
-            .first()
-        )
-        if result and result['hour']:
-            return result['hour'].strftime('%H:00')
-    except Exception:
-        pass
-    return '—'
-
-
-# ── 11. Attendance Reports ─────────────────────────────────
-@login_required
-def attendance_reports(request):
+def att_reports(request):
     today     = timezone.now().date()
     date_from = request.GET.get('from', str(today - timedelta(days=30)))
     date_to   = request.GET.get('to',   str(today))
 
-    records = AttendanceRecord.objects.filter(
-        date__gte=date_from, date__lte=date_to
-    ).select_related('member')
+    records = AttendanceRecord.objects.filter(date__gte=date_from, date__lte=date_to).select_related('member')
 
-    # Top members
-    top_members = (
-        records.values('member__first_name', 'member__last_name',
-                       'member__member_id', 'member__pk')
-        .annotate(visits=Count('id'))
-        .order_by('-visits')[:10]
-    )
+    top_members = (records.values('member__first_name', 'member__last_name', 'member__member_id', 'member__pk')
+                   .annotate(visits=Count('id')).order_by('-visits')[:10])
 
-    # Daily summary
-    daily_summary = (
-        records.values('date')
-        .annotate(
-            total=Count('id'),
-            late=Count('id', filter=Q(status='late')),
-        )
-        .order_by('-date')[:30]
-    )
+    daily_summary = (records.values('date')
+                     .annotate(total=Count('id'), late=Count('id', filter=Q(status='late')))
+                     .order_by('-date')[:30])
 
-    # Method breakdown
-    method_stats = (
-        records.values('check_in_method')
-        .annotate(count=Count('id'))
-        .order_by('-count')
-    )
+    method_stats = (records.values('check_in_method').annotate(count=Count('id')).order_by('-count'))
 
+    try:
+        d_from = date.fromisoformat(date_from)
+        d_to   = date.fromisoformat(date_to)
+        days   = max((d_to - d_from).days, 1)
+    except Exception:
+        days = 30
+
+    total = records.count()
     stats = {
-        'total':       records.count(),
-        'unique_members': records.values('member').distinct().count(),
-        'on_time':     records.filter(status='present').count(),
-        'late':        records.filter(status='late').count(),
-        'avg_per_day': round(records.count() / max((date.fromisoformat(date_to) - date.fromisoformat(date_from)).days, 1), 1),
+        'total':           total,
+        'unique_members':  records.values('member').distinct().count(),
+        'on_time':         records.filter(status='present').count(),
+        'late':            records.filter(status='late').count(),
+        'avg_per_day':     round(total / days, 1),
     }
 
     return render(request, 'attendance/reports.html', {
-        'stats':         stats,
-        'top_members':   top_members,
-        'daily_summary': daily_summary,
-        'method_stats':  method_stats,
-        'date_from':     date_from,
-        'date_to':       date_to,
-        'today':         today,
+        'stats': stats, 'top_members': top_members,
+        'daily_summary': daily_summary, 'method_stats': method_stats,
+        'date_from': date_from, 'date_to': date_to, 'today': today,
     })
 
 
 # ── 12. Late Members ───────────────────────────────────────
 @login_required
 def late_members(request):
-    today   = timezone.now().date()
-    date_f  = request.GET.get('date', str(today))
-
-    records = AttendanceRecord.objects.filter(
-        date=date_f, status='late'
-    ).select_related('member').order_by('-check_in')
-
+    today  = timezone.now().date()
+    date_f = request.GET.get('date', str(today))
+    records = AttendanceRecord.objects.filter(date=date_f, status='late').select_related('member').order_by('-check_in')
     return render(request, 'attendance/late_members.html', {
-        'records': records,
-        'date_f':  date_f,
-        'count':   records.count(),
-        'today':   today,
+        'records': records, 'date_f': date_f,
+        'count': records.count(), 'today': today,
     })
 
 
 # ── 13. Absent Members ─────────────────────────────────────
 @login_required
 def absent_members(request):
-    today   = timezone.now().date()
-    date_f  = request.GET.get('date', str(today))
+    today  = timezone.now().date()
+    date_f = request.GET.get('date', str(today))
 
-    # Active members who have no record on date_f
-    attended_pks = AttendanceRecord.objects.filter(
-        date=date_f
-    ).values_list('member_id', flat=True)
+    attended_pks = AttendanceRecord.objects.filter(date=date_f).values_list('member_id', flat=True)
+    absent = Member.objects.filter(status='active').exclude(pk__in=attended_pks).order_by('first_name')
 
-    absent = Member.objects.filter(
-        status='active'
-    ).exclude(pk__in=attended_pks).order_by('first_name')
-
-    # Streak info: members absent 3+ consecutive days
     chronic = []
     for m in absent:
-        streak = 0
-        d = today
+        streak, d = 0, today
         while True:
             if AttendanceRecord.objects.filter(member=m, date=d).exists():
                 break
@@ -534,149 +379,89 @@ def absent_members(request):
             chronic.append({'member': m, 'days': streak})
 
     return render(request, 'attendance/absent_members.html', {
-        'absent':  absent,
-        'count':   absent.count(),
-        'chronic': chronic,
-        'date_f':  date_f,
-        'today':   today,
+        'absent': absent, 'count': absent.count(),
+        'chronic': chronic, 'date_f': date_f, 'today': today,
     })
 
 
-# ── 14. Attendance Statistics ──────────────────────────────
+# ── 14. Statistics ─────────────────────────────────────────
 @login_required
-def attendance_statistics(request):
+def att_statistics(request):
     today     = timezone.now().date()
     month_ago = today - timedelta(days=30)
     year_ago  = today - timedelta(days=365)
 
-    # Monthly trend — last 12 months
     monthly = []
     for i in range(11, -1, -1):
         d = today.replace(day=1) - timedelta(days=i * 30)
-        c = AttendanceRecord.objects.filter(
-            date__year=d.year, date__month=d.month
-        ).count()
-        monthly.append({'label': d.strftime('%b %y'), 'count': c})
+        monthly.append({'label': d.strftime('%b %y'), 'count': AttendanceRecord.objects.filter(date__year=d.year, date__month=d.month).count()})
 
-    # Weekday breakdown
-    from django.db.models.functions import ExtractWeekDay
-    weekday_data = (
-        AttendanceRecord.objects.filter(date__gte=month_ago)
-        .annotate(wd=ExtractWeekDay('date'))
-        .values('wd')
-        .annotate(count=Count('id'))
-        .order_by('wd')
-    )
-    day_names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    weekday_map = {row['wd']: row['count'] for row in weekday_data}
-    weekday_chart = [
-        {'day': day_names[i], 'count': weekday_map.get(i + 1, 0)}
-        for i in range(7)
-    ]
+    weekday_data = (AttendanceRecord.objects.filter(date__gte=month_ago)
+                    .annotate(wd=ExtractWeekDay('date')).values('wd')
+                    .annotate(count=Count('id')).order_by('wd'))
+    day_names  = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    wd_map     = {row['wd']: row['count'] for row in weekday_data}
+    weekday_chart = [{'day': day_names[i], 'count': wd_map.get(i + 1, 0)} for i in range(7)]
 
-    # Method distribution
-    method_dist = (
-        AttendanceRecord.objects.filter(date__gte=month_ago)
-        .values('check_in_method')
-        .annotate(count=Count('id'))
-        .order_by('-count')
-    )
+    method_dist = (AttendanceRecord.objects.filter(date__gte=month_ago)
+                   .values('check_in_method').annotate(count=Count('id')).order_by('-count'))
 
-    # Overall stats
-    total_all   = AttendanceRecord.objects.count()
     total_month = AttendanceRecord.objects.filter(date__gte=month_ago).count()
+    late_month  = AttendanceRecord.objects.filter(date__gte=month_ago, status='late').count()
+    qr_month    = AttendanceRecord.objects.filter(date__gte=month_ago, check_in_method='qr').count()
 
     stats = {
-        'total_all_time':    total_all,
-        'total_this_month':  total_month,
-        'total_this_year':   AttendanceRecord.objects.filter(date__gte=year_ago).count(),
-        'unique_members':    AttendanceRecord.objects.values('member').distinct().count(),
-        'avg_per_day':       round(total_month / 30, 1),
-        'late_rate_pct':     round(
-                                 AttendanceRecord.objects.filter(
-                                     date__gte=month_ago, status='late'
-                                 ).count() / max(total_month, 1) * 100, 1
-                             ),
-        'peak_hour':         _get_peak_hour(),
-        'qr_usage_pct':      round(
-                                 AttendanceRecord.objects.filter(
-                                     date__gte=month_ago, check_in_method='qr'
-                                 ).count() / max(total_month, 1) * 100, 1
-                             ),
+        'total_all_time':   AttendanceRecord.objects.count(),
+        'total_this_month': total_month,
+        'total_this_year':  AttendanceRecord.objects.filter(date__gte=year_ago).count(),
+        'unique_members':   AttendanceRecord.objects.values('member').distinct().count(),
+        'avg_per_day':      round(total_month / 30, 1),
+        'late_rate_pct':    round(late_month / max(total_month, 1) * 100, 1),
+        'peak_hour':        _peak_hour(),
+        'qr_usage_pct':     round(qr_month / max(total_month, 1) * 100, 1),
     }
 
     return render(request, 'attendance/statistics.html', {
-        'stats':          stats,
-        'monthly':        monthly,
-        'weekday_chart':  weekday_chart,
-        'method_dist':    method_dist,
-        'today':          today,
+        'stats': stats, 'monthly': monthly,
+        'weekday_chart': weekday_chart, 'method_dist': method_dist,
+        'today': today,
     })
 
 
-# ── AJAX endpoints ─────────────────────────────────────────
+# ── AJAX ───────────────────────────────────────────────────
 @login_required
 def ajax_checkin(request):
-    """POST: member_id, method → JSON"""
     if request.method != 'POST':
         return JsonResponse({'ok': False, 'error': 'POST required'})
-
-    data      = json.loads(request.body)
-    member_id = data.get('member_id', '').strip()
-    method    = data.get('method', 'qr')
-
-    member = (
-        Member.objects.filter(member_id=member_id).first() or
-        Member.objects.filter(pk=member_id if member_id.isdigit() else 0).first()
-    )
+    data   = json.loads(request.body)
+    mid    = data.get('member_id', '').strip()
+    method = data.get('method', 'qr')
+    member = (Member.objects.filter(member_id=mid).first() or
+              Member.objects.filter(pk=mid if mid.isdigit() else 0).first())
     if not member:
-        return JsonResponse({'ok': False, 'error': f'Member "{member_id}" not found.'})
-
-    record, err = _checkin_member(member, method=method, user=request.user)
+        return JsonResponse({'ok': False, 'error': f'Member "{mid}" not found.'})
+    rec, err = _do_checkin(member, method=method, user=request.user)
     if err:
         return JsonResponse({'ok': False, 'error': err})
-
-    return JsonResponse({
-        'ok':     True,
-        'name':   member.get_full_name(),
-        'id':     member.member_id,
-        'status': record.status,
-        'time':   record.check_in.strftime('%H:%M'),
-        'avatar': member.profile_image.url if member.profile_image else None,
-    })
+    return JsonResponse({'ok': True, 'name': member.get_full_name(),
+                         'id': member.member_id, 'status': rec.status,
+                         'time': rec.check_in.strftime('%H:%M')})
 
 
 @login_required
 def ajax_checkout(request):
-    """POST: record_id, method → JSON"""
     if request.method != 'POST':
         return JsonResponse({'ok': False, 'error': 'POST required'})
-
-    data      = json.loads(request.body)
-    record_id = data.get('record_id')
-    method    = data.get('method', 'qr')
-
+    data = json.loads(request.body)
     try:
-        record = AttendanceRecord.objects.select_related('member').get(
-            pk=record_id, check_out__isnull=True
-        )
+        rec = AttendanceRecord.objects.select_related('member').get(pk=data.get('record_id'), check_out__isnull=True)
     except AttendanceRecord.DoesNotExist:
-        return JsonResponse({'ok': False, 'error': 'Record not found or already checked out.'})
-
-    record.do_checkout(method=method, recorded_by=request.user)
-    return JsonResponse({
-        'ok':       True,
-        'name':     record.member.get_full_name(),
-        'duration': record.duration_display,
-        'time':     record.check_out.strftime('%H:%M'),
-    })
+        return JsonResponse({'ok': False, 'error': 'Record not found.'})
+    rec.do_checkout(method=data.get('method', 'qr'), recorded_by=request.user)
+    return JsonResponse({'ok': True, 'name': rec.member.get_full_name(), 'duration': rec.duration_display})
 
 
 @login_required
 def ajax_live_count(request):
-    """GET — returns current inside count for real-time update."""
-    today = timezone.now().date()
-    count = AttendanceRecord.objects.filter(
-        date=today, check_out__isnull=True
-    ).count()
+    count = AttendanceRecord.objects.filter(date=timezone.now().date(), check_out__isnull=True).count()
     return JsonResponse({'count': count, 'time': timezone.now().strftime('%H:%M:%S')})

@@ -7,8 +7,6 @@
   <div><h1 class="page-title">Attendance Reports</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
   <a href="{% url 'attendance:statistics' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-chart-pie"></i> Statistics</a>
 </div>
-
-<!-- Date filter -->
 <div class="card-gymx mb-4">
   <div class="card-body" style="padding:14px 20px;">
     <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
@@ -18,104 +16,62 @@
     </form>
   </div>
 </div>
-
-<!-- KPI -->
 <div class="row g-3 mb-4">
-  <div class="col-md col-6">
-    <div class="stat-card blue" style="padding:16px;">
-      <div class="stat-icon blue" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-calendar-check"></i></div>
-      <div class="stat-value" style="font-size:24px;">{{ stats.total }}</div>
-      <div class="stat-label">Total Records</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card purple" style="padding:16px;">
-      <div class="stat-icon purple" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-users"></i></div>
-      <div class="stat-value" style="font-size:24px;">{{ stats.unique_members }}</div>
-      <div class="stat-label">Unique Members</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card green" style="padding:16px;">
-      <div class="stat-icon green" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div>
-      <div class="stat-value" style="font-size:24px;">{{ stats.on_time }}</div>
-      <div class="stat-label">On Time</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card orange" style="padding:16px;">
-      <div class="stat-icon orange" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div>
-      <div class="stat-value" style="font-size:24px;">{{ stats.late }}</div>
-      <div class="stat-label">Late Arrivals</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card blue" style="padding:16px;">
-      <div class="stat-icon blue" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-chart-simple"></i></div>
-      <div class="stat-value" style="font-size:24px;">{{ stats.avg_per_day }}</div>
-      <div class="stat-label">Avg/Day</div>
-    </div>
-  </div>
+  <div class="col-md col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total }}</div><div class="stat-label">Total Records</div></div></div>
+  <div class="col-md col-6"><div class="stat-card purple" style="padding:14px;"><div class="stat-icon purple" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.unique_members }}</div><div class="stat-label">Unique Members</div></div></div>
+  <div class="col-md col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.on_time }}</div><div class="stat-label">On Time</div></div></div>
+  <div class="col-md col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.late }}</div><div class="stat-label">Late</div></div></div>
+  <div class="col-md col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-chart-simple"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.avg_per_day }}</div><div class="stat-label">Avg/Day</div></div></div>
 </div>
-
 <div class="row g-4">
-  <!-- Top members -->
   <div class="col-lg-5">
     <div class="card-gymx">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-trophy"></i> Top Members</span></div>
       <div class="card-body" style="padding:0;">
         {% for m in top_members %}
         <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
-          <div style="width:24px;text-align:center;font-size:13px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#94A3B8{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
-          <a href="{% url 'attendance:member' m.member__pk %}" style="flex:1;font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.member__first_name }} {{ m.member__last_name }}</a>
+          <div style="width:22px;text-align:center;font-size:12px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#94A3B8{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
+          <a href="{% url 'attendance:member' m.member__pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.member__first_name }} {{ m.member__last_name }}</a>
           <div style="display:flex;align-items:center;gap:8px;">
-            <div class="progress-gymx" style="width:80px;">
-              <div class="fill" style="width:{% if top_members.0.visits > 0 %}{% widthratio m.visits top_members.0.visits 100 %}{% else %}0{% endif %}%;"></div>
-            </div>
-            <span style="font-size:13px;font-weight:700;color:var(--primary);min-width:28px;text-align:right;">{{ m.visits }}</span>
+            <div class="progress-gymx" style="width:70px;"><div class="fill" style="width:{% if top_members.0.visits > 0 %}{% widthratio m.visits top_members.0.visits 100 %}{% else %}0{% endif %}%;"></div></div>
+            <span style="font-size:13px;font-weight:700;color:var(--primary);min-width:24px;text-align:right;">{{ m.visits }}</span>
           </div>
         </div>
         {% empty %}
-        <div style="padding:32px;text-align:center;color:var(--text-muted);">No data in selected range</div>
+        <div style="padding:32px;text-align:center;color:var(--text-muted);">No data</div>
         {% endfor %}
       </div>
     </div>
   </div>
-
-  <!-- Daily summary + Method breakdown -->
   <div class="col-lg-7">
     <div class="card-gymx mb-4">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-table"></i> Daily Summary</span></div>
-      <div style="overflow-x:auto;max-height:280px;overflow-y:auto;">
+      <div style="overflow-x:auto;max-height:260px;overflow-y:auto;">
         <table class="table-gymx">
-          <thead style="position:sticky;top:0;background:white;z-index:1;"><tr><th>Date</th><th>Total</th><th>Late</th><th>On Time</th></tr></thead>
+          <thead style="position:sticky;top:0;background:white;"><tr><th>Date</th><th>Total</th><th>Late</th></tr></thead>
           <tbody>
             {% for d in daily_summary %}
             <tr>
-              <td style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ d.date|date:"M d, Y" }}</td>
+              <td style="font-size:13px;font-weight:500;">{{ d.date|date:"M d, Y" }}</td>
               <td style="font-size:14px;font-weight:700;color:var(--primary);">{{ d.total }}</td>
-              <td>{% if d.late %}<span style="font-size:13px;font-weight:600;color:var(--warning);">{{ d.late }}</span>{% else %}<span style="color:var(--text-muted);">0</span>{% endif %}</td>
-              <td style="font-size:13px;color:var(--success);">{{ d.total|add:d.late|add:"-"|add:d.late }}</td>
+              <td>{% if d.late %}<span style="font-size:13px;font-weight:600;color:var(--warning);">{{ d.late }}</span>{% else %}<span style="color:var(--text-muted);">—</span>{% endif %}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);">No data</td></tr>
+            <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted);">No data</td></tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
-
     <div class="card-gymx">
-      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> Check-In Methods</span></div>
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> Methods</span></div>
       <div class="card-body">
         {% for m in method_stats %}
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
           <i class="fa-solid {% if m.check_in_method == 'qr' %}fa-qrcode{% elif m.check_in_method == 'barcode' %}fa-barcode{% elif m.check_in_method == 'manual' %}fa-hand-pointer{% elif m.check_in_method == 'face' %}fa-face-smile{% else %}fa-mobile-screen{% endif %}" style="color:var(--primary);width:16px;"></i>
-          <span style="flex:1;font-size:13px;color:var(--text-secondary);">{{ m.check_in_method|capfirst }}</span>
-          <div class="progress-gymx" style="width:120px;">
-            <div class="fill" style="width:{% if stats.total > 0 %}{% widthratio m.count stats.total 100 %}{% else %}0{% endif %}%;"></div>
-          </div>
-          <span style="font-size:13px;font-weight:600;color:var(--text-primary);min-width:30px;text-align:right;">{{ m.count }}</span>
+          <span style="flex:1;font-size:13px;color:var(--text-secondary);text-transform:capitalize;">{{ m.check_in_method }}</span>
+          <div class="progress-gymx" style="width:100px;"><div class="fill" style="width:{% if stats.total > 0 %}{% widthratio m.count stats.total 100 %}{% else %}0{% endif %}%;"></div></div>
+          <span style="font-size:13px;font-weight:600;color:var(--text-primary);min-width:28px;text-align:right;">{{ m.count }}</span>
         </div>
         {% empty %}
         <div style="text-align:center;color:var(--text-muted);padding:16px;">No data</div>

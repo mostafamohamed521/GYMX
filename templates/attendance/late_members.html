@@ -1,36 +1,31 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Late Members — GymX{% endblock %}
-{% block page_breadcrumb %}Attendance / Late Members{% endblock %}
+{% block page_breadcrumb %}Attendance / Late{% endblock %}
 {% block content %}
 <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
-  <div><h1 class="page-title">Late Members</h1><p class="page-subtitle">{{ count }} late arrival{{ count|pluralize }} on {{ date_f }}</p></div>
-  <a href="{% url 'attendance:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  <div><h1 class="page-title">Late Members</h1><p class="page-subtitle">{{ count }} late arrival{{ count|pluralize }} — {{ date_f }}</p></div>
+  <a href="{% url 'attendance:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
 </div>
-
-<!-- Date picker -->
 <div class="card-gymx mb-4">
   <div class="card-body" style="padding:14px 20px;">
     <form method="get" style="display:flex;gap:10px;align-items:flex-end;">
-      <div><label class="form-label">Select Date</label><input type="date" name="date" value="{{ date_f }}" class="form-control" /></div>
+      <div><label class="form-label">Date</label><input type="date" name="date" value="{{ date_f }}" class="form-control" /></div>
       <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> View</button>
     </form>
   </div>
 </div>
-
-{% if count %}<div class="alert-gymx warning mb-4"><i class="fa-solid fa-clock"></i> <strong>{{ count }}</strong> member{{ count|pluralize }} arrived late on {{ date_f }}.</div>{% endif %}
-
 <div class="card-gymx">
   <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Late Arrivals</span></div>
   <div style="overflow-x:auto;">
     <table class="table-gymx">
-      <thead><tr><th>Member</th><th>Check-In Time</th><th>Minutes Late</th><th>Duration</th><th>Method</th></tr></thead>
+      <thead><tr><th>Member</th><th>Check-In</th><th>Duration</th><th>Method</th></tr></thead>
       <tbody>
         {% for r in records %}
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
                 {% if r.member.profile_image %}<img src="{{ r.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ r.member.get_initials }}{% endif %}
               </div>
               <div>
@@ -40,14 +35,11 @@
             </div>
           </td>
           <td style="font-size:14px;font-weight:700;color:var(--warning);">{{ r.check_in|date:"H:i" }}</td>
-          <td>
-            <span style="font-size:13px;font-weight:600;color:var(--danger);">~{{ r.check_in|date:"H" }}h late</span>
-          </td>
           <td style="font-size:13px;color:var(--text-secondary);">{{ r.duration_display }}</td>
-          <td><i class="fa-solid {{ r.get_method_icon }}" style="color:var(--text-muted);font-size:13px;" title="{{ r.get_check_in_method_display }}"></i></td>
+          <td><i class="fa-solid {{ r.get_method_icon }}" style="color:var(--text-muted);font-size:13px;"></i></td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" style="text-align:center;padding:56px;color:var(--text-muted);">
+        <tr><td colspan="4" style="text-align:center;padding:56px;color:var(--text-muted);">
           <i class="fa-solid fa-circle-check" style="font-size:36px;color:var(--success);display:block;margin-bottom:10px;opacity:0.5;"></i>
           No late arrivals on {{ date_f }}
         </td></tr>

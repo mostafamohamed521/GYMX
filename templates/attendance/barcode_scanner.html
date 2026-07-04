@@ -4,61 +4,26 @@
 {% block page_breadcrumb %}Attendance / Barcode Scanner{% endblock %}
 {% block content %}
 <div class="page-header d-flex align-items-center justify-content-between">
-  <div><h1 class="page-title">Barcode Scanner</h1><p class="page-subtitle">Scan member barcode or use a USB barcode reader</p></div>
+  <div><h1 class="page-title">Barcode Scanner</h1><p class="page-subtitle">Scan member barcode or use USB barcode reader</p></div>
   <a href="{% url 'attendance:live_checkin' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
 </div>
 <div class="row justify-content-center">
-  <div class="col-lg-6">
-    <div class="card-gymx mb-4">
-      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-barcode"></i> Barcode Input</span></div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-barcode"></i> Scan Barcode</span></div>
       <div class="card-body" style="text-align:center;padding:32px;">
-        <!-- Barcode visual -->
-        <div style="background:#0F172A;border-radius:var(--radius-xl);padding:32px;margin-bottom:24px;display:inline-block;">
-          <div style="display:flex;gap:2px;align-items:stretch;height:80px;">
-            {% for w in "123456789012345" %}
-            <div style="background:white;width:{{ forloop.counter|divisibleby:3|yesno:'4,2' }}px;opacity:{{ forloop.counter|divisibleby:2|yesno:'1,0.4' }};"></div>
-            {% endfor %}
-          </div>
+        <div style="background:#EFF6FF;border:2px solid #BFDBFE;border-radius:var(--radius-xl);padding:16px;margin-bottom:24px;">
+          <div style="font-size:13px;color:var(--primary);font-weight:600;margin-bottom:4px;"><i class="fa-solid fa-circle-info"></i> USB Barcode Reader</div>
+          <div style="font-size:12.5px;color:var(--text-secondary);">Connect USB barcode scanner — it types the code automatically into the field below.</div>
         </div>
-
-        <div style="background:#EFF6FF;border:2px solid #BFDBFE;border-radius:var(--radius-xl);padding:16px;margin-bottom:20px;">
-          <div style="font-size:13px;color:var(--primary);font-weight:600;margin-bottom:6px;"><i class="fa-solid fa-circle-info"></i> USB Barcode Reader</div>
-          <div style="font-size:12.5px;color:var(--text-secondary);">Connect a USB barcode scanner — it types the code automatically into the field below.</div>
-        </div>
-
         <form method="post" action="{% url 'attendance:live_checkin' %}" id="barcodeForm">
           {% csrf_token %}
           <input type="hidden" name="method" value="barcode" />
-          <div class="mb-3">
-            <input type="text" name="member_id" id="barcodeInput" class="form-control"
-                   placeholder="Scan or type barcode..."
-                   style="text-align:center;font-family:monospace;font-size:18px;letter-spacing:3px;padding:16px;"
-                   autofocus autocomplete="off" />
-          </div>
-          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;padding:12px;">
-            <i class="fa-solid fa-right-to-bracket"></i> Check In
-          </button>
+          <input type="text" name="member_id" id="barcodeInput" class="form-control mb-3"
+                 placeholder="Scan barcode here..." autofocus autocomplete="off"
+                 style="text-align:center;font-family:monospace;font-size:18px;letter-spacing:3px;padding:16px;" />
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;padding:12px;"><i class="fa-solid fa-right-to-bracket"></i> Check In</button>
         </form>
-      </div>
-    </div>
-
-    <div class="card-gymx">
-      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> How to Use</span></div>
-      <div class="card-body">
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;gap:12px;align-items:flex-start;">
-            <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">1</div>
-            <div style="font-size:13px;color:var(--text-secondary);padding-top:4px;">Connect USB barcode scanner to computer</div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;">
-            <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">2</div>
-            <div style="font-size:13px;color:var(--text-secondary);padding-top:4px;">Click the input field above to focus</div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;">
-            <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;">3</div>
-            <div style="font-size:13px;color:var(--text-secondary);padding-top:4px;">Scan member's barcode card — submits automatically</div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -66,11 +31,8 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-// Auto-submit when barcode scanner sends Enter
 document.getElementById('barcodeInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && this.value.trim()) {
-    document.getElementById('barcodeForm').submit();
-  }
+  if (e.key === 'Enter' && this.value.trim()) document.getElementById('barcodeForm').submit();
 });
 </script>
 {% endblock %}

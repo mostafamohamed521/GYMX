@@ -1,22 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}{{ member.get_full_name }} — Attendance — GymX{% endblock %}
+{% block title %}{{ member.get_full_name }} — Attendance{% endblock %}
 {% block page_breadcrumb %}Attendance / {{ member.get_full_name }}{% endblock %}
 {% block content %}
 <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
-  <div>
-    <h1 class="page-title">Member Attendance</h1>
-    <p class="page-subtitle">{{ member.get_full_name }}</p>
-  </div>
+  <div><h1 class="page-title">Member Attendance</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
   <div style="display:flex;gap:8px;">
     <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-user"></i> Profile</a>
     <a href="{% url 'attendance:history' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
   </div>
 </div>
 
-<!-- Member mini card -->
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
-  <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
+  <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
     {% if member.profile_image %}<img src="{{ member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ member.get_initials }}{% endif %}
   </div>
   <div style="flex:1;">
@@ -27,101 +23,55 @@
   {% if stats.streak > 0 %}
   <div style="text-align:center;padding:8px 16px;background:#FFFBEB;border-radius:var(--radius-lg);border:1px solid #FDE68A;">
     <div style="font-size:20px;font-weight:800;color:var(--warning);">🔥 {{ stats.streak }}</div>
-    <div style="font-size:11px;color:var(--warning);font-weight:600;">Day Streak</div>
+    <div style="font-size:10px;color:var(--warning);font-weight:600;">Day Streak</div>
   </div>
   {% endif %}
 </div>
 
-<!-- Stats -->
 <div class="row g-3 mb-4">
-  <div class="col-md col-6">
-    <div class="stat-card blue" style="padding:16px;">
-      <div class="stat-icon blue" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-calendar-check"></i></div>
-      <div class="stat-value" style="font-size:22px;">{{ stats.total_visits }}</div>
-      <div class="stat-label">Total Visits</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card green" style="padding:16px;">
-      <div class="stat-icon green" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-calendar"></i></div>
-      <div class="stat-value" style="font-size:22px;">{{ stats.this_month }}</div>
-      <div class="stat-label">This Month</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card green" style="padding:16px;">
-      <div class="stat-icon green" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div>
-      <div class="stat-value" style="font-size:22px;">{{ stats.on_time }}</div>
-      <div class="stat-label">On Time</div>
-    </div>
-  </div>
-  <div class="col-md col-6">
-    <div class="stat-card orange" style="padding:16px;">
-      <div class="stat-icon orange" style="width:32px;height:32px;font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div>
-      <div class="stat-value" style="font-size:22px;">{{ stats.late }}</div>
-      <div class="stat-label">Late Arrivals</div>
-    </div>
-  </div>
+  <div class="col-md col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total_visits }}</div><div class="stat-label">Total Visits</div></div></div>
+  <div class="col-md col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-calendar"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.this_month }}</div><div class="stat-label">This Month</div></div></div>
+  <div class="col-md col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.on_time }}</div><div class="stat-label">On Time</div></div></div>
+  <div class="col-md col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.late }}</div><div class="stat-label">Late</div></div></div>
 </div>
 
 <div class="row g-4">
   <div class="col-lg-8">
-    <!-- Monthly chart -->
     <div class="card-gymx mb-4">
-      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Monthly Visits (Last 6 Months)</span></div>
-      <div class="card-body"><div style="height:180px;"><canvas id="monthlyChart"></canvas></div></div>
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Monthly Visits</span></div>
+      <div class="card-body"><div style="height:160px;"><canvas id="mChart"></canvas></div></div>
     </div>
-
-    <!-- Records table -->
     <div class="card-gymx">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Visit History ({{ records|length }})</span></div>
       <div style="overflow-x:auto;">
         <table class="table-gymx">
-          <thead><tr><th>Date</th><th>Check In</th><th>Check Out</th><th>Duration</th><th>Status</th><th>Method</th></tr></thead>
+          <thead><tr><th>Date</th><th>In</th><th>Out</th><th>Duration</th><th>Status</th><th>Method</th></tr></thead>
           <tbody>
             {% for r in records %}
             <tr>
-              <td style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ r.date|date:"M d, Y" }}</td>
+              <td style="font-size:13px;font-weight:500;">{{ r.date|date:"M d, Y" }}</td>
               <td style="font-size:13px;">{{ r.check_in|date:"H:i"|default:"—" }}</td>
-              <td style="font-size:13px;color:var(--text-secondary);">{{ r.check_out|date:"H:i"|default:'<span style="color:var(--success);font-size:11px;">Inside</span>' }}</td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ r.check_out|date:"H:i"|default:"—" }}</td>
               <td style="font-size:13px;color:var(--text-secondary);">{{ r.duration_display }}</td>
               <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
-              <td><i class="fa-solid {{ r.get_method_icon }}" style="color:var(--text-muted);font-size:12px;" title="{{ r.get_check_in_method_display }}"></i></td>
+              <td><i class="fa-solid {{ r.get_method_icon }}" style="color:var(--text-muted);font-size:12px;"></i></td>
             </tr>
             {% empty %}
-            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">No attendance records</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">No records</td></tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
   </div>
-
   <div class="col-lg-4">
     <div class="card-gymx">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> Summary</span></div>
       <div class="card-body">
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-            <span style="font-size:13px;color:var(--text-muted);">Last Visit</span>
-            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{% if stats.last_visit %}{{ stats.last_visit.date|date:"M d, Y" }}{% else %}Never{% endif %}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-            <span style="font-size:13px;color:var(--text-muted);">Current Streak</span>
-            <span style="font-size:13px;font-weight:700;color:{% if stats.streak >= 7 %}var(--warning){% else %}var(--text-primary){% endif %};">{{ stats.streak }} day{{ stats.streak|pluralize }}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-            <span style="font-size:13px;color:var(--text-muted);">On-Time Rate</span>
-            <span style="font-size:13px;font-weight:600;color:var(--success);">{% if stats.total_visits %}{{ stats.on_time|floatformat:0 }}/{{ stats.total_visits }}{% else %}—{% endif %}</span>
-          </div>
-          {% if stats.avg_duration %}
-          <div style="display:flex;justify-content:space-between;padding:8px 0;">
-            <span style="font-size:13px;color:var(--text-muted);">Avg Duration</span>
-            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">
-              {% with s=stats.avg_duration.total_seconds %}{{ s|floatformat:0|add:"0"|slice:"-4:" }}{% endwith %} min
-            </span>
-          </div>
-          {% endif %}
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Last Visit</span><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{% if stats.last_visit %}{{ stats.last_visit.date|date:"M d, Y" }}{% else %}Never{% endif %}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Streak</span><span style="font-size:13px;font-weight:700;color:{% if stats.streak >= 7 %}var(--warning){% else %}var(--text-primary){% endif %};">{{ stats.streak }}d</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:13px;color:var(--text-muted);">On-Time Rate</span><span style="font-size:13px;font-weight:600;color:var(--success);">{% if stats.total_visits %}{{ stats.on_time }}/{{ stats.total_visits }}{% else %}—{% endif %}</span></div>
         </div>
       </div>
     </div>
@@ -130,12 +80,10 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-const labels = [{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
-const data   = [{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
-const ctx = document.getElementById('monthlyChart').getContext('2d');
-const grad = ctx.createLinearGradient(0,0,0,180);
-grad.addColorStop(0,'rgba(59,130,246,0.2)');
-grad.addColorStop(1,'rgba(59,130,246,0)');
-new Chart(ctx,{ type:'bar', data:{ labels, datasets:[{ data, backgroundColor:'rgba(59,130,246,0.7)', borderColor:'#3B82F6', borderWidth:1, borderRadius:8 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', stepSize:1 }, beginAtZero:true } } } });
+new Chart(document.getElementById('mChart').getContext('2d'), {
+  type:'bar',
+  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(59,130,246,0.7)', borderColor:'#3B82F6', borderWidth:1, borderRadius:8 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', stepSize:1 }, beginAtZero:true } } }
+});
 </script>
 {% endblock %}

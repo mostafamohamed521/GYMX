@@ -4,50 +4,41 @@
 {% block page_breadcrumb %}Attendance / QR Scanner{% endblock %}
 {% block content %}
 <div class="page-header d-flex align-items-center justify-content-between">
-  <div><h1 class="page-title">QR Code Scanner</h1><p class="page-subtitle">Scan member QR codes for instant check-in / check-out</p></div>
+  <div><h1 class="page-title">QR Code Scanner</h1><p class="page-subtitle">Scan member QR codes for instant check-in</p></div>
   <a href="{% url 'attendance:live_checkin' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
 </div>
 <div class="row justify-content-center">
-  <div class="col-lg-6">
+  <div class="col-lg-5">
     <div class="card-gymx mb-4">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-qrcode"></i> Camera Scanner</span></div>
       <div class="card-body" style="text-align:center;padding:24px;">
-        <!-- Camera viewfinder -->
-        <div id="scannerView" style="width:100%;max-width:360px;height:300px;background:#0F172A;border-radius:var(--radius-xl);margin:0 auto 20px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <video id="cameraFeed" style="width:100%;height:100%;object-fit:cover;display:none;"></video>
-          <div id="scannerOverlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-            <div style="width:200px;height:200px;position:relative;">
-              <div style="position:absolute;top:0;left:0;width:30px;height:30px;border-top:3px solid #3B82F6;border-left:3px solid #3B82F6;border-radius:4px 0 0 0;"></div>
-              <div style="position:absolute;top:0;right:0;width:30px;height:30px;border-top:3px solid #3B82F6;border-right:3px solid #3B82F6;border-radius:0 4px 0 0;"></div>
-              <div style="position:absolute;bottom:0;left:0;width:30px;height:30px;border-bottom:3px solid #3B82F6;border-left:3px solid #3B82F6;border-radius:0 0 0 4px;"></div>
-              <div style="position:absolute;bottom:0;right:0;width:30px;height:30px;border-bottom:3px solid #3B82F6;border-right:3px solid #3B82F6;border-radius:0 0 4px 0;"></div>
-              <!-- Scan line -->
-              <div id="scanLine" style="position:absolute;left:10px;right:10px;height:2px;background:linear-gradient(90deg,transparent,#3B82F6,transparent);animation:scanLine 2s linear infinite;top:50%;"></div>
-            </div>
-          </div>
-          <div id="scannerPlaceholder" style="text-align:center;color:rgba(255,255,255,0.5);">
+        <div style="width:100%;max-width:320px;height:280px;background:#0F172A;border-radius:var(--radius-xl);margin:0 auto 20px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+          <video id="video" style="width:100%;height:100%;object-fit:cover;display:none;"></video>
+          <div id="placeholder" style="text-align:center;color:rgba(255,255,255,0.4);">
             <i class="fa-solid fa-qrcode" style="font-size:48px;display:block;margin-bottom:10px;"></i>
-            <div style="font-size:13px;">Press Start to activate camera</div>
+            <div style="font-size:13px;">Click Start Camera</div>
+          </div>
+          <div id="corners" style="position:absolute;inset:30px;display:none;">
+            <div style="position:absolute;top:0;left:0;width:24px;height:24px;border-top:3px solid #3B82F6;border-left:3px solid #3B82F6;border-radius:4px 0 0 0;"></div>
+            <div style="position:absolute;top:0;right:0;width:24px;height:24px;border-top:3px solid #3B82F6;border-right:3px solid #3B82F6;border-radius:0 4px 0 0;"></div>
+            <div style="position:absolute;bottom:0;left:0;width:24px;height:24px;border-bottom:3px solid #3B82F6;border-left:3px solid #3B82F6;border-radius:0 0 0 4px;"></div>
+            <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:3px solid #3B82F6;border-right:3px solid #3B82F6;border-radius:0 0 4px 0;"></div>
           </div>
         </div>
-        <div id="scanResult" style="display:none;"></div>
-        <div style="display:flex;gap:10px;justify-content:center;">
-          <button id="startBtn" onclick="startCamera()" class="btn-gymx primary"><i class="fa-solid fa-camera"></i> Start Camera</button>
-          <button id="stopBtn" onclick="stopCamera()" class="btn-gymx outline" style="display:none;"><i class="fa-solid fa-stop"></i> Stop</button>
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;">
+          <button id="startBtn" onclick="startCam()" class="btn-gymx primary"><i class="fa-solid fa-camera"></i> Start Camera</button>
+          <button id="stopBtn" onclick="stopCam()" class="btn-gymx outline" style="display:none;"><i class="fa-solid fa-stop"></i> Stop</button>
         </div>
-        <div style="margin-top:16px;font-size:12.5px;color:var(--text-muted);">Point camera at member QR code — auto-detects and checks in/out</div>
       </div>
     </div>
-
-    <!-- Manual fallback -->
     <div class="card-gymx">
-      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-keyboard"></i> Manual ID Entry</span></div>
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-keyboard"></i> Manual Entry</span></div>
       <div class="card-body">
         <form method="post" action="{% url 'attendance:live_checkin' %}">
           {% csrf_token %}
           <input type="hidden" name="method" value="qr" />
-          <div style="display:flex;gap:10px;">
-            <input type="text" name="member_id" class="form-control" placeholder="Enter Member ID (GYM00001)" style="font-family:monospace;letter-spacing:1px;" />
+          <div style="display:flex;gap:8px;">
+            <input type="text" name="member_id" class="form-control" placeholder="Member ID (GYM00001)" style="font-family:monospace;letter-spacing:1px;" />
             <button type="submit" class="btn-gymx primary" style="white-space:nowrap;"><i class="fa-solid fa-right-to-bracket"></i> Check In</button>
           </div>
         </form>
@@ -56,38 +47,27 @@
   </div>
 </div>
 {% endblock %}
-{% block extra_css %}
-<style>
-@keyframes scanLine {
-  0%   { top: 10px; }
-  50%  { top: calc(100% - 12px); }
-  100% { top: 10px; }
-}
-</style>
-{% endblock %}
 {% block extra_js %}
 <script>
 let stream = null;
-async function startCamera() {
+async function startCam() {
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    const video = document.getElementById('cameraFeed');
-    video.srcObject = stream;
-    video.play();
-    video.style.display = 'block';
-    document.getElementById('scannerPlaceholder').style.display = 'none';
-    document.getElementById('startBtn').style.display = 'none';
-    document.getElementById('stopBtn').style.display = 'flex';
-  } catch(e) {
-    alert('Camera access denied or not available. Use manual entry below.');
-  }
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment' } });
+    const v = document.getElementById('video');
+    v.srcObject = stream; v.play(); v.style.display='block';
+    document.getElementById('placeholder').style.display='none';
+    document.getElementById('corners').style.display='block';
+    document.getElementById('startBtn').style.display='none';
+    document.getElementById('stopBtn').style.display='flex';
+  } catch(e) { alert('Camera access denied. Use manual entry.'); }
 }
-function stopCamera() {
-  if (stream) stream.getTracks().forEach(t => t.stop());
-  document.getElementById('cameraFeed').style.display = 'none';
-  document.getElementById('scannerPlaceholder').style.display = 'block';
-  document.getElementById('startBtn').style.display = 'flex';
-  document.getElementById('stopBtn').style.display = 'none';
+function stopCam() {
+  if (stream) stream.getTracks().forEach(t=>t.stop());
+  document.getElementById('video').style.display='none';
+  document.getElementById('placeholder').style.display='block';
+  document.getElementById('corners').style.display='none';
+  document.getElementById('startBtn').style.display='flex';
+  document.getElementById('stopBtn').style.display='none';
 }
 </script>
 {% endblock %}

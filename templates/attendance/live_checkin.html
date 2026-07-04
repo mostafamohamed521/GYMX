@@ -2,7 +2,6 @@
 {% load static %}
 {% block title %}Live Check-In — GymX{% endblock %}
 {% block page_breadcrumb %}Attendance / Check In{% endblock %}
-
 {% block content %}
 <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
   <div>
@@ -15,94 +14,45 @@
   </div>
 </div>
 
-{% if messages %}
-{% for msg in messages %}
-<div class="alert-gymx {{ msg.tags }} mb-3" style="font-size:14px;">
-  <i class="fa-solid {% if 'success' in msg.tags %}fa-circle-check{% elif 'error' in msg.tags %}fa-circle-xmark{% else %}fa-triangle-exclamation{% endif %}"></i>
-  {{ msg }}
-</div>
-{% endfor %}
-{% endif %}
+{% if messages %}{% for msg in messages %}
+<div class="alert-gymx {{ msg.tags }} mb-3"><i class="fa-solid {% if 'success' in msg.tags %}fa-circle-check{% elif 'error' in msg.tags %}fa-circle-xmark{% else %}fa-triangle-exclamation{% endif %}"></i> {{ msg }}</div>
+{% endfor %}{% endif %}
 
 <div class="row g-4">
-
-  <!-- Check-in form -->
   <div class="col-lg-5">
     <div class="card-gymx mb-4">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-right-to-bracket" style="color:var(--success);"></i> Quick Check-In</span></div>
       <div class="card-body">
-        <form method="post" id="checkinForm">
+        <form method="post">
           {% csrf_token %}
           <input type="hidden" name="method" id="methodInput" value="manual" />
-
           <div class="mb-3">
-            <label class="form-label">Member ID or Search</label>
-            <div style="position:relative;">
-              <input type="text" name="member_id" id="memberSearch"
-                     class="form-control" placeholder="Enter member ID e.g. GYM00001"
-                     autocomplete="off" autofocus
-                     style="padding-left:40px;font-family:monospace;font-size:15px;letter-spacing:1px;" />
-              <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:14px;"></i>
-            </div>
-            <!-- Autocomplete dropdown -->
-            <div id="memberDropdown" style="display:none;position:absolute;z-index:100;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);max-height:240px;overflow-y:auto;min-width:300px;margin-top:4px;"></div>
+            <label class="form-label">Member ID</label>
+            <input type="text" name="member_id" id="memberSearch" class="form-control"
+                   placeholder="e.g. GYM00001" autocomplete="off" autofocus
+                   style="font-family:monospace;font-size:15px;letter-spacing:1px;" />
+            <div id="memberDropdown" style="display:none;position:absolute;z-index:200;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);width:320px;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
           </div>
-
-          <!-- Method selector -->
           <div class="mb-4">
-            <label class="form-label">Check-In Method</label>
+            <label class="form-label">Method</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              {% for val, label, icon in method_choices %}{% endfor %}
-              <button type="button" onclick="setMethod('manual', this)" class="method-btn active" data-method="manual"
-                      style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--primary);background:var(--primary);color:white;cursor:pointer;transition:all 0.15s;">
-                <i class="fa-solid fa-hand-pointer"></i> Manual
-              </button>
-              <button type="button" onclick="setMethod('qr', this)" class="method-btn"
-                      style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;">
-                <i class="fa-solid fa-qrcode"></i> QR
-              </button>
-              <button type="button" onclick="setMethod('barcode', this)"  class="method-btn"
-                      style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;">
-                <i class="fa-solid fa-barcode"></i> Barcode
-              </button>
-              <button type="button" onclick="setMethod('app', this)"  class="method-btn"
-                      style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;">
-                <i class="fa-solid fa-mobile-screen"></i> App
-              </button>
+              <button type="button" onclick="setMethod('manual',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--primary);background:var(--primary);color:white;cursor:pointer;"><i class="fa-solid fa-hand-pointer"></i> Manual</button>
+              <button type="button" onclick="setMethod('qr',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-qrcode"></i> QR</button>
+              <button type="button" onclick="setMethod('barcode',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-barcode"></i> Barcode</button>
             </div>
           </div>
-
-          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;font-size:15px;padding:12px;">
-            <i class="fa-solid fa-right-to-bracket"></i> Check In Member
-          </button>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;padding:12px;font-size:14px;"><i class="fa-solid fa-right-to-bracket"></i> Check In</button>
         </form>
       </div>
     </div>
 
-    <!-- Today stats mini -->
     <div class="row g-2">
-      <div class="col-4">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;">
-          <div style="font-size:22px;font-weight:800;color:var(--success);">{{ inside_count }}</div>
-          <div style="font-size:11px;color:var(--text-muted);">Inside</div>
-        </div>
-      </div>
-      <div class="col-4">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;">
-          <div style="font-size:22px;font-weight:800;color:var(--primary);">{{ recent|length }}</div>
-          <div style="font-size:11px;color:var(--text-muted);">Today</div>
-        </div>
-      </div>
-      <div class="col-4">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;">
-          <div style="font-size:22px;font-weight:800;color:var(--warning);">{{ recent|length }}</div>
-          <div style="font-size:11px;color:var(--text-muted);">Records</div>
-        </div>
-      </div>
+      <div class="col-4"><div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--success);">{{ inside_count }}</div><div style="font-size:11px;color:var(--text-muted);">Inside</div></div></div>
+      <div class="col-4"><div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--primary);">{{ recent|length }}</div><div style="font-size:11px;color:var(--text-muted);">Today</div></div></div>
+      <div class="col-4"><a href="{% url 'attendance:today' %}" style="display:block;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;text-decoration:none;"><div style="font-size:22px;font-weight:800;color:var(--accent);"><i class="fa-solid fa-table-list"></i></div><div style="font-size:11px;color:var(--text-muted);">All Today</div></a></div>
     </div>
   </div>
 
-  <!-- Currently inside -->
   <div class="col-lg-7">
     <div class="card-gymx">
       <div class="card-header">
@@ -111,13 +61,13 @@
       </div>
       <div style="overflow-x:auto;">
         <table class="table-gymx">
-          <thead><tr><th>Member</th><th>Check-In</th><th>Duration</th><th>Method</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>Member</th><th>In</th><th>Duration</th><th>Status</th><th>Out</th></tr></thead>
           <tbody>
             {% for r in inside %}
             <tr>
               <td>
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                  <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
                     {% if r.member.profile_image %}<img src="{{ r.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ r.member.get_initials }}{% endif %}
                   </div>
                   <div>
@@ -126,25 +76,20 @@
                   </div>
                 </div>
               </td>
-              <td style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ r.check_in|date:"H:i" }}</td>
+              <td style="font-size:13.5px;font-weight:600;">{{ r.check_in|date:"H:i" }}</td>
               <td style="font-size:13px;color:var(--text-secondary);">{{ r.duration_display }}</td>
-              <td><i class="fa-solid {{ r.get_method_icon }}" style="color:var(--text-muted);font-size:13px;" title="{{ r.get_check_in_method_display }}"></i></td>
+              <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
               <td>
-                <span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span>
-              </td>
-              <td>
-                <form method="post" action="{% url 'attendance:live_checkout' %}" style="display:inline;">
+                <form method="post" action="{% url 'attendance:live_checkout' %}">
                   {% csrf_token %}
                   <input type="hidden" name="record_id" value="{{ r.pk }}" />
                   <input type="hidden" name="method" value="manual" />
-                  <button type="submit" class="btn-gymx danger" style="font-size:11px;padding:5px 10px;" title="Checkout">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                  </button>
+                  <button type="submit" class="btn-gymx danger" style="font-size:11px;padding:5px 10px;"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </form>
               </td>
             </tr>
             {% empty %}
-            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-solid fa-users" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.3;"></i>No members currently inside</td></tr>
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-solid fa-users" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.3;"></i>No members inside</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -156,51 +101,31 @@
 
 {% block extra_js %}
 <script>
-function setMethod(method, btn) {
-  document.getElementById('methodInput').value = method;
-  document.querySelectorAll('.method-btn').forEach(b => {
-    b.style.background    = 'white';
-    b.style.color         = 'var(--text-secondary)';
-    b.style.borderColor   = 'var(--border)';
-  });
-  btn.style.background  = 'var(--primary)';
-  btn.style.color       = 'white';
-  btn.style.borderColor = 'var(--primary)';
-}
+const members = [{% for m in members %}{"id":"{{ m.member_id }}","name":"{{ m.get_full_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+const inp = document.getElementById('memberSearch');
+const dd  = document.getElementById('memberDropdown');
 
-// Member search autocomplete
-const members = [
-  {% for m in members %}{"id":"{{ m.member_id }}","name":"{{ m.get_full_name }}","pk":{{ m.pk }}}{% if not forloop.last %},{% endif %}{% endfor %}
-];
-const searchInput = document.getElementById('memberSearch');
-const dropdown    = document.getElementById('memberDropdown');
-
-searchInput.addEventListener('input', function() {
+inp.addEventListener('input', function() {
   const q = this.value.trim().toLowerCase();
-  if (q.length < 1) { dropdown.style.display = 'none'; return; }
-  const filtered = members.filter(m =>
-    m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
-  ).slice(0, 6);
-  if (!filtered.length) { dropdown.style.display = 'none'; return; }
-  dropdown.innerHTML = filtered.map(m =>
-    `<div onclick="selectMember('${m.id}','${m.name}')"
+  if (q.length < 1) { dd.style.display='none'; return; }
+  const f = members.filter(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)).slice(0,6);
+  if (!f.length) { dd.style.display='none'; return; }
+  dd.innerHTML = f.map(m =>
+    `<div onclick="document.getElementById('memberSearch').value='${m.id}';document.getElementById('memberDropdown').style.display='none';"
           style="padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;"
-          onmouseenter="this.style.background='#EFF6FF'"
-          onmouseleave="this.style.background='white'">
-      <span style="font-weight:600;color:var(--text-primary);">${m.name}</span>
-      <span style="font-family:monospace;color:var(--text-muted);margin-left:8px;font-size:11px;">${m.id}</span>
+          onmouseenter="this.style.background='#EFF6FF'" onmouseleave="this.style.background='white'">
+      <strong>${m.name}</strong> <span style="color:var(--text-muted);font-size:11px;font-family:monospace;">${m.id}</span>
     </div>`
   ).join('');
-  dropdown.style.display = 'block';
+  dd.style.display = 'block';
 });
 
-function selectMember(id, name) {
-  searchInput.value     = id;
-  dropdown.style.display = 'none';
+document.addEventListener('click', e => { if (!e.target.closest('#memberSearch')) dd.style.display='none'; });
+
+function setMethod(m, btn) {
+  document.getElementById('methodInput').value = m;
+  document.querySelectorAll('.method-btn').forEach(b => { b.style.background='white'; b.style.color='var(--text-secondary)'; b.style.borderColor='var(--border)'; });
+  btn.style.background='var(--primary)'; btn.style.color='white'; btn.style.borderColor='var(--primary)';
 }
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#memberSearch')) dropdown.style.display = 'none';
-});
 </script>
 {% endblock %}
