@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Installment Plan — {{ plan.member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Installments / {{ plan.member.get_full_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Installment Plan</h1>
+    <p class="page-subtitle">{{ plan.member.get_full_name }} — {{ plan.description }}</p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'members:detail' plan.member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-user"></i> Profile</a>
+    <a href="{% url 'payments:installments' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="padding:20px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="position:relative;width:100px;height:100px;margin:0 auto;">
+            <svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100px;height:100px;">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-muted)" stroke-width="10"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="{% if plan.status == 'completed' %}var(--success){% else %}var(--primary){% endif %}" stroke-width="10" stroke-dasharray="{{ plan.progress_pct|floatformat:0 }} 251" stroke-linecap="round"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div style="font-size:20px;font-weight:800;color:var(--text-primary);">{{ plan.progress_pct }}%</div>
+            </div>
+          </div>
+          <span class="badge-gymx {{ plan.get_status_color }}" style="margin-top:8px;display:inline-block;">{{ plan.get_status_display }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Total</span><span style="font-size:13px;font-weight:700;">{{ plan.total_amount|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Paid</span><span style="font-size:13px;font-weight:700;color:var(--success);">{{ plan.amount_paid|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Remaining</span><span style="font-size:13px;font-weight:700;color:{% if plan.amount_remaining > 0 %}var(--danger){% else %}var(--success){% endif %};">{{ plan.amount_remaining|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:13px;color:var(--text-muted);">Per Installment</span><span style="font-size:13px;font-weight:700;color:var(--primary);">{{ plan.installment_amount|floatformat:0 }} EGP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-days"></i> Installments</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>#</th><th>Due Date</th><th>Amount</th><th>Paid Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for inst in plan.installments.all %}
+            <tr>
+              <td style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ inst.number }}</td>
+              <td style="font-size:13px;font-weight:{% if inst.is_overdue %}700{% else %}400{% endif %};color:{% if inst.is_overdue %}var(--danger){% else %}var(--text-secondary){% endif %};">{{ inst.due_date|date:"M d, Y" }}</td>
+              <td style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ inst.amount|floatformat:0 }} EGP</td>
+              <td style="font-size:13px;color:var(--text-muted);">{{ inst.paid_date|date:"M d, Y"|default:"—" }}</td>
+              <td><span class="badge-gymx {{ inst.get_status_color }}" style="font-size:11px;">{{ inst.get_status_display }}</span></td>
+              <td>
+                {% if inst.status == 'pending' %}
+                <a href="{% url 'payments:installment_pay' plan.pk inst.pk %}" class="btn-gymx primary" style="font-size:11px;padding:5px 12px;text-decoration:none;"><i class="fa-solid fa-dollar-sign"></i> Pay</a>
+                {% elif inst.status == 'paid' %}
+                {% if inst.payment and inst.payment.receipt %}
+                <a href="{% url 'payments:receipt_detail' inst.payment.receipt.pk %}" class="btn-gymx outline" style="font-size:11px;padding:5px 10px;text-decoration:none;"><i class="fa-solid fa-receipt"></i></a>
+                {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

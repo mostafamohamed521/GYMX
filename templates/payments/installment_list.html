@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Installments — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Installments{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Installment Plans</h1><p class="page-subtitle">{{ total }} plans</p></div>
+  <a href="{% url 'payments:installment_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Plan</a>
+</div>
+<div class="card-gymx mb-3">
+  <div class="card-body" style="padding:12px 20px;">
+    <form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+      <div><label class="form-label">Status</label>
+        <select name="status" class="form-select" style="width:160px;">
+          <option value="">All</option>
+          {% for val,label in statuses %}<option value="{{ val }}" {% if status_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Filter</button>
+      {% if status_f %}<a href="{% url 'payments:installments' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+    </form>
+  </div>
+</div>
+<div class="row g-3">
+  {% for plan in plans %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card-gymx">
+      <div class="card-body" style="padding:18px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ plan.member.get_full_name }}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">{{ plan.description }}</div>
+          </div>
+          <span class="badge-gymx {{ plan.get_status_color }}" style="font-size:11px;">{{ plan.get_status_display }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:12.5px;color:var(--text-muted);">Total</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text-primary);">{{ plan.total_amount|floatformat:0 }} EGP</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:12.5px;color:var(--text-muted);">Paid</span>
+          <span style="font-size:13px;font-weight:600;color:var(--success);">{{ plan.amount_paid|floatformat:0 }} EGP</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-size:12.5px;color:var(--text-muted);">Remaining</span>
+          <span style="font-size:13px;font-weight:600;color:{% if plan.amount_remaining > 0 %}var(--danger){% else %}var(--success){% endif %};">{{ plan.amount_remaining|floatformat:0 }} EGP</span>
+        </div>
+        <div class="progress-gymx" style="margin-bottom:8px;">
+          <div class="fill" style="width:{{ plan.progress_pct }}%;background:{% if plan.progress_pct == 100 %}var(--success){% else %}var(--primary){% endif %};"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">{{ plan.progress_pct }}% · {{ plan.num_installments }} installments · {{ plan.installment_amount|floatformat:0 }} EGP/mo</div>
+        <a href="{% url 'payments:installment_detail' plan.pk %}" class="btn-gymx outline" style="text-decoration:none;width:100%;justify-content:center;font-size:12.5px;"><i class="fa-solid fa-eye"></i> View Details</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+      <i class="fa-solid fa-calendar-days" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;"></i>
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">No installment plans</div>
+      <a href="{% url 'payments:installment_new' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:8px;">Create First Plan</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

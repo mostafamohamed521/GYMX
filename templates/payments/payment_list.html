@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payments List — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / All{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">All Payments</h1><p class="page-subtitle">{{ total }} records · <strong style="color:var(--success);">{{ total_amount|floatformat:0 }} EGP</strong> total</p></div>
+  <a href="{% url 'payments:new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Payment</a>
+</div>
+
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:14px 20px;">
+    <form method="get">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Name, ID or reference..." /></div>
+        <div class="col-md-2"><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+        <div class="col-md-2"><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+        <div class="col-md-1"><label class="form-label">Method</label><select name="method" class="form-select"><option value="">All</option>{% for val,label in methods %}<option value="{{ val }}" {% if method_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-1"><label class="form-label">Status</label><select name="status" class="form-select"><option value="">All</option>{% for val,label in statuses %}<option value="{{ val }}" {% if status_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-2"><label class="form-label">Type</label><select name="type" class="form-select"><option value="">All</option>{% for val,label in types %}<option value="{{ val }}" {% if type_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-1 d-flex gap-2"><button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-filter"></i></button></div>
+      </div>
+      {% if q or date_from or date_to or method_f or status_f or type_f %}
+      <div style="margin-top:10px;"><a href="{% url 'payments:list' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12px;padding:5px 12px;"><i class="fa-solid fa-xmark"></i> Clear</a></div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-money-bill-wave"></i> Payments</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Date</th><th>Type</th><th>Method</th><th>Amount</th><th>Net</th><th>Status</th><th>Ref</th><th></th></tr></thead>
+      <tbody>
+        {% for pay in payments %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if pay.member.profile_image %}<img src="{{ pay.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ pay.member.get_initials }}{% endif %}
+              </div>
+              <div>
+                <a href="{% url 'members:detail' pay.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ pay.member.get_full_name }}</a>
+                <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ pay.member.member_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ pay.payment_date|date:"M d, Y" }}</td>
+          <td><span class="badge-gymx gray" style="font-size:10px;">{{ pay.get_payment_type_display }}</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <i class="fa-solid {{ pay.get_method_icon }}" style="color:var(--text-muted);font-size:12px;"></i>
+              <span style="font-size:12.5px;color:var(--text-secondary);">{{ pay.get_method_display }}</span>
+            </div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">{{ pay.amount|floatformat:0 }}</td>
+          <td style="font-size:14px;font-weight:700;color:var(--success);">{{ pay.net_amount|floatformat:0 }} EGP</td>
+          <td><span class="badge-gymx {{ pay.get_status_color }}" style="font-size:11px;">{{ pay.get_status_display }}</span></td>
+          <td style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ pay.reference|default:"—" }}</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <a href="{% url 'payments:detail' pay.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;" title="View"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a>
+              {% if pay.receipt %}
+              <a href="{% url 'payments:receipt_detail' pay.receipt.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;" title="Receipt"><i class="fa-solid fa-receipt" style="font-size:11px;"></i></a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-money-bill-wave" style="font-size:32px;display:block;margin-bottom:10px;opacity:0.3;"></i>No payments found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

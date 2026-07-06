@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Daily Cash Register — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Cash Register{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Daily Cash Register</h1><p class="page-subtitle">{{ today|date:"l, F j, Y" }}</p></div>
+  <div style="display:flex;gap:8px;">
+    {% if register.status == 'open' %}
+    <a href="{% url 'payments:daily_closing' %}" class="btn-gymx danger" style="text-decoration:none;"><i class="fa-solid fa-lock"></i> Close Register</a>
+    {% endif %}
+    <a href="{% url 'payments:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+  </div>
+</div>
+
+<!-- Register status -->
+<div style="background:{% if register.status == 'open' %}linear-gradient(135deg,#059669,#0284C7){% else %}linear-gradient(135deg,#475569,#334155){% endif %};border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-md);">
+  <div>
+    <div style="font-size:13px;opacity:0.7;text-transform:uppercase;letter-spacing:1px;">Register Status</div>
+    <div style="font-size:22px;font-weight:800;margin-top:4px;">{% if register.status == 'open' %}🟢 Open{% else %}🔒 Closed{% endif %}</div>
+    <div style="font-size:12px;opacity:0.6;margin-top:4px;">Opened {{ register.opened_at|date:"H:i" }}</div>
+  </div>
+  <div style="text-align:right;">
+    <div style="font-size:13px;opacity:0.7;">Expected Closing</div>
+    <div style="font-size:28px;font-weight:800;">{{ expected_closing|floatformat:0 }} EGP</div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <!-- Method totals -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Revenue by Method</span></div>
+      <div class="card-body">
+        {% if method_totals %}
+        <div class="row g-3">
+          {% for m in method_totals %}
+          <div class="col-md-4 col-6">
+            <div style="padding:16px;background:var(--bg-muted);border-radius:var(--radius-xl);text-align:center;">
+              <i class="fa-solid {% if m.method == 'cash' %}fa-money-bill-wave{% elif m.method == 'card' %}fa-credit-card{% elif m.method == 'transfer' %}fa-building-columns{% else %}fa-globe{% endif %}" style="font-size:22px;color:var(--primary);display:block;margin-bottom:8px;"></i>
+              <div style="font-size:18px;font-weight:800;color:var(--text-primary);">{{ m.total|floatformat:0 }}</div>
+              <div style="font-size:11px;color:var(--text-muted);">EGP · {{ m.count }} payments</div>
+              <div style="font-size:11px;color:var(--text-muted);text-transform:capitalize;">{{ m.method }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:32px;color:var(--text-muted);">No payments today yet</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Today's transactions -->
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-list"></i> Today's Transactions</span>
+        <span style="font-size:12px;color:var(--text-muted);">{{ payments_today|length }} payments</span>
+      </div>
+      <div style="overflow-x:auto;max-height:320px;overflow-y:auto;">
+        <table class="table-gymx">
+          <thead style="position:sticky;top:0;background:white;z-index:1;"><tr><th>Member</th><th>Method</th><th>Amount</th><th>Time</th></tr></thead>
+          <tbody>
+            {% for pay in payments_today %}
+            <tr>
+              <td>
+                <a href="{% url 'payments:detail' pay.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ pay.member.get_full_name }}</a>
+                <div style="font-size:11px;color:var(--text-muted);">{{ pay.get_payment_type_display }}</div>
+              </td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ pay.get_method_display }}</td>
+              <td style="font-size:14px;font-weight:700;color:var(--success);">{{ pay.net_amount|floatformat:0 }} EGP</td>
+              <td style="font-size:12px;color:var(--text-muted);">{{ pay.created_at|date:"H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No transactions today</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Summary</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Opening Balance</span><span style="font-size:13px;font-weight:600;">{{ register.opening_balance|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Total Revenue</span><span style="font-size:14px;font-weight:700;color:var(--success);">+{{ total_revenue|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Cash Revenue</span><span style="font-size:13px;font-weight:600;color:var(--success);">+{{ cash_revenue|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;"><span style="font-size:15px;font-weight:700;color:var(--text-primary);">Expected Close</span><span style="font-size:20px;font-weight:800;color:var(--primary);">{{ expected_closing|floatformat:0 }} EGP</span></div>
+        </div>
+        {% if register.status == 'open' %}
+        <a href="{% url 'payments:daily_closing' %}" class="btn-gymx danger" style="width:100%;justify-content:center;margin-top:16px;text-decoration:none;"><i class="fa-solid fa-lock"></i> Close Register</a>
+        {% else %}
+        <div class="alert-gymx success mt-3"><i class="fa-solid fa-lock"></i> Register closed at {{ register.closed_at|date:"H:i" }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

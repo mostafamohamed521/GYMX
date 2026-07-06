@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Revenue Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Payments{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Revenue Dashboard</h1>
+    <p class="page-subtitle">{{ today|date:"l, F j, Y" }}</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'payments:cash_register' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-cash-register"></i> Cash Register</a>
+    <a href="{% url 'payments:new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Payment</a>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card green" style="padding:18px;">
+      <div class="stat-icon green" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.today_revenue|floatformat:0 }}</div>
+      <div class="stat-label">Today's Revenue (EGP)</div>
+      <div class="stat-change up"><i class="fa-solid fa-receipt"></i> {{ stats.today_count }} payments</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card blue" style="padding:18px;">
+      <div class="stat-icon blue" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-calendar"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.month_revenue|floatformat:0 }}</div>
+      <div class="stat-label">Month Revenue (EGP)</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card orange" style="padding:18px;">
+      <div class="stat-icon orange" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.pending_count }}</div>
+      <div class="stat-label">Pending Payments</div>
+      <div class="stat-change down"><i class="fa-solid fa-triangle-exclamation"></i> {{ stats.overdue_invoices }} overdue</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card purple" style="padding:18px;">
+      <div class="stat-icon purple" style="width:38px;height:38px;font-size:16px;margin-bottom:12px;"><i class="fa-solid fa-rotate-left"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ stats.pending_refunds }}</div>
+      <div class="stat-label">Pending Refunds</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Nav -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+  <a href="{% url 'payments:list' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-list"></i> All Payments</a>
+  <a href="{% url 'payments:pending' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Pending</a>
+  <a href="{% url 'payments:overdue' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);"></i> Overdue</a>
+  <a href="{% url 'payments:invoices' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-file-invoice"></i> Invoices</a>
+  <a href="{% url 'payments:receipts' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-receipt"></i> Receipts</a>
+  <a href="{% url 'payments:installments' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-calendar-days"></i> Installments</a>
+  <a href="{% url 'payments:refunds' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-rotate-left"></i> Refunds</a>
+  <a href="{% url 'payments:reports' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+</div>
+
+<div class="row g-4">
+  <!-- Revenue Chart -->
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-chart-line"></i> Monthly Revenue (Last 6 Months)</span>
+        <a href="{% url 'payments:reports' %}" class="btn-gymx outline" style="font-size:12px;padding:5px 12px;text-decoration:none;">Full Report</a>
+      </div>
+      <div class="card-body"><div style="height:220px;"><canvas id="revenueChart"></canvas></div></div>
+    </div>
+
+    <!-- Method breakdown -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> Payment Methods (This Month)</span></div>
+      <div class="card-body">
+        <div class="row g-3">
+          {% for m in method_stats %}
+          <div class="col-4">
+            <div style="text-align:center;padding:16px;background:var(--bg-muted);border-radius:var(--radius-xl);">
+              <i class="fa-solid {% if m.method == 'cash' %}fa-money-bill-wave{% elif m.method == 'card' %}fa-credit-card{% elif m.method == 'transfer' %}fa-building-columns{% elif m.method == 'online' %}fa-globe{% elif m.method == 'wallet' %}fa-wallet{% else %}fa-file-invoice{% endif %}" style="font-size:22px;color:var(--primary);display:block;margin-bottom:8px;"></i>
+              <div style="font-size:16px;font-weight:800;color:var(--text-primary);">{{ m.total|floatformat:0 }}</div>
+              <div style="font-size:11px;color:var(--text-muted);text-transform:capitalize;">{{ m.method }}</div>
+              <div style="font-size:11px;color:var(--text-muted);">{{ m.count }} payments</div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12" style="text-align:center;color:var(--text-muted);padding:24px;">No payments this month</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Recent + Register -->
+  <div class="col-lg-4">
+    <!-- Cash Register Status -->
+    {% if cash_register %}
+    <div class="card-gymx mb-4" style="border-color:{% if cash_register.status == 'open' %}var(--success){% else %}var(--border){% endif %};">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-cash-register"></i> Today's Register</span>
+        <span class="badge-gymx {% if cash_register.status == 'open' %}green{% else %}gray{% endif %}" style="font-size:11px;">{{ cash_register.status|capfirst }}</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Opening Balance</span><span style="font-size:13px;font-weight:600;">{{ cash_register.opening_balance|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Cash Revenue</span><span style="font-size:13px;font-weight:600;color:var(--success);">+{{ cash_register.cash_revenue|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);"><span style="font-size:13.5px;font-weight:700;">Expected Closing</span><span style="font-size:14px;font-weight:800;color:var(--primary);">{{ cash_register.expected_closing|floatformat:0 }} EGP</span></div>
+        </div>
+        {% if cash_register.status == 'open' %}
+        <a href="{% url 'payments:daily_closing' %}" class="btn-gymx outline" style="width:100%;justify-content:center;margin-top:14px;text-decoration:none;font-size:13px;"><i class="fa-solid fa-lock"></i> Close Register</a>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:24px;">
+        <i class="fa-solid fa-cash-register" style="font-size:28px;color:var(--text-muted);display:block;margin-bottom:10px;"></i>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">No register opened today</div>
+        <a href="{% url 'payments:cash_register' %}" class="btn-gymx primary" style="text-decoration:none;justify-content:center;"><i class="fa-solid fa-cash-register"></i> Open Register</a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent payments -->
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Payments</span>
+        <a href="{% url 'payments:list' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a>
+      </div>
+      <div style="max-height:280px;overflow-y:auto;">
+        {% for pay in recent %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+            {% if pay.member.profile_image %}<img src="{{ pay.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ pay.member.get_initials }}{% endif %}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ pay.member.get_full_name }}</div>
+            <div style="font-size:11px;color:var(--text-muted);">{{ pay.get_method_display }} · {{ pay.payment_date|date:"M d" }}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--success);">+{{ pay.net_amount|floatformat:0 }}</div>
+            <span class="badge-gymx {{ pay.get_status_color }}" style="font-size:10px;">{{ pay.get_status_display }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">No payments yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const labels  = [{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const revenues= [{% for m in monthly %}{{ m.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const counts  = [{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const ctx  = document.getElementById('revenueChart').getContext('2d');
+const grad = ctx.createLinearGradient(0,0,0,220);
+grad.addColorStop(0,'rgba(16,185,129,0.2)');
+grad.addColorStop(1,'rgba(16,185,129,0)');
+new Chart(ctx, {
+  type:'line',
+  data:{ labels, datasets:[
+    { label:'Revenue (EGP)', data:revenues, borderColor:'#10B981', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#10B981', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true, yAxisID:'y' },
+    { label:'Payments', data:counts, borderColor:'#3B82F6', borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#3B82F6', pointBorderWidth:2, pointRadius:3, tension:0.4, fill:false, yAxisID:'y1', borderDash:[4,4] }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8, font:{ family:'Inter', size:12 } } }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0F172A', bodyColor:'#64748B', padding:10, cornerRadius:12 } },
+    scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#10B981', font:{ size:11 }, callback: v => v.toLocaleString() }, beginAtZero:true }, y1:{ position:'right', grid:{ display:false }, ticks:{ color:'#3B82F6', font:{ size:11 } }, beginAtZero:true } }
+  }
+});
+</script>
+{% endblock %}

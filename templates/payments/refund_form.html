@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Request Refund — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Refunds / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Request Refund</h1><p class="page-subtitle">Payment #{{ pay.pk }} — {{ pay.member.get_full_name }}</p></div>
+  <a href="{% url 'payments:detail' pay.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;font-weight:600;color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Original Payment</div>
+      <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-top:6px;">{{ pay.net_amount|floatformat:0 }} EGP · {{ pay.get_method_display }} · {{ pay.payment_date|date:"M d, Y" }}</div>
+    </div>
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-rotate-left"></i> Refund Details</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Reason <span style="color:var(--danger);">*</span></label>
+            <select name="reason" class="form-select">{% for val,label in reasons %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select>
+          </div>
+          <div class="mb-3"><label class="form-label">Refund Amount (EGP) <span style="color:var(--danger);">*</span></label>
+            <input type="number" name="amount" class="form-control" value="{{ pay.net_amount }}" max="{{ pay.net_amount }}" step="0.01" />
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Max: {{ pay.net_amount|floatformat:0 }} EGP</div>
+          </div>
+          <div class="mb-4"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3" placeholder="Reason for refund..."></textarea></div>
+          <div class="alert-gymx warning mb-3"><i class="fa-solid fa-circle-info"></i> Refund will be marked as pending approval.</div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'payments:detail' pay.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx danger" onclick="return confirm('Submit this refund request?')"><i class="fa-solid fa-rotate-left"></i> Submit Refund</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

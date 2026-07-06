@@ -17,6 +17,7 @@ urlpatterns = [
     path('members/',       include('apps.members.urls',       namespace='members')),
     path('memberships/',   include('apps.memberships.urls', namespace='memberships')),
     path('attendance/',    include('apps.attendance.urls',    namespace='attendance')),
+    path('payments/',      include('apps.payments.urls',      namespace='payments')),
 ]
 
 if settings.DEBUG:

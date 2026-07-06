@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Installment Plan — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Installments / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Installment Plan</h1><p class="page-subtitle">Set up a payment plan for a member</p></div>
+  <a href="{% url 'payments:installments' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form method="post">
+      {% csrf_token %}
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Member & Plan Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12"><label class="form-label">Member <span style="color:var(--danger);">*</span></label>
+              <select name="member" class="form-select"><option value="">— Select member —</option>{% for m in members %}<option value="{{ m.pk }}" {% if member and member.pk == m.pk %}selected{% endif %}>{{ m.get_full_name }} ({{ m.member_id }})</option>{% endfor %}</select>
+            </div>
+            <div class="col-12"><label class="form-label">Description <span style="color:var(--danger);">*</span></label><input type="text" name="description" class="form-control" placeholder="e.g. Annual membership installments" /></div>
+            <div class="col-md-6"><label class="form-label">Total Amount (EGP) <span style="color:var(--danger);">*</span></label><input type="number" name="total_amount" id="totalAmt" class="form-control" placeholder="0.00" step="0.01" oninput="calcPlan()" /></div>
+            <div class="col-md-6"><label class="form-label">Down Payment (EGP)</label><input type="number" name="down_payment" id="downAmt" class="form-control" placeholder="0.00" step="0.01" value="0" oninput="calcPlan()" /></div>
+            <div class="col-md-6"><label class="form-label">Number of Installments <span style="color:var(--danger);">*</span></label><select name="num_installments" id="numInst" class="form-select" onchange="calcPlan()"><option value="2">2 months</option><option value="3" selected>3 months</option><option value="4">4 months</option><option value="6">6 months</option><option value="12">12 months</option></select></div>
+            <div class="col-md-6"><label class="form-label">Start Date <span style="color:var(--danger);">*</span></label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'payments:installments' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-calendar-days"></i> Create Plan</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Plan Preview</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Total Amount</span><span id="preTotal" style="font-size:13px;font-weight:600;">0 EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Down Payment</span><span id="preDown" style="font-size:13px;font-weight:600;color:var(--success);">0 EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Balance</span><span id="preBalance" style="font-size:13px;font-weight:600;">0 EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Installments</span><span id="preNum" style="font-size:13px;font-weight:600;">3</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:15px;font-weight:700;color:var(--text-primary);">Per Installment</span><span id="preEach" style="font-size:24px;font-weight:800;color:var(--primary);">0 EGP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function calcPlan() {
+  const total = parseFloat(document.getElementById('totalAmt').value)||0;
+  const down  = parseFloat(document.getElementById('downAmt').value)||0;
+  const num   = parseInt(document.getElementById('numInst').value)||3;
+  const bal   = Math.max(total - down, 0);
+  const each  = num > 0 ? (bal/num).toFixed(2) : 0;
+  document.getElementById('preTotal').textContent   = total.toFixed(0)+' EGP';
+  document.getElementById('preDown').textContent    = down.toFixed(0)+' EGP';
+  document.getElementById('preBalance').textContent = bal.toFixed(0)+' EGP';
+  document.getElementById('preNum').textContent     = num;
+  document.getElementById('preEach').textContent    = parseFloat(each).toFixed(0)+' EGP';
+}
+</script>
+{% endblock %}

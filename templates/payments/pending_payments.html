@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Pending Payments — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Pending{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Pending Payments</h1><p class="page-subtitle">{{ p_count }} pending payment{{ p_count|pluralize }} · {{ i_count }} unsent invoice{{ i_count|pluralize }}</p></div>
+  <a href="{% url 'payments:new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Payment</a>
+</div>
+
+{% if p_count %}<div class="alert-gymx warning mb-4"><i class="fa-solid fa-clock"></i> <strong>{{ p_count }}</strong> payment{{ p_count|pluralize }} awaiting completion.</div>{% endif %}
+
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Pending Payments</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Type</th><th>Method</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for pay in payments %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if pay.member.profile_image %}<img src="{{ pay.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ pay.member.get_initials }}{% endif %}
+              </div>
+              <a href="{% url 'members:detail' pay.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ pay.member.get_full_name }}</a>
+            </div>
+          </td>
+          <td><span class="badge-gymx gray" style="font-size:11px;">{{ pay.get_payment_type_display }}</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">{{ pay.get_method_display }}</td>
+          <td style="font-size:14px;font-weight:700;color:var(--warning);">{{ pay.net_amount|floatformat:0 }} EGP</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ pay.payment_date|date:"M d, Y" }}</td>
+          <td><a href="{% url 'payments:detail' pay.pk %}" class="btn-gymx primary" style="font-size:12px;padding:5px 12px;text-decoration:none;"><i class="fa-solid fa-eye"></i> View</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fa-solid fa-circle-check" style="font-size:28px;color:var(--success);display:block;margin-bottom:8px;opacity:0.6;"></i>No pending payments</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-file-invoice" style="color:var(--primary);"></i> Unpaid Invoices</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Invoice #</th><th>Member</th><th>Total</th><th>Amount Due</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for inv in invoices %}
+        <tr>
+          <td style="font-size:13px;font-family:monospace;font-weight:600;color:var(--primary);">{{ inv.invoice_number }}</td>
+          <td>
+            <a href="{% url 'members:detail' inv.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ inv.member.get_full_name }}</a>
+          </td>
+          <td style="font-size:13px;font-weight:600;">{{ inv.total|floatformat:0 }} EGP</td>
+          <td style="font-size:14px;font-weight:700;color:var(--danger);">{{ inv.amount_due|floatformat:0 }} EGP</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ inv.due_date|date:"M d, Y" }}</td>
+          <td><span class="badge-gymx {{ inv.get_status_color }}" style="font-size:11px;">{{ inv.get_status_display }}</span></td>
+          <td><a href="{% url 'payments:invoice_detail' inv.pk %}" class="btn-gymx outline" style="font-size:12px;padding:5px 12px;text-decoration:none;"><i class="fa-solid fa-eye"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);">No unpaid invoices</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ inv.invoice_number }} — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Invoices / {{ inv.invoice_number }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">{{ inv.invoice_number }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ inv.get_status_color }}">{{ inv.get_status_display }}</span>
+      {% if inv.is_overdue %}<span class="badge-gymx red"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</span>{% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    {% if inv.status not in 'paid,cancelled,refunded' %}
+    <form method="post" style="display:inline;">{% csrf_token %}<input type="hidden" name="action" value="mark_paid" /><button type="submit" class="btn-gymx primary" onclick="return confirm('Mark as paid?')"><i class="fa-solid fa-check"></i> Mark Paid</button></form>
+    <form method="post" style="display:inline;">{% csrf_token %}<input type="hidden" name="action" value="cancel" /><button type="submit" class="btn-gymx outline" onclick="return confirm('Cancel invoice?')"><i class="fa-solid fa-xmark"></i> Cancel</button></form>
+    {% endif %}
+    <a href="{% url 'payments:invoices' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="padding:28px;">
+        <!-- Invoice header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;">
+          <div>
+            <div style="font-size:22px;font-weight:800;color:var(--text-primary);">INVOICE</div>
+            <div style="font-size:14px;font-family:monospace;color:var(--primary);margin-top:4px;">{{ inv.invoice_number }}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:var(--text-muted);">Issue Date</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ inv.issue_date|date:"M d, Y" }}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">Due Date</div>
+            <div style="font-size:14px;font-weight:600;color:{% if inv.is_overdue %}var(--danger){% else %}var(--text-primary){% endif %};">{{ inv.due_date|date:"M d, Y" }}</div>
+          </div>
+        </div>
+        <!-- Billed to -->
+        <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:24px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Billed To</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ inv.member.get_full_name }}</div>
+          <div style="font-size:12.5px;color:var(--text-secondary);">{{ inv.member.email }}</div>
+          {% if inv.member.phone %}<div style="font-size:12.5px;color:var(--text-secondary);">{{ inv.member.phone }}</div>{% endif %}
+        </div>
+        <!-- Line items -->
+        <table class="table-gymx">
+          <thead><tr><th>Description</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Unit Price</th><th style="text-align:right;">Total</th></tr></thead>
+          <tbody>
+            {% for item in inv.items.all %}
+            <tr>
+              <td style="font-size:13.5px;">{{ item.description }}</td>
+              <td style="text-align:center;font-size:13px;color:var(--text-secondary);">{{ item.quantity }}</td>
+              <td style="text-align:right;font-size:13px;color:var(--text-secondary);">{{ item.unit_price|floatformat:2 }}</td>
+              <td style="text-align:right;font-size:13.5px;font-weight:600;">{{ item.total|floatformat:2 }} EGP</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px;">No line items</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- Totals -->
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <div style="min-width:240px;">
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Subtotal</span><span style="font-size:13px;font-weight:500;">{{ inv.subtotal|floatformat:2 }} EGP</span></div>
+            {% if inv.discount_amount %}<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--success);">Discount</span><span style="font-size:13px;font-weight:500;color:var(--success);">-{{ inv.discount_amount|floatformat:2 }} EGP</span></div>{% endif %}
+            {% if inv.tax_amount %}<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--warning);">Tax</span><span style="font-size:13px;font-weight:500;color:var(--warning);">+{{ inv.tax_amount|floatformat:2 }} EGP</span></div>{% endif %}
+            <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:16px;font-weight:700;">Total</span><span style="font-size:20px;font-weight:800;color:var(--primary);">{{ inv.total|floatformat:2 }} EGP</span></div>
+            {% if inv.amount_paid %}<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border);"><span style="font-size:13px;color:var(--success);">Paid</span><span style="font-size:13px;font-weight:600;color:var(--success);">{{ inv.amount_paid|floatformat:2 }} EGP</span></div>{% endif %}
+            {% if inv.amount_due > 0 %}<div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:14px;font-weight:700;color:var(--danger);">Amount Due</span><span style="font-size:18px;font-weight:800;color:var(--danger);">{{ inv.amount_due|floatformat:2 }} EGP</span></div>{% endif %}
+          </div>
+        </div>
+        {% if inv.notes %}<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:13px;color:var(--text-muted);">{{ inv.notes }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <!-- Payments made -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-money-bill-wave"></i> Payments</span><a href="{% url 'payments:new' %}?member={{ inv.member.pk }}" class="btn-gymx primary" style="font-size:12px;padding:5px 12px;text-decoration:none;"><i class="fa-solid fa-plus"></i></a></div>
+      <div class="card-body" style="padding:0;">
+        {% for pay in payments %}
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <i class="fa-solid {{ pay.get_method_icon }}" style="color:var(--text-muted);font-size:14px;width:16px;"></i>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ pay.get_method_display }}</div><div style="font-size:11px;color:var(--text-muted);">{{ pay.payment_date|date:"M d, Y" }}</div></div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--success);">{{ pay.net_amount|floatformat:0 }} EGP</div>
+        </div>
+        {% empty %}
+        <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No payments yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

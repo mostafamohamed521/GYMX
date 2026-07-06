@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Receipts — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Receipts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Receipts</h1><p class="page-subtitle">{{ total }} receipts</p></div>
+</div>
+<div class="card-gymx mb-3">
+  <div class="card-body" style="padding:12px 20px;">
+    <form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+      <div><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Receipt # or member..." style="width:240px;" /></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+      {% if q %}<a href="{% url 'payments:receipts' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+    </form>
+  </div>
+</div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Receipt #</th><th>Member</th><th>Amount</th><th>Method</th><th>Issued</th><th>By</th><th></th></tr></thead>
+      <tbody>
+        {% for r in receipts %}
+        <tr>
+          <td style="font-family:monospace;font-size:12.5px;font-weight:600;color:var(--primary);">{{ r.receipt_number }}</td>
+          <td><a href="{% url 'members:detail' r.payment.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ r.payment.member.get_full_name }}</a></td>
+          <td style="font-size:14px;font-weight:700;color:var(--success);">{{ r.payment.net_amount|floatformat:0 }} EGP</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ r.payment.get_method_display }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ r.issued_at|date:"M d, Y H:i" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ r.issued_by.get_short_name|default:"System" }}</td>
+          <td><a href="{% url 'payments:receipt_detail' r.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No receipts found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

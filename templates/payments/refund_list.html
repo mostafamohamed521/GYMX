@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Refunds — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Refunds{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Refunds</h1><p class="page-subtitle">{{ total }} refund requests</p></div>
+</div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Original Payment</th><th>Reason</th><th>Amount</th><th>Status</th><th>Requested</th><th>By</th></tr></thead>
+      <tbody>
+        {% for r in refunds %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if r.member.profile_image %}<img src="{{ r.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ r.member.get_initials }}{% endif %}
+              </div>
+              <a href="{% url 'members:detail' r.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ r.member.get_full_name }}</a>
+            </div>
+          </td>
+          <td><a href="{% url 'payments:detail' r.payment.pk %}" style="font-size:12.5px;color:var(--primary);text-decoration:none;">Payment #{{ r.payment.pk }}</a><div style="font-size:11px;color:var(--text-muted);">{{ r.payment.net_amount|floatformat:0 }} EGP · {{ r.payment.payment_date|date:"M d, Y" }}</div></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ r.get_reason_display }}</td>
+          <td style="font-size:14px;font-weight:700;color:var(--danger);">{{ r.amount|floatformat:0 }} EGP</td>
+          <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
+          <td style="font-size:12px;color:var(--text-muted);">{{ r.requested_at|date:"M d, Y" }}</td>
+          <td style="font-size:12px;color:var(--text-muted);">{{ r.requested_by.get_short_name|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-rotate-left" style="font-size:32px;display:block;margin-bottom:10px;opacity:0.3;"></i>No refunds requested</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

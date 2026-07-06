@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment #{{ pay.pk }} — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / #{{ pay.pk }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">Payment #{{ pay.pk }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ pay.get_status_color }}">{{ pay.get_status_display }}</span>
+      <span class="badge-gymx gray">{{ pay.get_payment_type_display }}</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    {% if receipt %}<a href="{% url 'payments:receipt_detail' receipt.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-receipt"></i> View Receipt</a>{% endif %}
+    {% if pay.status == 'completed' %}<a href="{% url 'payments:refund_new' pay.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-rotate-left"></i> Refund</a>{% endif %}
+    <a href="{% url 'payments:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <!-- Member -->
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:24px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;margin:0 auto 12px;overflow:hidden;">
+          {% if pay.member.profile_image %}<img src="{{ pay.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ pay.member.get_initials }}{% endif %}
+        </div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-primary);">{{ pay.member.get_full_name }}</div>
+        <div style="font-size:12px;color:var(--text-muted);font-family:monospace;margin-top:4px;">{{ pay.member.member_id }}</div>
+        {% if pay.member.email %}<div style="font-size:12.5px;color:var(--text-secondary);margin-top:8px;">{{ pay.member.email }}</div>{% endif %}
+        <div style="margin-top:12px;">
+          <a href="{% url 'members:detail' pay.member.pk %}" class="btn-gymx outline" style="text-decoration:none;font-size:12px;">View Profile</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Amount breakdown -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-receipt"></i> Breakdown</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Amount</span><span style="font-size:13px;font-weight:600;">{{ pay.amount|floatformat:2 }} EGP</span></div>
+          {% if pay.discount %}<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--success);">Discount</span><span style="font-size:13px;font-weight:600;color:var(--success);">-{{ pay.discount|floatformat:2 }} EGP</span></div>{% endif %}
+          {% if pay.tax %}<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--warning);">Tax</span><span style="font-size:13px;font-weight:600;color:var(--warning);">+{{ pay.tax|floatformat:2 }} EGP</span></div>{% endif %}
+          <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:16px;font-weight:700;color:var(--text-primary);">Net Total</span><span style="font-size:24px;font-weight:800;color:var(--success);">{{ pay.net_amount|floatformat:2 }} EGP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <!-- Details -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> Payment Details</span></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Method</div><div style="display:flex;align-items:center;gap:8px;"><i class="fa-solid {{ pay.get_method_icon }}" style="color:var(--primary);font-size:16px;"></i><span style="font-size:14px;font-weight:500;color:var(--text-primary);">{{ pay.get_method_display }}</span></div></div>
+          <div class="col-md-6"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Type</div><div style="font-size:14px;color:var(--text-primary);">{{ pay.get_payment_type_display }}</div></div>
+          <div class="col-md-6"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Date</div><div style="font-size:14px;color:var(--text-primary);">{{ pay.payment_date|date:"M d, Y" }} {{ pay.payment_time|time:"H:i" }}</div></div>
+          <div class="col-md-6"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Received By</div><div style="font-size:14px;color:var(--text-primary);">{{ pay.received_by.get_full_name|default:"System" }}</div></div>
+          {% if pay.reference %}<div class="col-12"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Reference</div><div style="font-size:13px;font-family:monospace;color:var(--text-primary);">{{ pay.reference }}</div></div>{% endif %}
+          {% if pay.notes %}<div class="col-12"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Notes</div><div style="font-size:13.5px;color:var(--text-secondary);line-height:1.6;">{{ pay.notes }}</div></div>{% endif %}
+          <div class="col-md-6"><div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Created</div><div style="font-size:13px;color:var(--text-primary);">{{ pay.created_at|date:"M d, Y H:i" }}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receipt info -->
+    {% if receipt %}
+    <div class="card-gymx" style="border-color:var(--success);">
+      <div class="card-header" style="background:#ECFDF5;"><span class="card-header-title" style="color:var(--success);"><i class="fa-solid fa-receipt"></i> Receipt Issued</span></div>
+      <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text-primary);">{{ receipt.receipt_number }}</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">Issued {{ receipt.issued_at|date:"M d, Y H:i" }}</div>
+        </div>
+        <a href="{% url 'payments:receipt_detail' receipt.pk %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-receipt"></i> View Receipt</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Pay Installment #{{ inst.number }} — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Installments / Pay{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Pay Installment #{{ inst.number }}</h1><p class="page-subtitle">{{ plan.member.get_full_name }} — {{ plan.description }}</p></div>
+  <a href="{% url 'payments:installment_detail' plan.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius-xl);padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;color:var(--primary);"><strong>Installment #{{ inst.number }}</strong> of {{ plan.num_installments }} — Due {{ inst.due_date|date:"M d, Y" }}</div>
+      {% if inst.is_overdue %}<div style="font-size:12px;color:var(--danger);margin-top:4px;"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</div>{% endif %}
+    </div>
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dollar-sign"></i> Payment</span></div>
+      <div class="card-body">
+        <div style="text-align:center;padding:16px;background:var(--bg-muted);border-radius:var(--radius-xl);margin-bottom:20px;">
+          <div style="font-size:32px;font-weight:800;color:var(--primary);">{{ inst.amount|floatformat:0 }} EGP</div>
+          <div style="font-size:13px;color:var(--text-muted);">Amount due</div>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label class="form-label">Payment Method</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              {% for val, label in methods %}
+              <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-full);border:1.5px solid var(--border);cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text-secondary);">
+                <input type="radio" name="method" value="{{ val }}" {% if val == 'cash' %}checked{% endif %} style="display:none;" onchange="this.parentElement.style.borderColor='var(--primary)';this.parentElement.style.color='var(--primary)';this.parentElement.style.background='#EFF6FF';document.querySelectorAll('.method-lbl').forEach(l=>{if(l!==this.parentElement){l.style.borderColor='var(--border)';l.style.color='var(--text-secondary)';l.style.background='white';}});" />
+                <i class="fa-solid {% if val == 'cash' %}fa-money-bill-wave{% elif val == 'card' %}fa-credit-card{% elif val == 'transfer' %}fa-building-columns{% else %}fa-globe{% endif %}"></i>
+                {{ label }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'payments:installment_detail' plan.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx primary" style="padding:10px 24px;"><i class="fa-solid fa-check"></i> Confirm Payment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

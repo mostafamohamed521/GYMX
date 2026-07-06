@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment Reports — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Reports{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Payment Reports</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <a href="{% url 'payments:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+</div>
+
+<!-- Date filter -->
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:14px 20px;">
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+      <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+    </form>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card green" style="padding:16px;">
+      <div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div class="stat-value" style="font-size:26px;">{{ stats.total_revenue|floatformat:0 }}</div>
+      <div class="stat-label">Revenue (EGP)</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card blue" style="padding:16px;">
+      <div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-receipt"></i></div>
+      <div class="stat-value" style="font-size:26px;">{{ stats.total_count }}</div>
+      <div class="stat-label">Total Payments</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card purple" style="padding:16px;">
+      <div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-chart-simple"></i></div>
+      <div class="stat-value" style="font-size:26px;">{{ stats.avg_payment|floatformat:0 }}</div>
+      <div class="stat-label">Avg Payment (EGP)</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card red" style="padding:16px;">
+      <div class="stat-icon red" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-rotate-left"></i></div>
+      <div class="stat-value" style="font-size:26px;">{{ stats.refunds_total|floatformat:0 }}</div>
+      <div class="stat-label">Refunds (EGP)</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Daily chart -->
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Daily Revenue</span></div>
+      <div class="card-body"><div style="height:220px;"><canvas id="dailyChart"></canvas></div></div>
+    </div>
+
+    <!-- Daily table -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-table"></i> Daily Breakdown</span></div>
+      <div style="overflow-x:auto;max-height:280px;overflow-y:auto;">
+        <table class="table-gymx">
+          <thead style="position:sticky;top:0;background:white;"><tr><th>Date</th><th>Payments</th><th>Revenue</th></tr></thead>
+          <tbody>
+            {% for d in daily %}
+            <tr>
+              <td style="font-size:13px;font-weight:500;">{{ d.payment_date|date:"M d, Y" }}</td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ d.count }}</td>
+              <td style="font-size:14px;font-weight:700;color:var(--success);">{{ d.total|floatformat:0 }} EGP</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-muted);">No data</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Type breakdown -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tags"></i> By Type</span></div>
+      <div class="card-body">
+        {% for t in type_breakdown %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ t.payment_type|cut:"_"|capfirst }}</span>
+          <div class="progress-gymx" style="width:80px;"><div class="fill" style="width:{% if type_breakdown.0.total > 0 %}{% widthratio t.total type_breakdown.0.total 100 %}{% else %}0{% endif %}%;"></div></div>
+          <span style="font-size:12px;font-weight:700;color:var(--text-primary);min-width:55px;text-align:right;">{{ t.total|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}
+        <div style="text-align:center;color:var(--text-muted);padding:16px;">No data</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Method breakdown -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-credit-card"></i> By Method</span></div>
+      <div class="card-body">
+        {% for m in method_breakdown %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <i class="fa-solid {% if m.method == 'cash' %}fa-money-bill-wave{% elif m.method == 'card' %}fa-credit-card{% elif m.method == 'transfer' %}fa-building-columns{% else %}fa-globe{% endif %}" style="color:var(--primary);width:16px;font-size:12px;"></i>
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ m.method }}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text-primary);">{{ m.total|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}
+        <div style="text-align:center;color:var(--text-muted);padding:16px;">No data</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Top payers -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-trophy"></i> Top Payers</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for p in top_payers %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:20px;text-align:center;font-size:12px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#94A3B8{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
+          <a href="{% url 'members:detail' p.member__pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ p.member__first_name }} {{ p.member__last_name }}</a>
+          <span style="font-size:13px;font-weight:700;color:var(--success);">{{ p.total|floatformat:0 }}</span>
+        </div>
+        {% empty %}
+        <div style="padding:20px;text-align:center;color:var(--text-muted);">No data</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const labels  = [{% for d in daily reversed %}"{{ d.payment_date|date:'M d' }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const revenues= [{% for d in daily reversed %}{{ d.total|floatformat:2 }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const ctx  = document.getElementById('dailyChart').getContext('2d');
+const grad = ctx.createLinearGradient(0,0,0,220);
+grad.addColorStop(0,'rgba(16,185,129,0.2)');
+grad.addColorStop(1,'rgba(16,185,129,0)');
+new Chart(ctx,{
+  type:'line',
+  data:{ labels, datasets:[{ data:revenues, borderColor:'#10B981', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#10B981', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0F172A', bodyColor:'#64748B', padding:10, cornerRadius:12, callbacks:{ label: c=>`${c.raw.toLocaleString()} EGP` } } },
+    scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', font:{ size:11 }, callback: v=>v.toLocaleString() }, beginAtZero:true } }
+  }
+});
+</script>
+{% endblock %}

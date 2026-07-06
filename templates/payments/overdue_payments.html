@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Overdue Payments — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Overdue{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Overdue Payments</h1><p class="page-subtitle">{{ inv_count }} overdue invoice{{ inv_count|pluralize }} · {{ inst_count }} overdue installment{{ inst_count|pluralize }}</p></div>
+</div>
+{% if inv_count or inst_count %}<div class="alert-gymx error mb-4"><i class="fa-solid fa-triangle-exclamation"></i> <strong>{{ inv_count|add:inst_count }}</strong> overdue item{{ inv_count|add:inst_count|pluralize }} require immediate attention.</div>{% endif %}
+
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-file-invoice" style="color:var(--danger);"></i> Overdue Invoices ({{ inv_count }})</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Invoice #</th><th>Member</th><th>Total</th><th>Amount Due</th><th>Due Date</th><th>Days Overdue</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for inv in invoices %}
+        <tr>
+          <td style="font-size:13px;font-family:monospace;font-weight:600;color:var(--danger);">{{ inv.invoice_number }}</td>
+          <td><a href="{% url 'members:detail' inv.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ inv.member.get_full_name }}</a></td>
+          <td style="font-size:13px;">{{ inv.total|floatformat:0 }} EGP</td>
+          <td style="font-size:14px;font-weight:700;color:var(--danger);">{{ inv.amount_due|floatformat:0 }} EGP</td>
+          <td style="font-size:12.5px;color:var(--danger);font-weight:600;">{{ inv.due_date|date:"M d, Y" }}</td>
+          <td>
+            <span style="font-size:13px;font-weight:700;color:var(--danger);">{{ today|timeuntil:inv.due_date }}</span>
+          </td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <a href="{% url 'payments:invoice_detail' inv.pk %}" class="btn-gymx outline" style="font-size:11px;padding:5px 10px;text-decoration:none;"><i class="fa-solid fa-eye"></i></a>
+              <a href="{% url 'payments:new' %}?member={{ inv.member.pk }}" class="btn-gymx primary" style="font-size:11px;padding:5px 10px;text-decoration:none;"><i class="fa-solid fa-dollar-sign"></i> Pay</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);">No overdue invoices</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-days" style="color:var(--danger);"></i> Overdue Installments ({{ inst_count }})</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Plan</th><th>Installment #</th><th>Amount</th><th>Due Date</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for inst in installments %}
+        <tr>
+          <td><a href="{% url 'members:detail' inst.plan.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ inst.plan.member.get_full_name }}</a></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ inst.plan.description }}</td>
+          <td><span class="badge-gymx red" style="font-size:11px;">#{{ inst.number }}</span></td>
+          <td style="font-size:14px;font-weight:700;color:var(--danger);">{{ inst.amount|floatformat:0 }} EGP</td>
+          <td style="font-size:12.5px;color:var(--danger);font-weight:600;">{{ inst.due_date|date:"M d, Y" }}</td>
+          <td><a href="{% url 'payments:installment_pay' inst.plan.pk inst.pk %}" class="btn-gymx primary" style="font-size:11px;padding:5px 12px;text-decoration:none;"><i class="fa-solid fa-dollar-sign"></i> Pay Now</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">No overdue installments</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

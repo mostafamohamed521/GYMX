@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Payment — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Payment</h1><p class="page-subtitle">Record a new payment</p></div>
+  <a href="{% url 'payments:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form method="post" id="paymentForm">
+      {% csrf_token %}
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Member</span></div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Select Member <span style="color:var(--danger);">*</span></label>
+            <select name="member" id="memberSelect" class="form-select" onchange="loadMemberInfo(this.value)">
+              <option value="">— Select member —</option>
+              {% for m in members %}
+              <option value="{{ m.pk }}" {% if member and member.pk == m.pk %}selected{% endif %}>{{ m.get_full_name }} ({{ m.member_id }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Member info card -->
+          <div id="memberInfo" style="display:{% if member %}block{% else %}none{% endif %};">
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius-xl);padding:14px 16px;">
+              <div id="memberName" style="font-size:14px;font-weight:700;color:var(--primary);">{{ member.get_full_name|default:"" }}</div>
+              <div id="memberPlan" style="font-size:12.5px;color:var(--text-secondary);margin-top:4px;"></div>
+              <div id="memberDue" style="font-size:13px;font-weight:600;color:var(--danger);margin-top:4px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-credit-card"></i> Payment Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Payment Type <span style="color:var(--danger);">*</span></label>
+              <select name="payment_type" class="form-select">
+                {% for val, label in types %}<option value="{{ val }}" {% if val == 'membership' %}selected{% endif %}>{{ label }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Payment Method <span style="color:var(--danger);">*</span></label>
+              <select name="method" id="methodSelect" class="form-select" onchange="updateMethodIcon(this.value)">
+                {% for val, label in methods %}<option value="{{ val }}" {% if val == 'cash' %}selected{% endif %}>{{ label }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Amount (EGP) <span style="color:var(--danger);">*</span></label>
+              <input type="number" name="amount" id="amountInput" class="form-control" placeholder="0.00" step="0.01" min="0" oninput="calcNet()" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Discount (EGP)</label>
+              <input type="number" name="discount" id="discountInput" class="form-control" placeholder="0.00" step="0.01" min="0" value="0" oninput="calcNet()" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tax (EGP)</label>
+              <input type="number" name="tax" id="taxInput" class="form-control" placeholder="0.00" step="0.01" min="0" value="0" oninput="calcNet()" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Payment Date</label>
+              <input type="date" name="payment_date" class="form-control" value="{{ today }}" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Reference / Transaction ID</label>
+              <input type="text" name="reference" class="form-control" placeholder="e.g. TXN-001234" />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notes</label>
+              <textarea name="notes" class="form-control" rows="2" placeholder="Optional notes..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'payments:list' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary" style="font-size:14px;padding:10px 24px;"><i class="fa-solid fa-check"></i> Record Payment</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-5">
+    <!-- Net preview -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Payment Preview</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Amount</span><span id="previewAmount" style="font-size:13px;font-weight:600;">0 EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Discount</span><span id="previewDiscount" style="font-size:13px;font-weight:600;color:var(--success);">-0 EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Tax</span><span id="previewTax" style="font-size:13px;font-weight:600;color:var(--warning);">+0 EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:16px;font-weight:700;color:var(--text-primary);">Net Total</span><span id="previewNet" style="font-size:22px;font-weight:800;color:var(--success);">0 EGP</span></div>
+        </div>
+        <!-- Method icon -->
+        <div style="text-align:center;padding:16px;background:var(--bg-muted);border-radius:var(--radius-xl);margin-top:12px;">
+          <i id="methodIcon" class="fa-solid fa-money-bill-wave" style="font-size:32px;color:var(--primary);display:block;margin-bottom:8px;"></i>
+          <div id="methodLabel" style="font-size:13px;color:var(--text-secondary);">Cash</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> Quick Tips</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--text-secondary);"><i class="fa-solid fa-receipt" style="color:var(--primary);margin-top:2px;width:16px;"></i>Receipt is auto-generated on completion</div>
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--text-secondary);"><i class="fa-solid fa-cash-register" style="color:var(--success);margin-top:2px;width:16px;"></i>Cash payments update the daily register automatically</div>
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--text-secondary);"><i class="fa-solid fa-tag" style="color:var(--warning);margin-top:2px;width:16px;"></i>Add discount in EGP (not %)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const methodIcons = {cash:'fa-money-bill-wave',card:'fa-credit-card',transfer:'fa-building-columns',online:'fa-globe',cheque:'fa-file-invoice',wallet:'fa-wallet'};
+const methodLabels = {cash:'Cash',card:'Credit/Debit Card',transfer:'Bank Transfer',online:'Online Payment',cheque:'Cheque',wallet:'Digital Wallet'};
+
+function calcNet() {
+  const a = parseFloat(document.getElementById('amountInput').value)||0;
+  const d = parseFloat(document.getElementById('discountInput').value)||0;
+  const t = parseFloat(document.getElementById('taxInput').value)||0;
+  const net = a - d + t;
+  document.getElementById('previewAmount').textContent = a.toFixed(0)+' EGP';
+  document.getElementById('previewDiscount').textContent = '-'+d.toFixed(0)+' EGP';
+  document.getElementById('previewTax').textContent = '+'+t.toFixed(0)+' EGP';
+  document.getElementById('previewNet').textContent = net.toFixed(0)+' EGP';
+}
+
+function updateMethodIcon(m) {
+  document.getElementById('methodIcon').className = 'fa-solid '+( methodIcons[m]||'fa-coins');
+  document.getElementById('methodLabel').textContent = methodLabels[m]||m;
+}
+
+function loadMemberInfo(pk) {
+  if (!pk) { document.getElementById('memberInfo').style.display='none'; return; }
+  fetch(`/payments/ajax/member-info/${pk}/`)
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById('memberInfo').style.display='block';
+      document.getElementById('memberName').textContent = d.name+' ('+d.member_id+')';
+      document.getElementById('memberPlan').textContent = d.plan ? 'Plan: '+d.plan+' — '+d.plan_price+' EGP' : 'No active membership';
+      document.getElementById('memberDue').textContent  = d.amount_due && d.amount_due!='0.00' ? 'Amount Due: '+d.amount_due+' EGP' : '';
+      if (d.amount_due && d.amount_due!='0.00') document.getElementById('amountInput').value = d.amount_due;
+      calcNet();
+    }).catch(()=>{});
+}
+
+// Init
+{% if member %}loadMemberInfo({{ member.pk }});{% endif %}
+calcNet();
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ receipt.receipt_number }} — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Receipts / {{ receipt.receipt_number }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ receipt.receipt_number }}</h1></div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="window.print()" class="btn-gymx outline"><i class="fa-solid fa-print"></i> Print</button>
+    <a href="{% url 'payments:receipts' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-6 col-md-8">
+    <div class="card-gymx" id="receiptCard">
+      <div style="background:linear-gradient(135deg,#1D4ED8,#0369A1);padding:24px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:white;letter-spacing:-0.3px;">🏋️ GymX</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Official Payment Receipt</div>
+      </div>
+      <div style="padding:28px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="width:56px;height:56px;background:#ECFDF5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i class="fa-solid fa-circle-check" style="font-size:24px;color:var(--success);"></i></div>
+          <div style="font-size:18px;font-weight:800;color:var(--success);">Payment Confirmed</div>
+          <div style="font-size:30px;font-weight:900;color:var(--text-primary);margin-top:6px;">{{ receipt.payment.net_amount|floatformat:0 }} EGP</div>
+        </div>
+        <div style="background:var(--bg-muted);border-radius:var(--radius-xl);padding:16px;margin-bottom:20px;">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Receipt #</span><span style="font-size:12.5px;font-weight:700;font-family:monospace;color:var(--primary);">{{ receipt.receipt_number }}</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Member</span><span style="font-size:12.5px;font-weight:600;color:var(--text-primary);">{{ receipt.payment.member.get_full_name }}</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Type</span><span style="font-size:12.5px;color:var(--text-primary);">{{ receipt.payment.get_payment_type_display }}</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Method</span><span style="font-size:12.5px;color:var(--text-primary);">{{ receipt.payment.get_method_display }}</span></div>
+            {% if receipt.payment.reference %}<div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Reference</span><span style="font-size:12.5px;font-family:monospace;color:var(--text-primary);">{{ receipt.payment.reference }}</span></div>{% endif %}
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Date</span><span style="font-size:12.5px;color:var(--text-primary);">{{ receipt.payment.payment_date|date:"M d, Y" }}</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12.5px;color:var(--text-muted);">Issued By</span><span style="font-size:12.5px;color:var(--text-primary);">{{ receipt.issued_by.get_full_name|default:"System" }}</span></div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--text-muted);border-top:1px dashed var(--border);padding-top:16px;">Thank you for your payment! · GymX Management System</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>@media print { .sidebar,.navbar,.app-footer,.page-header,.btn-gymx{display:none!important;} .main-content{margin-left:0!important;} }</style>
+{% endblock %}

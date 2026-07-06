@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Invoice — GymX{% endblock %}
+{% block page_breadcrumb %}Payments / Invoices / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Invoice</h1><p class="page-subtitle">Create a billing invoice for a member</p></div>
+  <a href="{% url 'payments:invoices' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post" id="invoiceForm">
+  {% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Member & Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8"><label class="form-label">Member <span style="color:var(--danger);">*</span></label>
+              <select name="member" class="form-select"><option value="">— Select member —</option>{% for m in members %}<option value="{{ m.pk }}" {% if member and member.pk == m.pk %}selected{% endif %}>{{ m.get_full_name }} ({{ m.member_id }})</option>{% endfor %}</select>
+            </div>
+            <div class="col-md-4"><label class="form-label">Status</label>
+              <select name="status" class="form-select"><option value="draft">Draft</option><option value="sent">Send Now</option></select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Issue Date</label><input type="date" name="issue_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-md-6"><label class="form-label">Due Date <span style="color:var(--danger);">*</span></label><input type="date" name="due_date" class="form-control" /></div>
+            <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <!-- Line items -->
+      <div class="card-gymx mb-4">
+        <div class="card-header">
+          <span class="card-header-title"><i class="fa-solid fa-list"></i> Line Items</span>
+          <button type="button" onclick="addItem()" class="btn-gymx outline" style="font-size:12px;padding:5px 12px;"><i class="fa-solid fa-plus"></i> Add Item</button>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="table-gymx" id="itemsTable">
+            <thead><tr><th>Description</th><th style="width:80px;">Qty</th><th style="width:120px;">Unit Price</th><th style="width:100px;">Total</th><th style="width:40px;"></th></tr></thead>
+            <tbody id="itemsBody">
+              <tr>
+                <td><input type="text" name="item_desc" class="form-control" placeholder="Description" style="font-size:13px;" /></td>
+                <td><input type="number" name="item_qty" class="form-control item-qty" value="1" min="1" style="font-size:13px;" oninput="calcRow(this)" /></td>
+                <td><input type="number" name="item_price" class="form-control item-price" value="0" step="0.01" style="font-size:13px;" oninput="calcRow(this)" /></td>
+                <td class="item-total" style="font-size:13px;font-weight:600;padding-top:10px;">0 EGP</td>
+                <td><button type="button" onclick="removeRow(this)" style="border:none;background:none;color:var(--danger);cursor:pointer;font-size:16px;">×</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Totals</span></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text-muted);">Subtotal</span><span id="subtotalDisplay" style="font-size:13px;font-weight:600;">0 EGP</span></div>
+            <div><label class="form-label" style="font-size:12px;">Discount (EGP)</label><input type="number" name="discount_amount" id="discountInput" class="form-control" value="0" step="0.01" oninput="calcTotals()" /></div>
+            <div><label class="form-label" style="font-size:12px;">Tax (EGP)</label><input type="number" name="tax_amount" id="taxInput" class="form-control" value="0" step="0.01" oninput="calcTotals()" /></div>
+            <input type="hidden" name="subtotal" id="subtotalInput" value="0" />
+            <input type="hidden" name="total" id="totalInput" value="0" />
+            <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);"><span style="font-size:16px;font-weight:700;">Total</span><span id="totalDisplay" style="font-size:22px;font-weight:800;color:var(--primary);">0 EGP</span></div>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;margin-top:16px;"><i class="fa-solid fa-file-invoice"></i> Create Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function calcRow(el) {
+  const tr = el.closest('tr');
+  const qty = parseFloat(tr.querySelector('.item-qty').value)||0;
+  const price = parseFloat(tr.querySelector('.item-price').value)||0;
+  tr.querySelector('.item-total').textContent = (qty*price).toFixed(0)+' EGP';
+  calcTotals();
+}
+function calcTotals() {
+  let sub = 0;
+  document.querySelectorAll('.item-qty').forEach(q => {
+    const p = parseFloat(q.closest('tr').querySelector('.item-price').value)||0;
+    sub += (parseFloat(q.value)||0)*p;
+  });
+  const disc = parseFloat(document.getElementById('discountInput').value)||0;
+  const tax  = parseFloat(document.getElementById('taxInput').value)||0;
+  const total = sub - disc + tax;
+  document.getElementById('subtotalDisplay').textContent = sub.toFixed(0)+' EGP';
+  document.getElementById('totalDisplay').textContent = total.toFixed(0)+' EGP';
+  document.getElementById('subtotalInput').value = sub.toFixed(2);
+  document.getElementById('totalInput').value = total.toFixed(2);
+}
+function addItem() {
+  const tbody = document.getElementById('itemsBody');
+  const tr = tbody.rows[0].cloneNode(true);
+  tr.querySelectorAll('input').forEach(i => { if(i.name!='item_qty') i.value=''; else i.value=1; });
+  tr.querySelector('.item-total').textContent = '0 EGP';
+  tbody.appendChild(tr);
+}
+function removeRow(btn) {
+  const tbody = document.getElementById('itemsBody');
+  if (tbody.rows.length > 1) { btn.closest('tr').remove(); calcTotals(); }
+}
+</script>
+{% endblock %}
