@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Schedule — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Schedule{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Schedule</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'coaches:calendar' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-calendar"></i> Calendar</a>
+    <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Session</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Title <span style="color:var(--danger);">*</span></label><input type="text" name="title" class="form-control" placeholder="e.g. Morning PT — Ahmed" /></div>
+          <div class="row g-3 mb-3">
+            <div class="col-6"><label class="form-label">Type</label>
+              <select name="session_type" class="form-select">{% for val,label in session_types %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select>
+            </div>
+            <div class="col-6"><label class="form-label">Member</label>
+              <select name="member" class="form-select"><option value="">— None —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select>
+            </div>
+          </div>
+          <div class="mb-3"><label class="form-label">Date <span style="color:var(--danger);">*</span></label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+          <div class="row g-3 mb-3">
+            <div class="col-6"><label class="form-label">Start Time</label><input type="time" name="start_time" class="form-control" value="08:00" /></div>
+            <div class="col-6"><label class="form-label">End Time</label><input type="time" name="end_time" class="form-control" value="09:00" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add to Schedule</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <!-- This week -->
+    <div class="card-gymx mb-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-calendar-week"></i> This Week</span>
+        <span style="font-size:12px;color:var(--text-muted);">{{ week_start|date:"M d" }} — {{ week_end|date:"M d, Y" }}</span>
+      </div>
+      {% if this_week %}
+      <div class="card-body" style="padding:0;">
+        {% for s in this_week %}
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:44px;text-align:center;flex-shrink:0;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">{{ s.date|date:"D" }}</div>
+            <div style="font-size:18px;font-weight:800;color:var(--text-primary);">{{ s.date|date:"d" }}</div>
+          </div>
+          <div style="width:3px;height:40px;border-radius:999px;background:{% if s.session_type == 'class' %}var(--primary){% elif s.session_type == 'pt' %}var(--success){% elif s.session_type == 'meeting' %}var(--warning){% else %}var(--text-muted){% endif %};flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ s.title }}</div>
+            <div style="font-size:12px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}{% if s.member %} · {{ s.member.get_full_name }}{% endif %}</div>
+          </div>
+          <span class="badge-gymx {{ s.get_type_color }}" style="font-size:10px;">{{ s.get_session_type_display }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="card-body" style="text-align:center;padding:32px;color:var(--text-muted);">No sessions this week</div>
+      {% endif %}
+    </div>
+
+    <!-- Upcoming -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-forward"></i> Upcoming Sessions</span></div>
+      <div style="overflow-x:auto;max-height:320px;overflow-y:auto;">
+        <table class="table-gymx">
+          <thead style="position:sticky;top:0;background:white;"><tr><th>Date</th><th>Title</th><th>Time</th><th>Member</th><th>Type</th></tr></thead>
+          <tbody>
+            {% for s in upcoming %}
+            <tr>
+              <td style="font-size:13px;font-weight:500;">{{ s.date|date:"M d, Y" }}</td>
+              <td style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ s.title }}</td>
+              <td style="font-size:12.5px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }}–{{ s.end_time|time:"H:i" }}</td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.member.get_full_name|default:"—" }}</td>
+              <td><span class="badge-gymx {{ s.get_type_color }}" style="font-size:10px;">{{ s.get_session_type_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">No upcoming sessions</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

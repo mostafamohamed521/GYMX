@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Availability — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Availability{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Availability</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock"></i> Weekly Availability</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+            {% for day_num, day_name in days %}
+            {% with avail=availability|default_if_none:'' %}
+            <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--bg-muted);border-radius:var(--radius-xl);">
+              <label style="display:flex;align-items:center;gap:8px;min-width:120px;cursor:pointer;">
+                <input type="checkbox" name="day" value="{{ day_num }}"
+                       {% if day_num in availability %}checked{% endif %}
+                       id="day_{{ day_num }}"
+                       style="width:16px;height:16px;accent-color:var(--primary);"
+                       onchange="toggleTimes({{ day_num }}, this.checked)" />
+                <span style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ day_name }}</span>
+              </label>
+              <div id="times_{{ day_num }}" style="display:flex;gap:10px;align-items:center;{% if day_num not in availability %}opacity:0.3;pointer-events:none;{% endif %}">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span style="font-size:12px;color:var(--text-muted);">From</span>
+                  <input type="time" name="start_{{ day_num }}" class="form-control" style="width:110px;height:32px;font-size:12.5px;"
+                         value="{{ availability|default_if_none:'' }}" />
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span style="font-size:12px;color:var(--text-muted);">To</span>
+                  <input type="time" name="end_{{ day_num }}" class="form-control" style="width:110px;height:32px;font-size:12.5px;" value="22:00" />
+                </div>
+              </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+          </div>
+          <div class="alert-gymx blue mb-3"><i class="fa-solid fa-circle-info"></i> Check days the coach is available and set working hours.</div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx primary" style="padding:10px 28px;"><i class="fa-solid fa-floppy-disk"></i> Save Availability</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function toggleTimes(day, checked) {
+  const el = document.getElementById('times_' + day);
+  el.style.opacity = checked ? '1' : '0.3';
+  el.style.pointerEvents = checked ? 'auto' : 'none';
+}
+
+// Init time values from saved availability
+{% for day_num, avail in availability.items %}
+const d{{ day_num }} = document.getElementById('times_{{ day_num }}');
+if (d{{ day_num }}) {
+  d{{ day_num }}.querySelectorAll('input[type=time]')[0].value = '{{ avail.start_time|time:"H:i" }}';
+  d{{ day_num }}.querySelectorAll('input[type=time]')[1].value = '{{ avail.end_time|time:"H:i" }}';
+}
+{% endfor %}
+</script>
+{% endblock %}

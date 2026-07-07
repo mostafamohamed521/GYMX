@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Attendance — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Attendance{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Attendance</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.present }}</div><div class="stat-label">Present</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:14px;"><div class="stat-icon red" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-circle-xmark"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.absent }}</div><div class="stat-label">Absent</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.late }}</div><div class="stat-label">Late</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-umbrella-beach"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.leave }}</div><div class="stat-label">Leave</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Record Attendance</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+          <div class="mb-3"><label class="form-label">Status</label>
+            <select name="status" class="form-select">{% for val,label in statuses %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Check In</label><input type="time" name="check_in" class="form-control" /></div>
+            <div class="col-6"><label class="form-label">Check Out</label><input type="time" name="check_out" class="form-control" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Attendance History</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Date</th><th>Status</th><th>In</th><th>Out</th><th>Notes</th></tr></thead>
+          <tbody>
+            {% for r in records %}
+            <tr>
+              <td style="font-size:13px;font-weight:500;">{{ r.date|date:"M d, Y" }}</td>
+              <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ r.check_in|time:"H:i"|default:"—" }}</td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ r.check_out|time:"H:i"|default:"—" }}</td>
+              <td style="font-size:12px;color:var(--text-muted);">{{ r.notes|default:"—"|truncatechars:30 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No attendance records</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

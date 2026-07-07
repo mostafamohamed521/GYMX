@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Certificates — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Certificates{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Certificates</h1><p class="page-subtitle">{{ coach.get_full_name }} — {{ certs|length }} certificate{{ certs|length|pluralize }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Certificate</span></div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Title <span style="color:var(--danger);">*</span></label><input type="text" name="title" class="form-control" placeholder="e.g. NASM Certified PT" /></div>
+          <div class="mb-3"><label class="form-label">Issued By <span style="color:var(--danger);">*</span></label><input type="text" name="issued_by" class="form-control" placeholder="e.g. NASM, ACE, ACSM" /></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Issue Date <span style="color:var(--danger);">*</span></label><input type="date" name="issue_date" class="form-control" /></div>
+            <div class="col-6"><label class="form-label">Expiry Date</label><input type="date" name="expiry_date" class="form-control" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Document</label><input type="file" name="document" class="form-control" accept=".pdf,.jpg,.png" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-certificate"></i> Add Certificate</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="row g-3">
+      {% for cert in certs %}
+      <div class="col-md-6">
+        <div style="background:white;border:1px solid {% if cert.is_expired %}var(--danger){% elif cert.is_expiring_soon %}var(--warning){% else %}var(--border){% endif %};border-radius:var(--radius-xl);padding:18px;box-shadow:var(--shadow-xs);">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+            <div style="width:40px;height:40px;background:{% if cert.is_expired %}#FEF2F2{% elif cert.is_expiring_soon %}#FFFBEB{% else %}#EFF6FF{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fa-solid fa-certificate" style="color:{% if cert.is_expired %}var(--danger){% elif cert.is_expiring_soon %}var(--warning){% else %}var(--primary){% endif %};font-size:18px;"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13.5px;font-weight:700;color:var(--text-primary);">{{ cert.title }}</div>
+              <div style="font-size:12px;color:var(--text-muted);">{{ cert.issued_by }}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text-muted);">Issued</span><span style="font-size:12px;font-weight:500;">{{ cert.issue_date|date:"M d, Y" }}</span></div>
+            {% if cert.expiry_date %}
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;color:var(--text-muted);">Expires</span><span style="font-size:12px;font-weight:600;color:{% if cert.is_expired %}var(--danger){% elif cert.is_expiring_soon %}var(--warning){% else %}var(--text-primary){% endif %};">{{ cert.expiry_date|date:"M d, Y" }}</span></div>
+            {% endif %}
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            {% if cert.is_expired %}<span class="badge-gymx red" style="font-size:11px;"><i class="fa-solid fa-triangle-exclamation"></i> Expired</span>
+            {% elif cert.is_expiring_soon %}<span class="badge-gymx orange" style="font-size:11px;"><i class="fa-solid fa-clock"></i> Expiring Soon</span>
+            {% else %}<span class="badge-gymx green" style="font-size:11px;"><i class="fa-solid fa-circle-check"></i> Valid</span>{% endif %}
+            {% if cert.document %}<a href="{{ cert.document.url }}" target="_blank" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;text-decoration:none;"><i class="fa-solid fa-download"></i> Document</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+        <i class="fa-solid fa-certificate" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
+        <div style="font-size:15px;font-weight:600;color:var(--text-primary);">No certificates yet</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

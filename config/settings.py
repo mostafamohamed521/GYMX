@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'apps.memberships',
     'apps.attendance',
     'apps.payments',
+    'apps.coaches',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
 
 
 # PostgreSQL (uncomment when ready):

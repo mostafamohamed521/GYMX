@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Commissions — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Commissions{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Commissions</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-dollar-sign"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total|floatformat:0 }}</div><div class="stat-label">Total (EGP)</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.paid|floatformat:0 }}</div><div class="stat-label">Paid (EGP)</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.pending|floatformat:0 }}</div><div class="stat-label">Pending (EGP)</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Commission</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member <span style="color:var(--danger);">*</span></label>
+            <select name="member" class="form-select"><option value="">— Select —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select>
+          </div>
+          <div class="mb-3"><label class="form-label">Description <span style="color:var(--danger);">*</span></label><input type="text" name="description" class="form-control" placeholder="e.g. PT Session — 60 min" /></div>
+          <div class="mb-3"><label class="form-label">Amount (EGP) <span style="color:var(--danger);">*</span></label><input type="number" name="amount" class="form-control" value="{{ coach.session_rate }}" step="0.01" /></div>
+          <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add Commission</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> All Commissions ({{ stats.count }})</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Member</th><th>Description</th><th>Amount</th><th>Date</th><th>Paid</th></tr></thead>
+          <tbody>
+            {% for c in commissions %}
+            <tr>
+              <td><a href="{% url 'members:detail' c.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ c.member.get_full_name }}</a></td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.description }}</td>
+              <td style="font-size:14px;font-weight:700;color:var(--success);">{{ c.amount|floatformat:0 }} EGP</td>
+              <td style="font-size:12.5px;color:var(--text-muted);">{{ c.date|date:"M d, Y" }}</td>
+              <td><span class="badge-gymx {% if c.is_paid %}green{% else %}orange{% endif %}" style="font-size:11px;">{% if c.is_paid %}Paid{% else %}Pending{% endif %}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No commissions recorded</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

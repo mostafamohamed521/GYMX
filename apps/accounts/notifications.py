@@ -10,6 +10,7 @@ from django.utils.html import strip_tags
 from typing import Union
 
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -40,9 +41,10 @@ def send_sms(to_phone: str, message: str) -> bool:
         logger.error(f"Twilio error sending to {to_phone}: {e}")
         return False
 
+
 # ── Email via Django/SMTP ──────────────────────────────────
 def send_email(
-    to: Union[str, list],   
+    to: Union[str, list],
     subject: str,
     html_content: str,
     text_content: str = None,

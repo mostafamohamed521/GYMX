@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Assigned Members — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Members{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Assigned Members</h1><p class="page-subtitle">{{ coach.get_full_name }} — {{ count }} member{{ count|pluralize }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Status</th><th>Phone</th><th>Join Date</th><th></th></tr></thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if m.profile_image %}<img src="{{ m.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ m.get_initials }}{% endif %}
+              </div>
+              <div>
+                <a href="{% url 'members:detail' m.pk %}" style="font-size:13.5px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.get_full_name }}</a>
+                <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ m.member_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge-gymx {{ m.get_status_color }}" style="font-size:11px;">{{ m.get_status_display }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ m.phone|default:"—" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ m.created_at|date:"M d, Y" }}</td>
+          <td>
+            <div style="display:flex;gap:4px;">
+              <a href="{% url 'members:detail' m.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;" title="Profile"><i class="fa-solid fa-user" style="font-size:11px;"></i></a>
+              <a href="{% url 'coaches:schedule' coach.pk %}?member={{ m.pk }}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;" title="Schedule"><i class="fa-solid fa-calendar-plus" style="font-size:11px;"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-users" style="font-size:32px;display:block;margin-bottom:10px;opacity:0.3;"></i>No members assigned to this coach</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

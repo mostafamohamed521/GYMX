@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Salary — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Salary{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Salary</h1><p class="page-subtitle">{{ coach.get_full_name }} — {{ total_paid|floatformat:0 }} EGP paid total</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:24px;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:var(--radius-xl);">
+        <div style="font-size:13px;color:var(--text-muted);">Base Salary</div>
+        <div style="font-size:36px;font-weight:900;color:var(--success);">{{ coach.base_salary|floatformat:0 }}</div>
+        <div style="font-size:13px;color:var(--text-muted);">EGP / month</div>
+      </div>
+    </div>
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Salary Record</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Month</label><input type="month" name="month" class="form-control" value="{{ current_month }}" /></div>
+          <div class="mb-3"><label class="form-label">Base Salary (EGP)</label><input type="number" name="base_salary" class="form-control" value="{{ coach.base_salary }}" step="0.01" /></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Bonus (EGP)</label><input type="number" name="bonus" class="form-control" value="0" step="0.01" /></div>
+            <div class="col-6"><label class="form-label">Deductions</label><input type="number" name="deductions" class="form-control" value="0" step="0.01" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Status</label>
+            <select name="status" class="form-select">{% for val,label in statuses %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select>
+          </div>
+          <div class="mb-3"><label class="form-label">Paid Date</label><input type="date" name="paid_date" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Salary History</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Month</th><th>Base</th><th>Bonus</th><th>Deductions</th><th>Commissions</th><th>Net</th><th>Status</th><th>Paid</th></tr></thead>
+          <tbody>
+            {% for s in salaries %}
+            <tr>
+              <td style="font-size:13px;font-weight:600;">{{ s.month|date:"M Y" }}</td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.base_salary|floatformat:0 }}</td>
+              <td style="font-size:12.5px;color:var(--success);">+{{ s.bonus|floatformat:0 }}</td>
+              <td style="font-size:12.5px;color:var(--danger);">-{{ s.deductions|floatformat:0 }}</td>
+              <td style="font-size:12.5px;color:var(--primary);">+{{ s.commissions|floatformat:0 }}</td>
+              <td style="font-size:14px;font-weight:700;color:var(--success);">{{ s.net_salary|floatformat:0 }} EGP</td>
+              <td><span class="badge-gymx {{ s.get_status_color }}" style="font-size:11px;">{{ s.get_status_display }}</span></td>
+              <td style="font-size:12px;color:var(--text-muted);">{{ s.paid_date|date:"M d"|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">No salary records</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

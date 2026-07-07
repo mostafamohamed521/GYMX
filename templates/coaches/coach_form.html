@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ action }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ page_title }}</h1></div>
+  <a href="{% if coach %}{% url 'coaches:detail' coach.pk %}{% else %}{% url 'coaches:list' %}{% endif %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Personal Information</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">First Name <span style="color:var(--danger);">*</span></label><input type="text" name="first_name" class="form-control" value="{{ coach.first_name|default:'' }}" /></div>
+            <div class="col-md-6"><label class="form-label">Last Name <span style="color:var(--danger);">*</span></label><input type="text" name="last_name" class="form-control" value="{{ coach.last_name|default:'' }}" /></div>
+            <div class="col-md-6"><label class="form-label">Email <span style="color:var(--danger);">*</span></label><input type="email" name="email" class="form-control" value="{{ coach.email|default:'' }}" /></div>
+            <div class="col-md-6"><label class="form-label">Phone <span style="color:var(--danger);">*</span></label><input type="text" name="phone" class="form-control" value="{{ coach.phone|default:'' }}" /></div>
+            <div class="col-md-6"><label class="form-label">Secondary Phone</label><input type="text" name="phone_secondary" class="form-control" value="{{ coach.phone_secondary|default:'' }}" /></div>
+            <div class="col-md-3"><label class="form-label">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="male" {% if coach.gender == 'male' or not coach %}selected{% endif %}>Male</option>
+                <option value="female" {% if coach.gender == 'female' %}selected{% endif %}>Female</option>
+              </select>
+            </div>
+            <div class="col-md-3"><label class="form-label">Birth Date</label><input type="date" name="birth_date" class="form-control" value="{{ coach.birth_date|default:'' }}" /></div>
+            <div class="col-md-6"><label class="form-label">Nationality</label><input type="text" name="nationality" class="form-control" value="{{ coach.nationality|default:'' }}" /></div>
+            <div class="col-md-6"><label class="form-label">National ID</label><input type="text" name="national_id" class="form-control" value="{{ coach.national_id|default:'' }}" /></div>
+            <div class="col-12"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2">{{ coach.address|default:'' }}</textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-briefcase"></i> Professional Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Status</label>
+              <select name="status" class="form-select">{% for val,label in statuses %}<option value="{{ val }}" {% if coach.status == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+            </div>
+            <div class="col-md-4"><label class="form-label">Employment Type</label>
+              <select name="employment_type" class="form-select">{% for val,label in employment_types %}<option value="{{ val }}" {% if coach.employment_type == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+            </div>
+            <div class="col-md-4"><label class="form-label">Hire Date</label><input type="date" name="hire_date" class="form-control" value="{{ coach.hire_date|default:today }}" /></div>
+            <div class="col-md-4"><label class="form-label">Experience (years)</label><input type="number" name="experience_years" class="form-control" value="{{ coach.experience_years|default:0 }}" min="0" /></div>
+            <div class="col-md-4"><label class="form-label">Max Members</label><input type="number" name="max_members" class="form-control" value="{{ coach.max_members|default:20 }}" /></div>
+            <div class="col-md-4"><label class="form-label">Rating (0–5)</label><input type="number" name="rating" class="form-control" value="{{ coach.rating|default:5 }}" min="0" max="5" step="0.1" /></div>
+            <div class="col-12"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="3" placeholder="Coach biography and expertise...">{{ coach.bio|default:'' }}</textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dollar-sign"></i> Financial</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Base Salary (EGP)</label><input type="number" name="base_salary" class="form-control" value="{{ coach.base_salary|default:0 }}" step="0.01" /></div>
+            <div class="col-md-4"><label class="form-label">Commission Rate (%)</label><input type="number" name="commission_rate" class="form-control" value="{{ coach.commission_rate|default:0 }}" step="0.01" /></div>
+            <div class="col-md-4"><label class="form-label">PT Session Rate (EGP)</label><input type="number" name="session_rate" class="form-control" value="{{ coach.session_rate|default:0 }}" step="0.01" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-brands fa-instagram"></i> Social</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Instagram URL</label><input type="url" name="instagram" class="form-control" value="{{ coach.instagram|default:'' }}" placeholder="https://instagram.com/..." /></div>
+            <div class="col-md-6"><label class="form-label">YouTube URL</label><input type="url" name="youtube" class="form-control" value="{{ coach.youtube|default:'' }}" placeholder="https://youtube.com/..." /></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Profile image -->
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-image"></i> Profile Photo</span></div>
+        <div class="card-body" style="text-align:center;">
+          <div id="imgPreview" style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800;color:white;margin:0 auto 16px;overflow:hidden;">
+            {% if coach and coach.profile_image %}<img src="{{ coach.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}<i class="fa-solid fa-camera" style="font-size:28px;"></i>{% endif %}
+          </div>
+          <input type="file" name="profile_image" id="imgInput" accept="image/*" style="display:none;" onchange="previewImg(this)" />
+          <button type="button" onclick="document.getElementById('imgInput').click()" class="btn-gymx outline" style="font-size:12.5px;"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+        </div>
+      </div>
+
+      <!-- Specializations -->
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tags"></i> Specializations</span></div>
+        <div class="card-body">
+          {% for s in specs %}
+          <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+            <input type="checkbox" name="specializations" value="{{ s.pk }}"
+                   {% if coach and s in coach.specializations.all %}checked{% endif %}
+                   style="width:16px;height:16px;accent-color:{{ s.color }};" />
+            <div style="width:10px;height:10px;border-radius:50%;background:{{ s.color }};flex-shrink:0;"></div>
+            <span style="font-size:13.5px;color:var(--text-secondary);">{{ s.name }}</span>
+          </label>
+          {% empty %}
+          <div style="font-size:13px;color:var(--text-muted);">No specializations configured</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% if coach %}{% url 'coaches:detail' coach.pk %}{% else %}{% url 'coaches:list' %}{% endif %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary" style="padding:10px 28px;"><i class="fa-solid fa-floppy-disk"></i> {% if coach %}Save Changes{% else %}Add Coach{% endif %}</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function previewImg(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => {
+      document.getElementById('imgPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" />`;
+    };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

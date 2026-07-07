@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">{{ coach.get_full_name }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ coach.get_status_color }}">{{ coach.get_status_display }}</span>
+      <span class="badge-gymx gray">{{ coach.get_employment_type_display }}</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'coaches:schedule' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-calendar"></i> Schedule</a>
+    <a href="{% url 'coaches:edit' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-pen"></i> Edit</a>
+    <a href="{% url 'coaches:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left: profile card -->
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div style="background:linear-gradient(135deg,var(--primary),var(--accent));padding:32px 20px;text-align:center;border-radius:var(--radius-xl) var(--radius-xl) 0 0;">
+        <div style="width:80px;height:80px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:var(--primary);margin:0 auto 12px;overflow:hidden;box-shadow:var(--shadow-md);">
+          {% if coach.profile_image %}<img src="{{ coach.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ coach.get_initials }}{% endif %}
+        </div>
+        <div style="font-size:18px;font-weight:800;color:white;">{{ coach.get_full_name }}</div>
+        <div style="font-size:12.5px;color:rgba(255,255,255,0.75);margin-top:4px;">{{ coach.get_employment_type_display }}</div>
+        <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;">
+          {% for s in coach.specializations.all %}<span style="background:rgba(255,255,255,0.2);color:white;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:600;">{{ s.name }}</span>{% endfor %}
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-envelope" style="color:var(--text-muted);width:16px;font-size:13px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ coach.email }}</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-phone" style="color:var(--text-muted);width:16px;font-size:13px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ coach.phone }}</span></div>
+          {% if coach.phone_secondary %}<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-phone-flip" style="color:var(--text-muted);width:16px;font-size:13px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ coach.phone_secondary }}</span></div>{% endif %}
+          {% if coach.age %}<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-cake-candles" style="color:var(--text-muted);width:16px;font-size:13px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ coach.age }} years old</span></div>{% endif %}
+          <div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-calendar-plus" style="color:var(--text-muted);width:16px;font-size:13px;"></i><span style="font-size:13px;color:var(--text-secondary);">Joined {{ coach.hire_date|date:"M d, Y" }}</span></div>
+          {% if coach.nationality %}<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-flag" style="color:var(--text-muted);width:16px;font-size:13px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ coach.nationality }}</span></div>{% endif %}
+        </div>
+        {% if coach.instagram or coach.youtube %}
+        <div style="display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          {% if coach.instagram %}<a href="{{ coach.instagram }}" target="_blank" style="width:34px;height:34px;border-radius:50%;background:#E1306C;display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-instagram" style="color:white;font-size:15px;"></i></a>{% endif %}
+          {% if coach.youtube %}<a href="{{ coach.youtube }}" target="_blank" style="width:34px;height:34px;border-radius:50%;background:#FF0000;display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-youtube" style="color:white;font-size:15px;"></i></a>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Rating -->
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:20px;">
+        <div style="font-size:42px;font-weight:900;color:var(--warning);">{{ coach.rating }}</div>
+        <div style="font-size:18px;margin-bottom:4px;">
+          {% for i in "12345" %}{% if forloop.counter <= coach.rating|floatformat:0|add:0 %}⭐{% else %}☆{% endif %}{% endfor %}
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);">Coach Rating</div>
+      </div>
+    </div>
+
+    <!-- Quick nav -->
+    <div class="card-gymx">
+      <div class="card-body" style="padding:8px;">
+        {% for label, icon, url_name in pages %}
+        <a href="{% url url_name coach.pk %}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-lg);text-decoration:none;color:var(--text-secondary);font-size:13px;font-weight:500;transition:all 0.15s;" onmouseenter="this.style.background='var(--bg-muted)';this.style.color='var(--primary)';" onmouseleave="this.style.background='';this.style.color='var(--text-secondary)';">
+          <i class="fa-solid {{ icon }}" style="width:16px;"></i> {{ label }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: stats + content -->
+  <div class="col-lg-8">
+    <!-- KPI row -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.assigned_members }}</div><div class="stat-label">Members</div></div></div>
+      <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.attendance_month }}</div><div class="stat-label">Days Present</div></div></div>
+      <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:14px;"><div class="stat-icon purple" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.sessions_month }}</div><div class="stat-label">Sessions/Mo</div></div></div>
+      <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-dollar-sign"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.commissions_total|floatformat:0 }}</div><div class="stat-label">Commissions</div></div></div>
+    </div>
+
+    <!-- Bio -->
+    {% if coach.bio %}
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-quote-left"></i> Bio</span></div>
+      <div class="card-body"><p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0;">{{ coach.bio }}</p></div>
+    </div>
+    {% endif %}
+
+    <!-- Upcoming schedule -->
+    <div class="card-gymx mb-4">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-calendar-days"></i> Upcoming Sessions</span>
+        <a href="{% url 'coaches:schedule' coach.pk %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a>
+      </div>
+      {% if recent_schedule %}
+      <div class="card-body" style="padding:0;">
+        {% for s in recent_schedule %}
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:42px;height:42px;background:{{ s.get_type_color }};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {% if s.session_type == 'class' %}fa-users{% elif s.session_type == 'pt' %}fa-person-running{% else %}fa-calendar{% endif %}" style="color:white;font-size:15px;"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ s.title }}</div>
+            <div style="font-size:12px;color:var(--text-muted);">{{ s.date|date:"M d" }} · {{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}</div>
+          </div>
+          <span class="badge-gymx {{ s.get_type_color }}" style="font-size:10px;">{{ s.get_session_type_display }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="card-body" style="text-align:center;padding:32px;color:var(--text-muted);">No upcoming sessions</div>
+      {% endif %}
+    </div>
+
+    <div class="row g-4">
+      <!-- Assigned Members -->
+      <div class="col-md-6">
+        <div class="card-gymx">
+          <div class="card-header">
+            <span class="card-header-title"><i class="fa-solid fa-users"></i> Members</span>
+            <a href="{% url 'coaches:members' coach.pk %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            {% for m in assigned %}
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if m.profile_image %}<img src="{{ m.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ m.get_initials }}{% endif %}
+              </div>
+              <a href="{% url 'members:detail' m.pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.get_full_name }}</a>
+              <span class="badge-gymx {{ m.get_status_color }}" style="font-size:10px;">{{ m.get_status_display }}</span>
+            </div>
+            {% empty %}
+            <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No members assigned</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Certs & Notes -->
+      <div class="col-md-6">
+        <div class="card-gymx mb-3">
+          <div class="card-header">
+            <span class="card-header-title"><i class="fa-solid fa-certificate"></i> Certificates</span>
+            <a href="{% url 'coaches:certificates' coach.pk %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            {% for c in certificates %}
+            <div style="padding:10px 16px;border-bottom:1px solid var(--border);">
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ c.title }}</div>
+              <div style="font-size:11px;color:var(--text-muted);">{{ c.issued_by }} · {{ c.issue_date|date:"M Y" }}</div>
+              {% if c.is_expired %}<span class="badge-gymx red" style="font-size:10px;">Expired</span>{% elif c.is_expiring_soon %}<span class="badge-gymx orange" style="font-size:10px;">Expiring Soon</span>{% endif %}
+            </div>
+            {% empty %}
+            <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">No certificates</div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="card-gymx">
+          <div class="card-header">
+            <span class="card-header-title"><i class="fa-solid fa-note-sticky"></i> Notes</span>
+            <a href="{% url 'coaches:notes' coach.pk %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            {% for n in notes %}
+            <div style="padding:10px 16px;border-bottom:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ n.title }}</span>{% if n.is_pinned %}<i class="fa-solid fa-thumbtack" style="color:var(--primary);font-size:11px;"></i>{% endif %}</div>
+              <div style="font-size:12px;color:var(--text-muted);">{{ n.created_at|date:"M d, Y" }}</div>
+            </div>
+            {% empty %}
+            <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">No notes</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Calendar — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Calendar{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Calendar</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn-gymx outline" style="text-decoration:none;padding:8px 14px;"><i class="fa-solid fa-chevron-left"></i></a>
+    <span style="font-size:14px;font-weight:600;color:var(--text-primary);min-width:130px;text-align:center;">{{ month_name }} {{ year }}</span>
+    <a href="?year={{ next_year }}&month={{ next_month }}" class="btn-gymx outline" style="text-decoration:none;padding:8px 14px;"><i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'coaches:schedule' coach.pk %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add</a>
+    <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i></a>
+  </div>
+</div>
+<div class="card-gymx">
+  <div class="card-body" style="padding:20px;">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;">
+      {% for d in "Mon|Tue|Wed|Thu|Fri|Sat|Sun"|split:"|" %}{% endfor %}
+      {% for day in "Mon,Tue,Wed,Thu,Fri,Sat,Sun"|split:"," %}
+      <div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);padding:6px 0;">{{ day }}</div>
+      {% endfor %}
+    </div>
+    {% for week in cal_weeks %}
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
+      {% for day in week %}
+      {% if day == 0 %}
+      <div style="min-height:80px;border-radius:var(--radius-lg);background:var(--bg-muted);opacity:0.3;"></div>
+      {% else %}
+      <div style="min-height:80px;border-radius:var(--radius-lg);border:1.5px solid {% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--border){% endif %};padding:6px;background:{% if day == today.day and month == today.month and year == today.year %}#EFF6FF{% else %}white{% endif %};">
+        <div style="font-size:12px;font-weight:{% if day == today.day and month == today.month and year == today.year %}800{% else %}500{% endif %};color:{% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--text-primary){% endif %};margin-bottom:4px;">{{ day }}</div>
+        {% if sched_map|default_if_none:'' %}
+          {% for s in sched_map.items %}
+            {% if s.0 == day %}
+              {% for sess in s.1 %}
+              <div style="background:{% if sess.session_type == 'class' %}#DBEAFE{% elif sess.session_type == 'pt' %}#DCFCE7{% elif sess.session_type == 'meeting' %}#FEF9C3{% else %}#F3F4F6{% endif %};border-radius:4px;padding:2px 5px;margin-bottom:2px;font-size:10px;font-weight:600;color:{% if sess.session_type == 'class' %}#1E40AF{% elif sess.session_type == 'pt' %}#166534{% elif sess.session_type == 'meeting' %}#854D0E{% else %}#374151{% endif %};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ sess.start_time|time:"H:i" }} {{ sess.title }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:12px;height:12px;border-radius:3px;background:#DBEAFE;display:inline-block;"></span>Group Class</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:12px;height:12px;border-radius:3px;background:#DCFCE7;display:inline-block;"></span>Personal Training</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:12px;height:12px;border-radius:3px;background:#FEF9C3;display:inline-block;"></span>Meeting</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);"><span style="width:12px;height:12px;border-radius:3px;border:1.5px solid var(--primary);background:#EFF6FF;display:inline-block;"></span>Today</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

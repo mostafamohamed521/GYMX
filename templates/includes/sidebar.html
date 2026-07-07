@@ -24,7 +24,7 @@
     <a href="{% url 'memberships:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'memberships' %}active{% endif %}">
       <i class="fa-solid fa-id-card"></i><span>Memberships</span>
     </a>
-    <a href="#" class="nav-item" title="Coming in Sprint 6">
+    <a href="{% url 'coaches:list' %}" class="nav-item {% if request.resolver_match.app_name == 'coaches' %}active{% endif %}">
       <i class="fa-solid fa-person-running"></i><span>Coaches</span>
     </a>
     <a href="{% url 'attendance:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'attendance' %}active{% endif %}">
@@ -32,7 +32,7 @@
     </a>
 
     <div class="nav-section-label">Finance</div>
-    <a href="{% url 'payments:dashboard' %}" class="nav-item" title="Coming in Sprint 5">
+    <a href="#" class="nav-item" title="Coming in Sprint 5">
       <i class="fa-solid fa-credit-card"></i><span>Payments</span>
     </a>
     <a href="#" class="nav-item">

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Notes — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Notes{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Notes</h1><p class="page-subtitle">{{ coach.get_full_name }} — {{ notes|length }} note{{ notes|length|pluralize }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Note</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Title <span style="color:var(--danger);">*</span></label><input type="text" name="title" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Note <span style="color:var(--danger);">*</span></label><textarea name="body" class="form-control" rows="4"></textarea></div>
+          <div class="row g-2 mb-3">
+            <div class="col-8"><label class="form-label">Priority</label>
+              <select name="priority" class="form-select">{% for val,label in priorities %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select>
+            </div>
+            <div class="col-4" style="display:flex;align-items:flex-end;">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13.5px;cursor:pointer;padding-bottom:8px;">
+                <input type="checkbox" name="is_pinned" style="width:16px;height:16px;accent-color:var(--primary);" /> Pin
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-note-sticky"></i> Add Note</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="row g-3">
+      {% for note in notes %}
+      <div class="col-md-6">
+        <div style="background:{% if note.priority == 'high' %}#FFF5F5{% elif note.priority == 'low' %}#F8FAFC{% else %}white{% endif %};border:1px solid {% if note.priority == 'high' %}#FECACA{% elif note.is_pinned %}var(--primary){% else %}var(--border){% endif %};border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              {% if note.is_pinned %}<i class="fa-solid fa-thumbtack" style="color:var(--primary);font-size:12px;"></i>{% endif %}
+              <span style="font-size:13.5px;font-weight:700;color:var(--text-primary);">{{ note.title }}</span>
+            </div>
+            <form method="post" style="display:inline;">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete" />
+              <input type="hidden" name="note_id" value="{{ note.pk }}" />
+              <button type="submit" style="border:none;background:none;color:var(--danger);cursor:pointer;font-size:14px;padding:0;" onclick="return confirm('Delete note?')">×</button>
+            </form>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px;">{{ note.body }}</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="badge-gymx {{ note.get_priority_color }}" style="font-size:10px;">{{ note.get_priority_display }}</span>
+            <span style="font-size:11px;color:var(--text-muted);">{{ note.created_at|date:"M d, Y" }}</span>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+        <i class="fa-solid fa-note-sticky" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
+        <div style="font-size:15px;font-weight:600;color:var(--text-primary);">No notes yet</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

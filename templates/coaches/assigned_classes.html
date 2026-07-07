@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Classes — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Classes{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Assigned Classes</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'coaches:schedule' coach.pk %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Class</a>
+    <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-forward" style="color:var(--success);"></i> Upcoming Classes ({{ upcoming|length }})</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Title</th><th>Date</th><th>Time</th><th>Member</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for s in upcoming %}
+        <tr>
+          <td style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ s.title }}</td>
+          <td style="font-size:13px;font-weight:500;">{{ s.date|date:"M d, Y" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.member.get_full_name|default:"Group" }}</td>
+          <td><span class="badge-gymx blue" style="font-size:11px;">Upcoming</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">No upcoming classes</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--text-muted);"></i> Past Classes ({{ past|length }})</span></div>
+  <div style="overflow-x:auto;max-height:360px;overflow-y:auto;">
+    <table class="table-gymx">
+      <thead style="position:sticky;top:0;background:white;"><tr><th>Title</th><th>Date</th><th>Time</th><th>Member</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for s in past %}
+        <tr>
+          <td style="font-size:13px;color:var(--text-secondary);">{{ s.title }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ s.date|date:"M d, Y" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ s.member.get_full_name|default:"Group" }}</td>
+          <td><span class="badge-gymx {% if s.is_completed %}green{% else %}gray{% endif %}" style="font-size:11px;">{% if s.is_completed %}Completed{% else %}Missed{% endif %}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">No past classes</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

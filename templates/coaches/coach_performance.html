@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Performance — {{ coach.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Coaches / {{ coach.get_full_name }} / Performance{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Performance</h1><p class="page-subtitle">{{ coach.get_full_name }}</p></div>
+  <a href="{% url 'coaches:detail' coach.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value" style="font-size:26px;">{{ sessions_total }}</div><div class="stat-label">Total Sessions</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-percent"></i></div><div class="stat-value" style="font-size:26px;">{{ completion_rate }}%</div><div class="stat-label">Completion Rate</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:26px;">{{ attendance_rate }}%</div><div class="stat-label">Attendance Rate</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:26px;">{{ members_assigned }}</div><div class="stat-label">Members Assigned</div></div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Monthly Sessions (Last 6 Months)</span></div>
+      <div class="card-body"><div style="height:220px;"><canvas id="sessChart"></canvas></div></div>
+    </div>
+
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-gauge"></i> KPI Summary</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:var(--text-muted);">Session Completion</span><span style="font-size:13px;font-weight:700;color:var(--success);">{{ completion_rate }}%</span></div>
+            <div class="progress-gymx"><div class="fill" style="width:{{ completion_rate }}%;background:var(--success);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:var(--text-muted);">Attendance Rate</span><span style="font-size:13px;font-weight:700;color:var(--primary);">{{ attendance_rate }}%</span></div>
+            <div class="progress-gymx"><div class="fill" style="width:{{ attendance_rate }}%;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:var(--text-muted);">Member Capacity</span><span style="font-size:13px;font-weight:700;color:var(--warning);">{{ members_assigned }}/{{ coach.max_members }}</span></div>
+            <div class="progress-gymx"><div class="fill" style="width:{% widthratio members_assigned coach.max_members 100 %}%;background:var(--warning);"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:28px;">
+        <div style="font-size:56px;font-weight:900;color:var(--warning);line-height:1;">{{ coach.rating }}</div>
+        <div style="font-size:22px;margin:8px 0;">⭐⭐⭐⭐⭐</div>
+        <div style="font-size:13px;color:var(--text-muted);">Overall Rating</div>
+      </div>
+    </div>
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-star"></i> Highlights</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Experience</span><span style="font-size:13px;font-weight:600;">{{ coach.experience_years }} yrs</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Sessions This Month</span><span style="font-size:13px;font-weight:600;color:var(--primary);">{{ sessions_month }}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Commissions Earned</span><span style="font-size:13px;font-weight:600;color:var(--success);">{{ commissions_total|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:13px;color:var(--text-muted);">PT Session Rate</span><span style="font-size:13px;font-weight:600;">{{ coach.session_rate|floatformat:0 }} EGP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+new Chart(document.getElementById('sessChart').getContext('2d'), {
+  type:'bar',
+  data:{ labels:[{% for m in monthly_sessions %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly_sessions %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(59,130,246,0.75)', borderColor:'#3B82F6', borderWidth:1, borderRadius:8 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', stepSize:1 }, beginAtZero:true } } }
+});
+</script>
+{% endblock %}
