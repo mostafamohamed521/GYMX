@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Exercise Library — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Exercises{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Exercise Library</h1><p class="page-subtitle">{{ stats.total }} exercises · {{ stats.categories }} categories</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'workouts:categories' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-tags"></i> Categories</a>
+    <a href="{% url 'workouts:exercise_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Exercise</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total }}</div><div class="stat-label">Exercises</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-seedling"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.beginner }}</div><div class="stat-label">Beginner</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:14px;"><div class="stat-icon red" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-fire"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.advanced }}</div><div class="stat-label">Advanced</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:14px;"><div class="stat-icon purple" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-tags"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.categories }}</div><div class="stat-label">Categories</div></div></div>
+</div>
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:14px 20px;">
+    <form method="get">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Exercise name..." /></div>
+        <div class="col-md-2"><label class="form-label">Muscle</label><select name="muscle" class="form-select"><option value="">All</option>{% for val,label in muscles %}<option value="{{ val }}" {% if muscle_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-2"><label class="form-label">Difficulty</label><select name="difficulty" class="form-select"><option value="">All</option>{% for val,label in difficulties %}<option value="{{ val }}" {% if diff_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-2"><label class="form-label">Equipment</label><select name="equipment" class="form-select"><option value="">All</option>{% for val,label in equipments %}<option value="{{ val }}" {% if equip_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div class="col-md-2"><label class="form-label">Category</label><select name="category" class="form-select"><option value="">All</option>{% for c in categories %}<option value="{{ c.pk }}" {% if cat_f == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+        <div class="col-md-1"><button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-filter"></i></button></div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="row g-3">
+  {% for ex in exercises %}
+  <div class="col-md-6 col-lg-4">
+    <a href="{% url 'workouts:exercise_detail' ex.pk %}" style="text-decoration:none;">
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;transition:all 0.15s;box-shadow:var(--shadow-xs);"
+           onmouseenter="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'"
+           onmouseleave="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='var(--shadow-xs)'">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:{% if ex.category %}{{ ex.category.color }}20{% else %}#EFF6FF{% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {{ ex.get_muscle_icon }}" style="font-size:18px;color:{% if ex.category %}{{ ex.category.color }}{% else %}var(--primary){% endif %};"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13.5px;font-weight:700;color:var(--text-primary);">{{ ex.name }}</div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">{{ ex.get_muscle_group_display }}{% if ex.category %} · {{ ex.category.name }}{% endif %}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <span class="badge-gymx {{ ex.get_difficulty_color }}" style="font-size:10px;text-transform:capitalize;">{{ ex.difficulty }}</span>
+          <span class="badge-gymx gray" style="font-size:10px;">{{ ex.get_equipment_display }}</span>
+          <span style="font-size:10px;color:var(--text-muted);padding:2px 0;">🔥 {{ ex.calories_per_min }}/min</span>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <i class="fa-solid fa-dumbbell" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
+    <div style="font-size:16px;font-weight:700;">No exercises found</div>
+    <a href="{% url 'workouts:exercise_new' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Add Exercise</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

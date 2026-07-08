@@ -31,8 +31,11 @@
       <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
     </a>
 
+    <a href="{% url 'workouts:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
+      <i class="fa-solid fa-dumbbell"></i><span>Workouts</span>
+    </a>
     <div class="nav-section-label">Finance</div>
-    <a href="#" class="nav-item" title="Coming in Sprint 5">
+    <a href="{% url 'payments:dashboard' %}" class="nav-item" title="Coming in Sprint 5">
       <i class="fa-solid fa-credit-card"></i><span>Payments</span>
     </a>
     <a href="#" class="nav-item">

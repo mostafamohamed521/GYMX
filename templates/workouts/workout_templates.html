@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Workout Templates — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Templates{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Workout Templates</h1><p class="page-subtitle">Ready-made training programs</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'workouts:template_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Template</a>
+    <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:12px 20px;">
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+      <div><label class="form-label">Goal</label><select name="goal" class="form-select" style="width:150px;"><option value="">All</option>{% for val,label in goals %}<option value="{{ val }}" {% if goal_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div><label class="form-label">Difficulty</label><select name="difficulty" class="form-select" style="width:150px;"><option value="">All</option>{% for val,label in difficulties %}<option value="{{ val }}" {% if diff_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+      {% if goal_f or diff_f %}<a href="{% url 'workouts:templates' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+    </form>
+  </div>
+</div>
+<div class="row g-3">
+  {% for t in templates %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card-gymx">
+      <div style="background:linear-gradient(135deg,{% if t.goal == 'weight_loss' %}#F59E0B,#EF4444{% elif t.goal == 'muscle_gain' %}#3B82F6,#1D4ED8{% elif t.goal == 'strength' %}#EF4444,#991B1B{% elif t.goal == 'endurance' %}#10B981,#059669{% else %}#8B5CF6,#6D28D9{% endif %});padding:18px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;">
+        <div style="font-size:15px;font-weight:800;color:white;">{{ t.name }}</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <span style="background:rgba(255,255,255,0.2);color:white;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:600;">{{ t.get_goal_display }}</span>
+          <span style="background:rgba(255,255,255,0.2);color:white;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:600;text-transform:capitalize;">{{ t.difficulty }}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if t.description %}<p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">{{ t.description|truncatechars:80 }}</p>{% endif %}
+        <div class="row g-2 mb-14">
+          <div class="col-4" style="text-align:center;padding:8px;background:var(--bg-muted);border-radius:var(--radius-lg);"><div style="font-size:16px;font-weight:800;color:var(--primary);">{{ t.duration_weeks }}</div><div style="font-size:10px;color:var(--text-muted);">Weeks</div></div>
+          <div class="col-4" style="text-align:center;padding:8px;background:var(--bg-muted);border-radius:var(--radius-lg);"><div style="font-size:16px;font-weight:800;color:var(--primary);">{{ t.days_per_week }}</div><div style="font-size:10px;color:var(--text-muted);">Days/Week</div></div>
+          <div class="col-4" style="text-align:center;padding:8px;background:var(--bg-muted);border-radius:var(--radius-lg);"><div style="font-size:16px;font-weight:800;color:var(--primary);">{{ t.session_duration }}</div><div style="font-size:10px;color:var(--text-muted);">Min/Session</div></div>
+        </div>
+        <a href="{% url 'workouts:assign' %}?template={{ t.pk }}" class="btn-gymx primary" style="text-decoration:none;width:100%;justify-content:center;margin-top:14px;"><i class="fa-solid fa-user-plus"></i> Assign to Member</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <i class="fa-solid fa-copy" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;">No templates yet</div>
+    <a href="{% url 'workouts:template_new' %}" class="btn-gymx primary" style="text-decoration:none;">Create First Template</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

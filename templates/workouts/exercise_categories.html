@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Exercise Categories — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Categories{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Exercise Categories</h1></div>
+  <a href="{% url 'workouts:exercises' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Library</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Category</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+          <div class="row g-2 mb-3">
+            <div class="col-7"><label class="form-label">Icon (FA class)</label><input type="text" name="icon" class="form-control" value="fa-dumbbell" placeholder="fa-dumbbell" /></div>
+            <div class="col-5"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="#3B82F6" style="height:38px;" /></div>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="row g-3">
+      {% for cat in cats %}
+      <div class="col-md-6">
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-xs);">
+          <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:{{ cat.color }}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {{ cat.icon }}" style="font-size:20px;color:{{ cat.color }};"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ cat.name }}</div>
+            {% if cat.description %}<div style="font-size:12px;color:var(--text-muted);">{{ cat.description|truncatechars:40 }}</div>{% endif %}
+            <div style="font-size:12px;color:var(--primary);margin-top:4px;font-weight:600;">{{ cat.ex_count }} exercise{{ cat.ex_count|pluralize }}</div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12" style="text-align:center;padding:48px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+        <div style="font-size:15px;color:var(--text-muted);">No categories yet — add one</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

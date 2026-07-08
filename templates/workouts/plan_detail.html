@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ plan.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / {{ plan.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">{{ plan.name }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ plan.get_status_color }}">{{ plan.get_status_display }}</span>
+      <span class="badge-gymx {{ plan.get_goal_color }}">{{ plan.get_goal_display }}</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'workouts:progress' plan.member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-chart-line"></i> Progress</a>
+    <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<!-- Member + progress -->
+<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:18px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow-xs);flex-wrap:wrap;">
+  <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:white;overflow:hidden;flex-shrink:0;">
+    {% if plan.member.profile_image %}<img src="{{ plan.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ plan.member.get_initials }}{% endif %}
+  </div>
+  <div style="flex:1;">
+    <a href="{% url 'members:detail' plan.member.pk %}" style="font-size:15px;font-weight:700;color:var(--text-primary);text-decoration:none;">{{ plan.member.get_full_name }}</a>
+    <div style="font-size:12.5px;color:var(--text-muted);">{% if plan.coach %}Coach: {{ plan.coach.get_full_name }}{% else %}No coach assigned{% endif %} · Start: {{ plan.start_date|date:"M d, Y" }}</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="progress-gymx" style="width:120px;height:10px;border-radius:999px;"><div class="fill" style="height:10px;border-radius:999px;width:{{ plan.progress_pct }}%;background:{% if plan.progress_pct == 100 %}var(--success){% else %}var(--primary){% endif %};"></div></div>
+    <span style="font-size:14px;font-weight:700;color:var(--primary);">{{ plan.progress_pct }}%</span>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <!-- Add session form -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Session</span></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_session" />
+          <div class="mb-3"><label class="form-label">Session Name</label><input type="text" name="session_name" class="form-control" placeholder="e.g. Upper Body Day A" value="Workout Session" /></div>
+          <div class="mb-3"><label class="form-label">Scheduled Date</label><input type="date" name="scheduled_date" class="form-control" value="{{ today }}" /></div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add Session</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Past sessions -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Past Sessions</span></div>
+      <div style="max-height:260px;overflow-y:auto;">
+        {% for s in past %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span class="badge-gymx {{ s.get_status_color }}" style="font-size:10px;flex-shrink:0;">{{ s.get_status_display }}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</div>
+            <div style="font-size:11px;color:var(--text-muted);">{{ s.scheduled_date|date:"M d" }}{% if s.calories_burned %} · 🔥 {{ s.calories_burned }} cal{% endif %}</div>
+          </div>
+        </div>
+        {% empty %}
+        <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No past sessions</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <!-- Upcoming sessions -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-days"></i> Upcoming Sessions ({{ upcoming|length }})</span></div>
+      {% if upcoming %}
+      <div class="card-body" style="padding:0;">
+        {% for s in upcoming %}
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:48px;text-align:center;flex-shrink:0;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">{{ s.scheduled_date|date:"D" }}</div>
+            <div style="font-size:20px;font-weight:800;color:{% if s.scheduled_date == today %}var(--primary){% else %}var(--text-primary){% endif %};">{{ s.scheduled_date|date:"d" }}</div>
+            <div style="font-size:9px;color:var(--text-muted);">{{ s.scheduled_date|date:"M" }}</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:var(--text-primary);">{{ s.name }}</div>
+            {% if s.notes %}<div style="font-size:12px;color:var(--text-muted);">{{ s.notes }}</div>{% endif %}
+          </div>
+          {% if s.scheduled_date <= today %}
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="complete" />
+            <input type="hidden" name="session_pk" value="{{ s.pk }}" />
+            <input type="hidden" name="duration_min" value="60" />
+            <button type="submit" class="btn-gymx primary" style="font-size:12px;padding:6px 14px;"><i class="fa-solid fa-check"></i> Done</button>
+          </form>
+          {% else %}
+          <span class="badge-gymx blue" style="font-size:11px;">Upcoming</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="card-body" style="text-align:center;padding:40px;color:var(--text-muted);">
+        <i class="fa-solid fa-calendar" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.3;"></i>No upcoming sessions — add one!
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

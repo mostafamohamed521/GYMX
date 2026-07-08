@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Exercise — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Exercises / Add{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Add Exercise</h1></div>
+  <a href="{% url 'workouts:exercises' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dumbbell"></i> Exercise Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12"><label class="form-label">Exercise Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" placeholder="e.g. Barbell Bench Press" /></div>
+            <div class="col-md-4"><label class="form-label">Muscle Group</label><select name="muscle_group" class="form-select">{% for val,label in muscles %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Equipment</label><select name="equipment" class="form-select">{% for val,label in equipments %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Difficulty</label><select name="difficulty" class="form-select">{% for val,label in difficulties %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Category</label><select name="category" class="form-select"><option value="">— None —</option>{% for c in categories %}<option value="{{ c.pk }}">{{ c.name }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Secondary Muscles</label><input type="text" name="secondary_muscles" class="form-control" placeholder="e.g. Shoulders, Triceps" /></div>
+            <div class="col-md-4"><label class="form-label">Calories/min</label><input type="number" name="calories_per_min" class="form-control" value="5" step="0.5" /></div>
+            <div class="col-md-8"><label class="form-label">Video URL (YouTube)</label><input type="url" name="video_url" class="form-control" placeholder="https://youtube.com/..." /></div>
+            <div class="col-12"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+            <div class="col-12"><label class="form-label">Instructions (step by step)</label><textarea name="instructions" class="form-control" rows="5" placeholder="1. Position yourself...&#10;2. Grip the bar..."></textarea></div>
+            <div class="col-12"><label class="form-label">Tips & Form Cues</label><textarea name="tips" class="form-control" rows="3" placeholder="Keep your back straight..."></textarea></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-image"></i> Image</span></div>
+        <div class="card-body" style="text-align:center;">
+          <div id="imgPreview" style="width:120px;height:120px;border-radius:var(--radius-xl);background:var(--bg-muted);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;overflow:hidden;">
+            <i class="fa-solid fa-dumbbell" style="font-size:36px;color:var(--text-muted);"></i>
+          </div>
+          <input type="file" name="image" id="imgInput" accept="image/*" style="display:none;" onchange="previewImg(this)" />
+          <button type="button" onclick="document.getElementById('imgInput').click()" class="btn-gymx outline" style="font-size:12.5px;"><i class="fa-solid fa-upload"></i> Upload</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% url 'workouts:exercises' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Exercise</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function previewImg(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { document.getElementById('imgPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" />`; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

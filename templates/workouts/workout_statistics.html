@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Workout Statistics — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Statistics{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Workout Statistics</h1><p class="page-subtitle">Overall training analytics</p></div>
+  <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-clipboard-list"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total_plans }}</div><div class="stat-label">Total Plans</div><div class="stat-change up"><i class="fa-solid fa-circle-check"></i> {{ stats.active_plans }} active</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total_sessions }}</div><div class="stat-label">Total Sessions</div><div class="stat-change up"><i class="fa-solid fa-circle-check"></i> {{ stats.completed }} done</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-fire"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.calories_total|floatformat:0 }}</div><div class="stat-label">Calories Burned</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-person-running"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.pt_this_month }}</div><div class="stat-label">PT Sessions/Mo</div></div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Completed Sessions (Last 6 Months)</span></div>
+      <div class="card-body"><div style="height:220px;"><canvas id="mChart"></canvas></div></div>
+    </div>
+
+    <!-- Top members -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-trophy"></i> Most Active Members</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for m in top_members %}
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:22px;text-align:center;font-size:13px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#94A3B8{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
+          <a href="{% url 'members:detail' m.plan__member__pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.plan__member__first_name }} {{ m.plan__member__last_name }}</a>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="progress-gymx" style="width:80px;"><div class="fill" style="width:{% if top_members.0.sessions > 0 %}{% widthratio m.sessions top_members.0.sessions 100 %}{% else %}0{% endif %}%;"></div></div>
+            <span style="font-size:13px;font-weight:700;color:var(--primary);min-width:28px;text-align:right;">{{ m.sessions }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div style="padding:32px;text-align:center;color:var(--text-muted);">No data yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Avg duration -->
+    <div class="card-gymx mb-4">
+      <div class="card-body" style="text-align:center;padding:28px;">
+        <div style="font-size:48px;font-weight:900;color:var(--primary);">{{ stats.avg_duration|floatformat:0 }}</div>
+        <div style="font-size:14px;color:var(--text-muted);">Avg Session Duration (min)</div>
+      </div>
+    </div>
+
+    <!-- Exercise library stats -->
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dumbbell"></i> Exercise Library</span></div>
+      <div class="card-body" style="text-align:center;">
+        <div style="font-size:40px;font-weight:900;color:var(--text-primary);">{{ stats.total_exercises }}</div>
+        <div style="font-size:13px;color:var(--text-muted);">Total Exercises</div>
+        <a href="{% url 'workouts:exercises' %}" class="btn-gymx outline" style="text-decoration:none;margin-top:12px;font-size:12.5px;"><i class="fa-solid fa-dumbbell"></i> Browse Library</a>
+      </div>
+    </div>
+
+    <!-- Muscle distribution -->
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> By Muscle Group</span></div>
+      <div class="card-body">
+        {% for m in muscle_dist|slice:":7" %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ m.muscle_group|cut:"_"|capfirst }}</span>
+          <div class="progress-gymx" style="width:70px;"><div class="fill" style="width:{% if muscle_dist.0.count > 0 %}{% widthratio m.count muscle_dist.0.count 100 %}{% else %}0{% endif %}%;"></div></div>
+          <span style="font-size:12px;font-weight:600;color:var(--text-primary);min-width:22px;text-align:right;">{{ m.count }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const ctx  = document.getElementById('mChart').getContext('2d');
+const grad = ctx.createLinearGradient(0,0,0,220);
+grad.addColorStop(0,'rgba(59,130,246,0.2)');
+grad.addColorStop(1,'rgba(59,130,246,0)');
+new Chart(ctx, {
+  type:'line',
+  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'#3B82F6', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#3B82F6', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', stepSize:1 }, beginAtZero:true } } }
+});
+</script>
+{% endblock %}

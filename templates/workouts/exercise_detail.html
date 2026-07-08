@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ exercise.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Exercises / {{ exercise.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ exercise.name }}</h1><p class="page-subtitle">{{ exercise.get_muscle_group_display }}{% if exercise.category %} · {{ exercise.category.name }}{% endif %}</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'workouts:exercises' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Library</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div style="background:linear-gradient(135deg,var(--primary),var(--accent));padding:32px;text-align:center;border-radius:var(--radius-xl) var(--radius-xl) 0 0;">
+        {% if exercise.image %}<img src="{{ exercise.image.url }}" style="width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius-lg);" />
+        {% else %}<i class="fa-solid {{ exercise.get_muscle_icon }}" style="font-size:56px;color:white;opacity:0.9;"></i>{% endif %}
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Difficulty</span><span class="badge-gymx {{ exercise.get_difficulty_color }}" style="font-size:11px;text-transform:capitalize;">{{ exercise.difficulty }}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Muscle</span><span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ exercise.get_muscle_group_display }}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Equipment</span><span style="font-size:13px;font-weight:500;color:var(--text-primary);">{{ exercise.get_equipment_display }}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:13px;color:var(--text-muted);">Calories/min</span><span style="font-size:14px;font-weight:700;color:var(--warning);">🔥 {{ exercise.calories_per_min }}</span></div>
+        </div>
+        {% if exercise.secondary_muscles %}
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">Secondary muscles:</div>
+          <div style="font-size:13px;color:var(--text-secondary);">{{ exercise.secondary_muscles }}</div>
+        </div>
+        {% endif %}
+        {% if exercise.video_url %}
+        <a href="{{ exercise.video_url }}" target="_blank" class="btn-gymx outline" style="text-decoration:none;width:100%;justify-content:center;margin-top:14px;"><i class="fa-brands fa-youtube" style="color:#FF0000;"></i> Watch Video</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    {% if exercise.description %}
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> About</span></div>
+      <div class="card-body"><p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0;">{{ exercise.description }}</p></div>
+    </div>
+    {% endif %}
+
+    {% if exercise.instructions %}
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list-ol"></i> Instructions</span></div>
+      <div class="card-body">
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.8;white-space:pre-line;">{{ exercise.instructions }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if exercise.tips %}
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-lightbulb" style="color:var(--warning);"></i> Tips & Form Cues</span></div>
+      <div class="card-body">
+        <div style="font-size:14px;color:var(--text-secondary);line-height:1.8;white-space:pre-line;">{{ exercise.tips }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if related %}
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-shuffle"></i> Related Exercises</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for r in related %}
+        <a href="{% url 'workouts:exercise_detail' r.pk %}" style="display:flex;align-items:center;gap:12px;padding:12px 16px;text-decoration:none;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:36px;height:36px;border-radius:var(--radius-md);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid {{ r.get_muscle_icon }}" style="color:var(--primary);font-size:14px;"></i>
+          </div>
+          <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ r.name }}</div><div style="font-size:11px;color:var(--text-muted);">{{ r.get_equipment_display }}</div></div>
+          <span class="badge-gymx {{ r.get_difficulty_color }}" style="font-size:10px;">{{ r.difficulty }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

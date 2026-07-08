@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Assign Workout — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Assign{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Assign Workout</h1><p class="page-subtitle">Assign a template to a member</p></div>
+  <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member <span style="color:var(--danger);">*</span></label><select name="member" class="form-select"><option value="">— Select member —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }} ({{ m.member_id }})</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Workout Template <span style="color:var(--danger);">*</span></label>
+            <select name="template" id="templateSelect" class="form-select" onchange="showTemplateInfo(this)">
+              <option value="">— Select template —</option>
+              {% for t in templates %}<option value="{{ t.pk }}" data-goal="{{ t.get_goal_display }}" data-weeks="{{ t.duration_weeks }}" data-days="{{ t.days_per_week }}" data-min="{{ t.session_duration }}" data-diff="{{ t.difficulty }}">{{ t.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div id="templateInfo" style="display:none;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius-xl);padding:14px 16px;margin-bottom:16px;">
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <div style="text-align:center;"><div id="tGoal" style="font-size:13px;font-weight:700;color:var(--primary);"></div><div style="font-size:10px;color:var(--text-muted);">Goal</div></div>
+              <div style="text-align:center;"><div id="tWeeks" style="font-size:13px;font-weight:700;color:var(--primary);"></div><div style="font-size:10px;color:var(--text-muted);">Weeks</div></div>
+              <div style="text-align:center;"><div id="tDays" style="font-size:13px;font-weight:700;color:var(--primary);"></div><div style="font-size:10px;color:var(--text-muted);">Days/Wk</div></div>
+              <div style="text-align:center;"><div id="tMin" style="font-size:13px;font-weight:700;color:var(--primary);"></div><div style="font-size:10px;color:var(--text-muted);">Min/Session</div></div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6"><label class="form-label">Coach</label><select name="coach" class="form-select"><option value="">— None —</option>{% for c in coaches %}<option value="{{ c.pk }}">{{ c.get_full_name }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-user-plus"></i> Assign Plan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function showTemplateInfo(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const info = document.getElementById('templateInfo');
+  if (!opt.value) { info.style.display='none'; return; }
+  document.getElementById('tGoal').textContent  = opt.dataset.goal;
+  document.getElementById('tWeeks').textContent = opt.dataset.weeks + ' wks';
+  document.getElementById('tDays').textContent  = opt.dataset.days + ' days';
+  document.getElementById('tMin').textContent   = opt.dataset.min + ' min';
+  info.style.display = 'block';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Workout Plans — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Workout Plans</h1><p class="page-subtitle">Member training programs</p></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'workouts:builder' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-hammer"></i> Builder</a>
+    <a href="{% url 'workouts:assign' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-user-plus"></i> Assign</a>
+    <a href="{% url 'workouts:plan_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Plan</a>
+  </div>
+</div>
+
+<!-- Quick nav -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'workouts:templates' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-copy"></i> Templates</a>
+  <a href="{% url 'workouts:exercises' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-dumbbell"></i> Exercises</a>
+  <a href="{% url 'workouts:categories' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-tags"></i> Categories</a>
+  <a href="{% url 'workouts:pt_sessions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-person-running"></i> PT Sessions</a>
+  <a href="{% url 'workouts:statistics' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-chart-bar"></i> Statistics</a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-clipboard-list"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total }}</div><div class="stat-label">Total Plans</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.active }}</div><div class="stat-label">Active</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-trophy"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.completed }}</div><div class="stat-label">Completed</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-day"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.sessions_today }}</div><div class="stat-label">Sessions Today</div></div></div>
+</div>
+
+<!-- Filters -->
+<div class="card-gymx mb-4">
+  <div class="card-body" style="padding:14px 20px;">
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:180px;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Member or plan name..." /></div>
+      <div style="min-width:130px;"><label class="form-label">Status</label><select name="status" class="form-select"><option value="">All</option>{% for val,label in statuses %}<option value="{{ val }}" {% if status_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div style="min-width:150px;"><label class="form-label">Goal</label><select name="goal" class="form-select"><option value="">All</option>{% for val,label in goals %}<option value="{{ val }}" {% if goal_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Filter</button>
+      {% if q or status_f or goal_f %}<a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Plans table -->
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clipboard-list"></i> Plans ({{ plans|length }})</span></div>
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Plan</th><th>Goal</th><th>Coach</th><th>Start</th><th>Progress</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for plan in plans %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if plan.member.profile_image %}<img src="{{ plan.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ plan.member.get_initials }}{% endif %}
+              </div>
+              <a href="{% url 'members:detail' plan.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ plan.member.get_full_name }}</a>
+            </div>
+          </td>
+          <td style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ plan.name }}</td>
+          <td><span class="badge-gymx {{ plan.get_goal_color }}" style="font-size:11px;text-transform:capitalize;">{{ plan.get_goal_display }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ plan.coach.get_full_name|default:"—" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ plan.start_date|date:"M d, Y" }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="progress-gymx" style="width:70px;"><div class="fill" style="width:{{ plan.progress_pct }}%;"></div></div>
+              <span style="font-size:12px;color:var(--text-muted);">{{ plan.progress_pct }}%</span>
+            </div>
+          </td>
+          <td><span class="badge-gymx {{ plan.get_status_color }}" style="font-size:11px;">{{ plan.get_status_display }}</span></td>
+          <td><a href="{% url 'workouts:plan_detail' plan.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-clipboard-list" style="font-size:32px;display:block;margin-bottom:10px;opacity:0.3;"></i>No workout plans found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

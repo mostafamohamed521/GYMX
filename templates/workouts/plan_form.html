@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Workout Plan — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / New Plan{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Workout Plan</h1></div>
+  <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member <span style="color:var(--danger);">*</span></label>
+            <select name="member" class="form-select"><option value="">— Select member —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }} ({{ m.member_id }})</option>{% endfor %}</select>
+          </div>
+          <div class="mb-3"><label class="form-label">Plan Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" placeholder="e.g. 12-Week Muscle Building" /></div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6"><label class="form-label">Goal</label><select name="goal" class="form-select">{% for val,label in goals %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Assigned Coach</label><select name="coach" class="form-select"><option value="">— None —</option>{% for c in coaches %}<option value="{{ c.pk }}">{{ c.get_full_name }}</option>{% endfor %}</select></div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-md-6"><label class="form-label">End Date</label><input type="date" name="end_date" class="form-control" /></div>
+          </div>
+          <div class="mb-4"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3"></textarea></div>
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-clipboard-list"></i> Create Plan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

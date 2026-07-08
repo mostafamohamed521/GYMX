@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Workout Builder — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / Builder{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Workout Builder</h1><p class="page-subtitle">Create a custom session from exercises</p></div>
+  <a href="{% url 'workouts:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post" id="builderForm">
+  {% csrf_token %}
+  <div class="row g-4">
+    <!-- Left: plan info + exercise picker -->
+    <div class="col-lg-5">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Plan Info</span></div>
+        <div class="card-body">
+          <div class="mb-3"><label class="form-label">Member <span style="color:var(--danger);">*</span></label><select name="member" class="form-select"><option value="">— Select member —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Plan Name <span style="color:var(--danger);">*</span></label><input type="text" name="plan_name" class="form-control" placeholder="e.g. Custom Upper Body" /></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Goal</label><select name="goal" class="form-select">{% for val,label in goals %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-6"><label class="form-label">Coach</label><select name="coach" class="form-select"><option value="">None</option>{% for c in coaches %}<option value="{{ c.pk }}">{{ c.get_full_name }}</option>{% endfor %}</select></div>
+          </div>
+          <div><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+        </div>
+      </div>
+
+      <!-- Exercise picker -->
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-magnifying-glass"></i> Exercise Picker</span></div>
+        <div class="card-body" style="padding:12px;">
+          <input type="text" id="exSearch" placeholder="Search exercises..." class="form-control" style="margin-bottom:10px;" oninput="filterExercises(this.value)" />
+          <select id="muscleFilter" class="form-select" style="margin-bottom:10px;" onchange="filterExercises(document.getElementById('exSearch').value)">
+            <option value="">All muscles</option>{% for val,label in muscles %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+          </select>
+          <div id="exerciseList" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;">
+            {% for ex in exercises %}
+            <div class="ex-item" data-name="{{ ex.name|lower }}" data-muscle="{{ ex.muscle_group }}"
+                 style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-lg);cursor:pointer;background:white;border:1px solid var(--border);transition:all 0.15s;"
+                 onmouseenter="this.style.borderColor='var(--primary)';this.style.background='#EFF6FF'"
+                 onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"
+                 onclick="addToWorkout({{ ex.pk }},'{{ ex.name|escapejs }}','{{ ex.get_muscle_group_display }}')">
+              <i class="fa-solid {{ ex.get_muscle_icon }}" style="color:var(--primary);font-size:13px;width:16px;"></i>
+              <div style="flex:1;"><div style="font-size:12.5px;font-weight:600;color:var(--text-primary);">{{ ex.name }}</div><div style="font-size:10.5px;color:var(--text-muted);">{{ ex.get_muscle_group_display }} · {{ ex.get_equipment_display }}</div></div>
+              <span class="badge-gymx {{ ex.get_difficulty_color }}" style="font-size:9px;">{{ ex.difficulty }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: selected exercises -->
+    <div class="col-lg-7">
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list-check"></i> Your Workout</span><span id="exCount" style="font-size:12px;color:var(--text-muted);">0 exercises</span></div>
+        <div id="workoutList" style="min-height:200px;padding:12px;">
+          <div id="emptyMsg" style="text-align:center;padding:48px;color:var(--text-muted);">
+            <i class="fa-solid fa-dumbbell" style="font-size:28px;display:block;margin-bottom:10px;opacity:0.3;"></i>
+            Click exercises on the left to add them here
+          </div>
+        </div>
+        <div style="padding:16px;border-top:1px solid var(--border);">
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;font-size:14px;padding:12px;" id="saveBtn" disabled>
+            <i class="fa-solid fa-floppy-disk"></i> Save & Create Plan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+let exercises = [];
+
+function filterExercises(q) {
+  const muscle = document.getElementById('muscleFilter').value;
+  document.querySelectorAll('.ex-item').forEach(el => {
+    const nameMatch = el.dataset.name.includes(q.toLowerCase());
+    const muscleMatch = !muscle || el.dataset.muscle === muscle;
+    el.style.display = (nameMatch && muscleMatch) ? 'flex' : 'none';
+  });
+}
+
+function addToWorkout(id, name, muscle) {
+  if (exercises.find(e => e.id === id)) return;
+  exercises.push({ id, name, muscle });
+  renderWorkout();
+}
+
+function removeExercise(id) {
+  exercises = exercises.filter(e => e.id !== id);
+  renderWorkout();
+}
+
+function renderWorkout() {
+  const list = document.getElementById('workoutList');
+  const empty = document.getElementById('emptyMsg');
+  document.getElementById('exCount').textContent = exercises.length + ' exercise' + (exercises.length !== 1 ? 's' : '');
+  document.getElementById('saveBtn').disabled = exercises.length === 0;
+
+  if (exercises.length === 0) { list.innerHTML = ''; list.appendChild(empty); return; }
+  if (empty.parentNode) empty.parentNode.removeChild(empty);
+
+  list.innerHTML = exercises.map((ex, i) => `
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:12px 14px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</span>
+        <input type="hidden" name="exercise_ids" value="${ex.id}" />
+        <div style="flex:1;font-size:13.5px;font-weight:600;color:var(--text-primary);">${ex.name}</div>
+        <div style="font-size:11px;color:var(--text-muted);">${ex.muscle}</div>
+        <button type="button" onclick="removeExercise(${ex.id})" style="border:none;background:none;color:var(--danger);cursor:pointer;font-size:16px;line-height:1;">×</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;"><label style="font-size:10.5px;color:var(--text-muted);">Sets</label><input type="number" name="sets_${ex.id}" class="form-control" value="3" min="1" max="10" style="height:30px;font-size:12.5px;" /></div>
+        <div style="flex:1;"><label style="font-size:10.5px;color:var(--text-muted);">Reps</label><input type="text" name="reps_${ex.id}" class="form-control" value="10" style="height:30px;font-size:12.5px;" /></div>
+        <div style="flex:1;"><label style="font-size:10.5px;color:var(--text-muted);">Rest (s)</label><input type="number" name="rest_${ex.id}" class="form-control" value="60" style="height:30px;font-size:12.5px;" /></div>
+      </div>
+    </div>
+  `).join('');
+}
+</script>
+{% endblock %}

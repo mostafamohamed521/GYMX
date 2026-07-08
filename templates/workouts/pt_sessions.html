@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}PT Sessions — GymX{% endblock %}
+{% block page_breadcrumb %}Workouts / PT Sessions{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">PT Sessions</h1><p class="page-subtitle">Personal training appointments</p></div>
+  <a href="{% url 'workouts:pt_session_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Schedule PT</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-list"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total }}</div><div class="stat-label">Total</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-calendar-day"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.today }}</div><div class="stat-label">Today</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.scheduled }}</div><div class="stat-label">Scheduled</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.completed }}</div><div class="stat-label">Completed</div></div></div>
+</div>
+<div class="card-gymx mb-3">
+  <div class="card-body" style="padding:12px 20px;">
+    <form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+      <div><label class="form-label">Status</label><select name="status" class="form-select" style="width:160px;"><option value="">All</option>{% for val,label in statuses %}<option value="{{ val }}" {% if status_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+      {% if status_f %}<a href="{% url 'workouts:pt_sessions' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+    </form>
+  </div>
+</div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Member</th><th>Coach</th><th>Date</th><th>Time</th><th>Status</th><th>Rating</th></tr></thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if s.member.profile_image %}<img src="{{ s.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ s.member.get_initials }}{% endif %}
+              </div>
+              <a href="{% url 'members:detail' s.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ s.member.get_full_name }}</a>
+            </div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">{{ s.coach.get_full_name }}</td>
+          <td style="font-size:13px;font-weight:500;">{{ s.date|date:"M d, Y" }}{% if s.date == today %} <span class="badge-gymx orange" style="font-size:10px;">Today</span>{% endif %}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}</td>
+          <td><span class="badge-gymx {{ s.get_status_color }}" style="font-size:11px;">{{ s.get_status_display }}</span></td>
+          <td>{% if s.rating %}{% for i in "12345" %}{% if forloop.counter <= s.rating %}⭐{% endif %}{% endfor %}{% else %}<span style="color:var(--text-muted);font-size:12px;">—</span>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">No PT sessions found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
