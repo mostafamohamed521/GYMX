@@ -20,6 +20,7 @@ urlpatterns = [
     path('payments/',      include('apps.payments.urls',      namespace='payments')),
     path('coaches/',       include('apps.coaches.urls',       namespace='coaches')),
     path('workouts/',      include('apps.workouts.urls',      namespace='workouts')),
+    path('nutrition/',     include('apps.nutrition.urls',     namespace='nutrition')),
 ]
 
 if settings.DEBUG:

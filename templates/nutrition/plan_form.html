@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Nutrition Plan — GymX{% endblock %}
+{% block page_breadcrumb %}Nutrition / New Plan{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Nutrition Plan</h1></div>
+  <a href="{% url 'nutrition:plans' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form method="post">{% csrf_token %}
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Member & Plan</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8"><label class="form-label">Member <span style="color:var(--danger);">*</span></label><select name="member" class="form-select"><option value="">— Select —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }} ({{ m.member_id }})</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Coach</label><select name="coach" class="form-select"><option value="">None</option>{% for c in coaches %}<option value="{{ c.pk }}">{{ c.get_full_name }}</option>{% endfor %}</select></div>
+            <div class="col-md-8"><label class="form-label">Plan Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" placeholder="e.g. Weight Loss Diet Plan" /></div>
+            <div class="col-md-4"><label class="form-label">Goal</label><select name="goal" class="form-select">{% for val,label in goals %}<option value="{{ val }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-md-6"><label class="form-label">End Date</label><input type="date" name="end_date" class="form-control" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Daily Targets</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Calories (kcal)</label><input type="number" name="daily_calories" class="form-control" value="2000" /></div>
+            <div class="col-md-3"><label class="form-label">Protein (g)</label><input type="number" name="daily_protein" class="form-control" value="150" step="0.1" /></div>
+            <div class="col-md-3"><label class="form-label">Carbs (g)</label><input type="number" name="daily_carbs" class="form-control" value="250" step="0.1" /></div>
+            <div class="col-md-3"><label class="form-label">Fat (g)</label><input type="number" name="daily_fat" class="form-control" value="65" step="0.1" /></div>
+            <div class="col-md-4"><label class="form-label">Water (ml/day)</label><input type="number" name="daily_water_ml" class="form-control" value="2500" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-gymx mb-4">
+        <div class="card-body"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3"></textarea></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'nutrition:plans' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-leaf"></i> Create Plan</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-info"></i> Macro Guidelines</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {% for label, goal_hint, cals, prot, carb, fat in "Weight Loss,Deficit 500kcal,1500,120,150,50|Muscle Gain,Surplus 300kcal,2500,180,300,75|Maintenance,TDEE,2000,150,250,65|Endurance,High Carb,2200,140,320,60"|split:"|" %}{% endfor %}
+          <div style="background:#F0FDF4;border-radius:var(--radius-xl);padding:14px;"><div style="font-size:13px;font-weight:700;color:var(--success);margin-bottom:6px;">💡 Calculation Tips</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.7;">
+              Protein: 1.6–2.2g per kg body weight<br>
+              Fat: 20–35% of total calories<br>
+              Carbs: remaining calories after protein & fat<br>
+              Water: 35ml per kg body weight
+            </div>
+          </div>
+          <a href="{% url 'nutrition:calories_calc' %}" class="btn-gymx outline" style="text-decoration:none;justify-content:center;"><i class="fa-solid fa-calculator"></i> Use Calories Calculator</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

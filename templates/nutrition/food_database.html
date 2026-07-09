@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Food Database — GymX{% endblock %}
+{% block page_breadcrumb %}Nutrition / Foods{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Food Database</h1><p class="page-subtitle">{{ stats.total }} foods · {{ stats.categories }} categories</p></div>
+  <a href="{% url 'nutrition:food_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Food</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:12px 20px;">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="flex:1;min-width:160px;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Food name..." /></div>
+    <div style="min-width:150px;"><label class="form-label">Category</label><select name="category" class="form-select"><option value="">All</option>{% for c in cats %}<option value="{{ c.pk }}" {% if cat_f == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+    {% if q or cat_f %}<a href="{% url 'nutrition:foods' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+  </form>
+</div></div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Food</th><th>Category</th><th>Serving</th><th>Calories</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead>
+      <tbody>
+        {% for f in foods %}
+        <tr>
+          <td style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ f.name }}</td>
+          <td>{% if f.category %}<span style="background:{{ f.category.color }}20;color:{{ f.category.color }};padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;">{{ f.category.name }}</span>{% else %}<span style="color:var(--text-muted);font-size:12px;">—</span>{% endif %}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ f.serving_size }}{{ f.serving_unit }}</td>
+          <td style="font-size:14px;font-weight:700;color:var(--warning);">{{ f.calories|floatformat:0 }}</td>
+          <td style="font-size:13px;color:#EC4899;">{{ f.protein|floatformat:1 }}g</td>
+          <td style="font-size:13px;color:#F59E0B;">{{ f.carbs|floatformat:1 }}g</td>
+          <td style="font-size:13px;color:#10B981;">{{ f.fat|floatformat:1 }}g</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-apple-whole" style="font-size:32px;display:block;margin-bottom:10px;opacity:0.3;"></i>No foods found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

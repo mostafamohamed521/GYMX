@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Nutrition Progress — {{ member.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Nutrition / Progress{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Nutrition Progress</h1><p class="page-subtitle">{{ member.get_full_name }}</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'nutrition:history' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+    <a href="{% url 'members:detail' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-user"></i> Profile</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-leaf"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total_plans }}</div><div class="stat-label">Plans</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-fire"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.avg_calories|floatformat:0 }}</div><div class="stat-label">Avg Calories</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-droplet"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.avg_water|floatformat:0 }}</div><div class="stat-label">Avg Water ml</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:14px;"><div class="stat-icon purple" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-clipboard-list"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.logs_count }}</div><div class="stat-label">Log Entries</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-bar"></i> Monthly Avg Calories</span></div>
+      <div class="card-body"><div style="height:180px;"><canvas id="mChart"></canvas></div></div>
+    </div>
+    {% if active %}
+    <div class="card-gymx">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-bolt" style="color:var(--success);"></i> Active Plan: {{ active.name }}</span>
+        <a href="{% url 'nutrition:plan_detail' active.pk %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View</a>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-3" style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--primary);">{{ active.daily_calories }}</div><div style="font-size:11px;color:var(--text-muted);">kcal/day</div></div>
+          <div class="col-3" style="text-align:center;"><div style="font-size:20px;font-weight:800;color:#EC4899;">{{ active.daily_protein }}g</div><div style="font-size:11px;color:var(--text-muted);">Protein</div></div>
+          <div class="col-3" style="text-align:center;"><div style="font-size:20px;font-weight:800;color:#F59E0B;">{{ active.daily_carbs }}g</div><div style="font-size:11px;color:var(--text-muted);">Carbs</div></div>
+          <div class="col-3" style="text-align:center;"><div style="font-size:20px;font-weight:800;color:#10B981;">{{ active.daily_fat }}g</div><div style="font-size:11px;color:var(--text-muted);">Fat</div></div>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--text-muted);">Goal: <strong>{{ active.get_goal_display }}</strong> · Started {{ active.start_date|date:"M d, Y" }}</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Logs</span></div>
+      <div style="max-height:340px;overflow-y:auto;">
+        {% for log in logs %}
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ log.date|date:"M d, Y" }}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--warning);">{{ log.calories_actual }} kcal</span>
+          </div>
+          <div class="progress-gymx"><div class="fill" style="width:{{ log.calorie_pct }}%;background:{% if log.calorie_pct > 100 %}var(--danger){% elif log.calorie_pct > 80 %}var(--success){% else %}var(--primary){% endif %};"></div></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">{{ log.calorie_pct }}% · 💧 {{ log.water_ml }}ml</div>
+        </div>
+        {% empty %}
+        <div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px;">No logs yet</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+new Chart(document.getElementById('mChart').getContext('2d'), {
+  type:'bar',
+  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.avg }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(16,185,129,0.7)', borderColor:'#10B981', borderWidth:1, borderRadius:8 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', font:{ size:11 } }, beginAtZero:true } } }
+});
+</script>
+{% endblock %}

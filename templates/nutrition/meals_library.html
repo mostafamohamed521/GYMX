@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Meals Library — GymX{% endblock %}
+{% block page_breadcrumb %}Nutrition / Meals{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Meals Library</h1><p class="page-subtitle">{{ stats.total }} meals available</p></div>
+  <a href="{% url 'nutrition:meal_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Meal</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-icon orange" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-sun"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.breakfast }}</div><div class="stat-label">Breakfast</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-icon blue" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-bowl-food"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.lunch }}</div><div class="stat-label">Lunch</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:14px;"><div class="stat-icon purple" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-moon"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.dinner }}</div><div class="stat-label">Dinner</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-icon green" style="width:30px;height:30px;font-size:12px;margin-bottom:8px;"><i class="fa-solid fa-leaf"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.total }}</div><div class="stat-label">Total</div></div></div>
+</div>
+<div class="card-gymx mb-3"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+  <div style="flex:1;min-width:160px;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Meal name..." /></div>
+  <div style="min-width:140px;"><label class="form-label">Type</label><select name="type" class="form-select"><option value="">All</option>{% for val,label in meal_types %}<option value="{{ val }}" {% if type_f == val %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+  {% if q or type_f %}<a href="{% url 'nutrition:meals' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+</form></div></div>
+<div class="row g-3">
+  {% for meal in meals %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+        <div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ meal.name }}</div><div style="font-size:12px;color:var(--text-muted);">⏱ {{ meal.prep_time_min }} min</div></div>
+        <span class="badge-gymx {{ meal.get_type_color }}" style="font-size:10px;text-transform:capitalize;">{{ meal.meal_type }}</span>
+      </div>
+      {% if meal.description %}<p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px;line-height:1.5;">{{ meal.description|truncatechars:60 }}</p>{% endif %}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#FFF7ED;color:#C2410C;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;">🔥 {{ meal.total_calories|floatformat:0 }} kcal</span>
+        <span style="background:#FDF2F8;color:#9D174D;padding:3px 8px;border-radius:999px;font-size:11px;">P: {{ meal.total_protein|floatformat:0 }}g</span>
+        <span style="background:#FFFBEB;color:#92400E;padding:3px 8px;border-radius:999px;font-size:11px;">C: {{ meal.total_carbs|floatformat:0 }}g</span>
+        <span style="background:#F0FDF4;color:#166534;padding:3px 8px;border-radius:999px;font-size:11px;">F: {{ meal.total_fat|floatformat:0 }}g</span>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <i class="fa-solid fa-bowl-food" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
+    <div style="font-size:16px;font-weight:700;">No meals yet</div>
+    <a href="{% url 'nutrition:meal_new' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Add First Meal</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

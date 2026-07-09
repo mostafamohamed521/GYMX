@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}BMI Calculator — GymX{% endblock %}
+{% block page_breadcrumb %}Nutrition / Calculators / BMI{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">BMI Calculator</h1><p class="page-subtitle">Body Mass Index</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'nutrition:calories_calc' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-calculator"></i> Calories</a>
+    <a href="{% url 'nutrition:bmr_calc' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-fire"></i> BMR</a>
+  </div>
+</div>
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-weight-scale"></i> Input</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Weight (kg) <span style="color:var(--danger);">*</span></label><input type="number" name="weight" class="form-control" value="{% if result %}{{ result.weight }}{% endif %}" step="0.1" /></div>
+          <div class="mb-4"><label class="form-label">Height (cm) <span style="color:var(--danger);">*</span></label><input type="number" name="height" class="form-control" step="0.1" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-calculator"></i> Calculate BMI</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    {% if result %}
+    <div style="background:linear-gradient(135deg,{{ result.color }},{{ result.color }}AA);border-radius:var(--radius-2xl);padding:32px;text-align:center;color:white;box-shadow:var(--shadow-lg);margin-bottom:20px;">
+      <div style="font-size:14px;opacity:0.85;text-transform:uppercase;letter-spacing:1px;">Your BMI</div>
+      <div style="font-size:72px;font-weight:900;line-height:1;margin:12px 0;">{{ result.bmi }}</div>
+      <div style="font-size:20px;font-weight:700;">{{ result.category }}</div>
+    </div>
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-scale-balanced"></i> Ideal Weight Range</span></div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Minimum (BMI 18.5)</span><span style="font-size:14px;font-weight:700;color:var(--success);">{{ result.ideal_min }} kg</span></div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;"><span style="font-size:13px;color:var(--text-muted);">Maximum (BMI 24.9)</span><span style="font-size:14px;font-weight:700;color:var(--success);">{{ result.ideal_max }} kg</span></div>
+        <div style="margin-top:16px;padding:12px;background:var(--bg-muted);border-radius:var(--radius-xl);">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">BMI Scale</div>
+          <div style="height:16px;border-radius:999px;background:linear-gradient(to right,#3B82F6,#10B981,#F59E0B,#EF4444);position:relative;margin-bottom:6px;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);"><span>&lt;18.5</span><span>18.5</span><span>25</span><span>30+</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:600;"><span style="color:#3B82F6;">Under</span><span style="color:#10B981;">Normal</span><span style="color:#F59E0B;">Over</span><span style="color:#EF4444;">Obese</span></div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:72px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+      <i class="fa-solid fa-weight-scale" style="font-size:48px;color:var(--text-muted);display:block;margin-bottom:16px;opacity:0.3;"></i>
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary);">Enter your measurements</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
