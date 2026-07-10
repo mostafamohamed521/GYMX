@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Booking — {{ session.gym_class.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Classes / Booking{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ session.gym_class.name }}</h1><p class="page-subtitle">{{ session.date|date:"l, M d, Y" }} · {{ session.start_time|time:"H:i" }} — {{ session.end_time|time:"H:i" }}</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'classes:waitlist' session.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-hourglass-half"></i> Waitlist</a>
+    <a href="{% url 'classes:detail' session.gym_class.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<!-- Capacity bar -->
+<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:18px 20px;margin-bottom:24px;box-shadow:var(--shadow-xs);">
+  <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+    <span style="font-size:14px;font-weight:700;color:var(--text-primary);">Capacity</span>
+    <span style="font-size:14px;font-weight:700;color:{% if session.is_full %}var(--danger){% else %}var(--success){% endif %};">{{ session.booked_count }} / {{ session.gym_class.max_capacity }}</span>
+  </div>
+  <div class="progress-gymx" style="height:14px;border-radius:999px;"><div class="fill" style="height:14px;border-radius:999px;width:{{ session.capacity_pct }}%;background:{% if session.capacity_pct >= 100 %}var(--danger){% elif session.capacity_pct >= 70 %}var(--warning){% else %}var(--success){% endif %};"></div></div>
+  {% if session.is_full %}<div style="font-size:12.5px;color:var(--danger);margin-top:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Class is full — new bookings go to waitlist</div>{% endif %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Book a Member</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member <span style="color:var(--danger);">*</span></label>
+            <select name="member" class="form-select">
+              <option value="">— Select member —</option>
+              {% for m in members %}
+              <option value="{{ m.pk }}" {% if m.pk in booked_ids %}disabled{% endif %}>{{ m.get_full_name }} ({{ m.member_id }}){% if m.pk in booked_ids %} — Already booked{% endif %}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-ticket"></i> Book Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Bookings ({{ bookings|length }})</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Member</th><th>Status</th><th>Booked At</th><th></th></tr></thead>
+          <tbody>
+            {% for b in bookings %}
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                    {% if b.member.profile_image %}<img src="{{ b.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ b.member.get_initials }}{% endif %}
+                  </div>
+                  <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ b.member.get_full_name }}</span>
+                </div>
+              </td>
+              <td><span class="badge-gymx {{ b.get_status_color }}" style="font-size:11px;">{{ b.get_status_display }}</span></td>
+              <td style="font-size:12px;color:var(--text-muted);">{{ b.booked_at|date:"M d, H:i" }}</td>
+              <td>
+                {% if b.status == 'confirmed' or b.status == 'waitlist' %}
+                <form method="post" action="{% url 'classes:cancel_booking' session.pk b.member.pk %}">
+                  <button type="submit" style="border:none;background:none;color:var(--danger);cursor:pointer;font-size:12px;" onclick="return confirm('Cancel this booking?')"><i class="fa-solid fa-xmark"></i></button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);">No bookings yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
