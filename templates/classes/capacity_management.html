@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Capacity Management — GymX{% endblock %}
+{% block page_breadcrumb %}Classes / Capacity{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Capacity Management</h1><p class="page-subtitle">Upcoming sessions — booking levels</p></div>
+  <a href="{% url 'classes:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Class</th><th>Date</th><th>Time</th><th>Capacity</th><th>Booked</th><th>Fill Rate</th><th></th></tr></thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="width:10px;height:10px;border-radius:50%;background:{{ s.gym_class.color }};display:inline-block;"></span>
+              <span style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ s.gym_class.name }}</span>
+            </div>
+          </td>
+          <td style="font-size:13px;font-weight:500;">{{ s.date|date:"M d, Y" }}{% if s.date == today %} <span class="badge-gymx orange" style="font-size:10px;">Today</span>{% endif %}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }}</td>
+          <td style="font-size:13px;color:var(--text-secondary);">{{ s.gym_class.max_capacity }}</td>
+          <td style="font-size:14px;font-weight:700;color:{% if s.is_full %}var(--danger){% else %}var(--success){% endif %};">{{ s.booked_count }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="progress-gymx" style="width:90px;"><div class="fill" style="width:{{ s.capacity_pct }}%;background:{% if s.capacity_pct >= 100 %}var(--danger){% elif s.capacity_pct >= 70 %}var(--warning){% else %}var(--success){% endif %};"></div></div>
+              <span style="font-size:12px;color:var(--text-muted);">{{ s.capacity_pct }}%</span>
+            </div>
+          </td>
+          <td><a href="{% url 'classes:booking' s.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-ticket" style="font-size:11px;"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);">No upcoming sessions</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
