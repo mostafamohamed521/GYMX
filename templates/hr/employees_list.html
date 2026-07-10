@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employees — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Employees{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Employees</h1><p class="page-subtitle">Manage gym staff</p></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'hr:departments' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-building"></i> Departments</a>
+    <a href="{% url 'hr:payroll' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-money-check-dollar"></i> Payroll</a>
+    <a href="{% url 'hr:add' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Employee</a>
+  </div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'hr:positions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-briefcase"></i> Positions</a>
+  <a href="{% url 'hr:roles' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-user-shield"></i> Roles</a>
+  <a href="{% url 'hr:permissions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-lock"></i> Permissions</a>
+  <a href="{% url 'hr:shifts' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-clock"></i> Shifts</a>
+  <a href="{% url 'hr:attendance' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+  <a href="{% url 'hr:salaries' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-sack-dollar"></i> Salaries</a>
+  <a href="{% url 'hr:bonuses' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-gift"></i> Bonuses</a>
+  <a href="{% url 'hr:deductions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-minus-circle"></i> Deductions</a>
+  <a href="{% url 'hr:leave' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-plane-departure"></i> Leave</a>
+  <a href="{% url 'hr:performance' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-chart-line"></i> Performance</a>
+  <a href="{% url 'hr:contracts' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-file-signature"></i> Contracts</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total }}</div><div class="stat-label">Total Employees</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.active }}</div><div class="stat-label">Active</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-umbrella-beach"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.on_leave }}</div><div class="stat-label">On Leave</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-building"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.depts }}</div><div class="stat-label">Departments</div></div></div>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;"><form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+  <div style="flex:1;min-width:180px;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Name or email..." /></div>
+  <div style="min-width:130px;"><label class="form-label">Status</label><select name="status" class="form-select"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status_f == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <div style="min-width:150px;"><label class="form-label">Department</label><select name="department" class="form-select"><option value="">All</option>{% for d in depts %}<option value="{{ d.pk }}" {% if dept_f == d.pk|stringformat:'s' %}selected{% endif %}>{{ d.name }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+  {% if q or status_f or dept_f %}<a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+</form></div></div>
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Employee</th><th>Department</th><th>Position</th><th>Type</th><th>Salary</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for e in employees %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+                {% if e.profile_image %}<img src="{{ e.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ e.get_initials }}{% endif %}
+              </div>
+              <div><a href="{% url 'hr:detail' e.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ e.get_full_name }}</a><div style="font-size:11px;color:var(--text-muted);font-family:monospace;">{{ e.employee_id }}</div></div>
+            </div>
+          </td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ e.department.name|default:"—" }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ e.position.title|default:"—" }}</td>
+          <td><span class="badge-gymx gray" style="font-size:10px;">{{ e.get_employment_type_display }}</span></td>
+          <td style="font-size:13px;font-weight:600;">{{ e.base_salary|floatformat:0 }} EGP</td>
+          <td><span class="badge-gymx {{ e.get_status_color }}" style="font-size:11px;">{{ e.get_status_display }}</span></td>
+          <td><a href="{% url 'hr:detail' e.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);">No employees found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

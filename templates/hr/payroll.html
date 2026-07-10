@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payroll — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Payroll{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Payroll</h1><p class="page-subtitle">{{ stats.total_paid|floatformat:0 }} EGP paid total</p></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total_paid|floatformat:0 }}</div><div class="stat-label">Total Paid (EGP)</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.pending }}</div><div class="stat-label">Pending</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.this_month }}</div><div class="stat-label">This Month</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Process Payroll</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Employee</label><select name="employee" class="form-select">{% for e in employees %}<option value="{{ e.pk }}">{{ e.get_full_name }} ({{ e.base_salary|floatformat:0 }} EGP)</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Month</label><input type="month" name="month" class="form-control" value="{{ current_month }}" /></div>
+          <div class="mb-3"><label class="form-label">Base Salary</label><input type="number" name="base_salary" class="form-control" step="0.01" /></div>
+          <div class="mb-3"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Paid Date</label><input type="date" name="paid_date" class="form-control" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-check"></i> Process</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Payroll Records</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Employee</th><th>Month</th><th>Base</th><th>Bonus</th><th>Deduct</th><th>Net</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for p in payrolls %}
+            <tr>
+              <td style="font-size:13px;font-weight:600;">{{ p.employee.get_full_name }}</td>
+              <td style="font-size:12.5px;color:var(--text-muted);">{{ p.month|date:"M Y" }}</td>
+              <td style="font-size:12.5px;color:var(--text-secondary);">{{ p.base_salary|floatformat:0 }}</td>
+              <td style="font-size:12.5px;color:var(--success);">+{{ p.bonuses|floatformat:0 }}</td>
+              <td style="font-size:12.5px;color:var(--danger);">-{{ p.deductions|floatformat:0 }}</td>
+              <td style="font-size:14px;font-weight:700;color:var(--success);">{{ p.net_salary|floatformat:0 }}</td>
+              <td><span class="badge-gymx {{ p.get_status_color }}" style="font-size:11px;">{{ p.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No payroll records</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

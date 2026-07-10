@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Employee Attendance — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Attendance{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Employee Attendance</h1><p class="page-subtitle">{{ today|date:"l, F j, Y" }}</p></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ stats.present }}</div><div class="stat-label">Present</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ stats.absent }}</div><div class="stat-label">Absent</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ stats.late }}</div><div class="stat-label">Late</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ stats.leave }}</div><div class="stat-label">On Leave</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Record Attendance</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Employee</label><select name="employee" class="form-select">{% for e in employees %}<option value="{{ e.pk }}">{{ e.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+          <div class="mb-3"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Check In</label><input type="time" name="check_in" class="form-control" /></div>
+            <div class="col-6"><label class="form-label">Check Out</label><input type="time" name="check_out" class="form-control" /></div>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Today's Records</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Employee</th><th>Status</th><th>In</th><th>Out</th></tr></thead>
+          <tbody>
+            {% for r in records %}
+            <tr>
+              <td style="font-size:13px;font-weight:600;">{{ r.employee.get_full_name }}</td>
+              <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ r.check_in|time:"H:i"|default:"—" }}</td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ r.check_out|time:"H:i"|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);">No records today</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

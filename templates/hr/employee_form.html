@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}HR / {{ action }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ page_title }}</h1></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user"></i> Personal Info</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">First Name <span style="color:var(--danger);">*</span></label><input type="text" name="first_name" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Last Name <span style="color:var(--danger);">*</span></label><input type="text" name="last_name" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Email <span style="color:var(--danger);">*</span></label><input type="email" name="email" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Phone <span style="color:var(--danger);">*</span></label><input type="text" name="phone" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Gender</label><select name="gender" class="form-select"><option value="male">Male</option><option value="female">Female</option></select></div>
+            <div class="col-md-4"><label class="form-label">Birth Date</label><input type="date" name="birth_date" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">National ID</label><input type="text" name="national_id" class="form-control" /></div>
+            <div class="col-12"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-briefcase"></i> Employment</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Department</label><select name="department" class="form-select"><option value="">None</option>{% for d in depts %}<option value="{{ d.pk }}">{{ d.name }}</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Position</label><select name="position" class="form-select"><option value="">None</option>{% for p in positions %}<option value="{{ p.pk }}">{{ p.title }}</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Role</label><select name="role" class="form-select"><option value="">None</option>{% for r in roles %}<option value="{{ r.pk }}">{{ r.name }}</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Employment Type</label><select name="employment_type" class="form-select">{% for v,l in employment_types %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-md-4"><label class="form-label">Hire Date</label><input type="date" name="hire_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-md-4"><label class="form-label">Base Salary (EGP)</label><input type="number" name="base_salary" class="form-control" step="0.01" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-phone"></i> Emergency Contact</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Name</label><input type="text" name="emergency_contact_name" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="emergency_contact_phone" class="form-control" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card-gymx"><div class="card-body" style="text-align:center;">
+        <div id="imgPreview" style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:36px;color:white;margin:0 auto 16px;overflow:hidden;"><i class="fa-solid fa-camera"></i></div>
+        <input type="file" name="profile_image" id="imgInput" accept="image/*" style="display:none;" onchange="previewImg(this)" />
+        <button type="button" onclick="document.getElementById('imgInput').click()" class="btn-gymx outline" style="font-size:12.5px;"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+      </div></div>
+    </div>
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Employee</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function previewImg(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { document.getElementById('imgPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" />`; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

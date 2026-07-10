@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Deductions — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Deductions{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Deductions</h1><p class="page-subtitle">{{ total|floatformat:0 }} EGP total deducted</p></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Deduction</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Employee</label><select name="employee" class="form-select">{% for e in employees %}<option value="{{ e.pk }}">{{ e.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Title</label><input type="text" name="title" class="form-control" placeholder="e.g. Late Arrival" /></div>
+          <div class="mb-3"><label class="form-label">Amount (EGP)</label><input type="number" name="amount" class="form-control" step="0.01" /></div>
+          <div class="mb-3"><label class="form-label">Reason</label><select name="reason" class="form-select">{% for v,l in reasons %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx danger" style="width:100%;justify-content:center;"><i class="fa-solid fa-minus-circle"></i> Add Deduction</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Employee</th><th>Title</th><th>Reason</th><th>Amount</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for d in deduction_list %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ d.employee.get_full_name }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ d.title }}</td>
+          <td><span class="badge-gymx gray" style="font-size:10px;">{{ d.get_reason_display }}</span></td>
+          <td style="font-size:14px;font-weight:700;color:var(--danger);">-{{ d.amount|floatformat:0 }} EGP</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ d.date|date:"M d, Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No deductions recorded</td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}

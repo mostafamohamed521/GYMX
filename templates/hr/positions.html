@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Positions — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Positions{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Positions</h1></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Position</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Title <span style="color:var(--danger);">*</span></label><input type="text" name="title" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Department</label><select name="department" class="form-select"><option value="">None</option>{% for d in depts %}<option value="{{ d.pk }}">{{ d.name }}</option>{% endfor %}</select></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Min Salary</label><input type="number" name="min_salary" class="form-control" /></div>
+            <div class="col-6"><label class="form-label">Max Salary</label><input type="number" name="max_salary" class="form-control" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Title</th><th>Department</th><th>Salary Range</th><th>Employees</th></tr></thead>
+      <tbody>
+        {% for p in pos %}
+        <tr>
+          <td style="font-size:13.5px;font-weight:600;">{{ p.title }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ p.department.name|default:"—" }}</td>
+          <td style="font-size:13px;color:var(--text-secondary);">{{ p.min_salary|floatformat:0 }} - {{ p.max_salary|floatformat:0 }} EGP</td>
+          <td style="font-size:14px;font-weight:700;color:var(--primary);">{{ p.emp_count }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);">No positions yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}

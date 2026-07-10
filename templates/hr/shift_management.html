@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Shift Management — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Shifts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Shift Management</h1></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> New Shift</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <input type="hidden" name="action" value="add_shift" />
+          <div class="mb-3"><label class="form-label">Shift Name</label><input type="text" name="name" class="form-control" placeholder="e.g. Morning Shift" /></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Start</label><input type="time" name="start_time" class="form-control" value="06:00" /></div>
+            <div class="col-6"><label class="form-label">End</label><input type="time" name="end_time" class="form-control" value="14:00" /></div>
+          </div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Create Shift</button>
+        </form>
+      </div>
+    </div>
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user-clock"></i> Assign Shift</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <input type="hidden" name="action" value="assign" />
+          <div class="mb-3"><label class="form-label">Employee</label><select name="employee" class="form-select">{% for e in employees %}<option value="{{ e.pk }}">{{ e.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Shift</label><select name="shift" class="form-select">{% for s in shifts %}<option value="{{ s.pk }}">{{ s.name }} ({{ s.start_time|time:"H:i" }}-{{ s.end_time|time:"H:i" }})</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Day</label><select name="day_of_week" class="form-select">{% for v,l in days %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-check"></i> Assign</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-week"></i> Weekly Roster</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for day_num, day_name in days %}
+        <div style="display:flex;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:110px;padding:14px 12px;background:var(--bg-muted);flex-shrink:0;"><div style="font-size:12px;font-weight:700;color:var(--text-primary);">{{ day_name }}</div></div>
+          <div style="flex:1;padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            {% for a in grid|default_if_none:'' %}{% endfor %}
+            {% with slots=grid|default_if_none:'' %}{% endwith %}
+            {% for d, assignments in grid.items %}
+              {% if d == day_num %}
+                {% for a in assignments %}
+                <span style="background:#EFF6FF;padding:5px 10px;border-radius:var(--radius-full);font-size:12px;color:var(--primary);font-weight:500;">{{ a.employee.get_full_name }} <span style="opacity:0.6;">({{ a.shift.name }})</span></span>
+                {% empty %}
+                <span style="font-size:12px;color:var(--text-muted);">No assignments</span>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

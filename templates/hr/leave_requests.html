@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Leave Requests — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Leave{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Leave Requests</h1><p class="page-subtitle">{{ stats.pending }} pending · {{ stats.approved }} approved</p></div>
+  <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> New Request</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Employee</label><select name="employee" class="form-select">{% for e in employees %}<option value="{{ e.pk }}">{{ e.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Leave Type</label><select name="leave_type" class="form-select">{% for v,l in leave_types %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Start</label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-6"><label class="form-label">End</label><input type="date" name="end_date" class="form-control" value="{{ today }}" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Reason</label><textarea name="reason" class="form-control" rows="3"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx mb-3"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+      <div><label class="form-label">Status</label><select name="status" class="form-select" style="width:160px;"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status_f == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+    </form></div></div>
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for r in requests %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ r.employee.get_full_name }}</td>
+          <td><span class="badge-gymx blue" style="font-size:10px;">{{ r.get_leave_type_display }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ r.start_date|date:"M d" }} — {{ r.end_date|date:"M d, Y" }}</td>
+          <td style="font-size:13px;font-weight:700;color:var(--primary);">{{ r.days_count }}</td>
+          <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
+          <td>
+            {% if r.status == 'pending' %}
+            <div style="display:flex;gap:4px;">
+              <form method="post" action="{% url 'hr:leave_action' r.pk %}"><input type="hidden" name="action" value="approve" /><button type="submit" class="btn-gymx primary" style="font-size:11px;padding:4px 8px;"><i class="fa-solid fa-check"></i></button></form>
+              <form method="post" action="{% url 'hr:leave_action' r.pk %}"><input type="hidden" name="action" value="reject" /><button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 8px;"><i class="fa-solid fa-xmark"></i></button></form>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">No leave requests</td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}

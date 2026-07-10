@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Performance Review — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Performance / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Performance Review</h1></div>
+  <a href="{% url 'hr:performance' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Employee <span style="color:var(--danger);">*</span></label><select name="employee" class="form-select">{% for e in employees %}<option value="{{ e.pk }}">{{ e.get_full_name }}</option>{% endfor %}</select></div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6"><label class="form-label">Review Period</label><input type="text" name="review_period" class="form-control" placeholder="e.g. Q1 2026" /></div>
+        <div class="col-md-6"><label class="form-label">Review Date</label><input type="date" name="review_date" class="form-control" value="{{ today }}" /></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Rating</label>
+        <select name="rating" class="form-select">{% for v,l in ratings %}<option value="{{ v }}" {% if v == 3 %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+      </div>
+      <div class="mb-3"><label class="form-label">Strengths</label><textarea name="strengths" class="form-control" rows="2"></textarea></div>
+      <div class="mb-3"><label class="form-label">Areas for Improvement</label><textarea name="improvements" class="form-control" rows="2"></textarea></div>
+      <div class="mb-3"><label class="form-label">Goals</label><textarea name="goals" class="form-control" rows="2"></textarea></div>
+      <div class="mb-4"><label class="form-label">Additional Comments</label><textarea name="comments" class="form-control" rows="2"></textarea></div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'hr:performance' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Review</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

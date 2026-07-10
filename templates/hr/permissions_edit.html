@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Permissions — {{ role.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Permissions / {{ role.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ role.name }} Permissions</h1></div>
+  <a href="{% url 'hr:permissions' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post">{% csrf_token %}
+  <div class="card-gymx">
+    <div style="overflow-x:auto;">
+      <table class="table-gymx">
+        <thead><tr><th>Module</th><th style="text-align:center;">View</th><th style="text-align:center;">Add</th><th style="text-align:center;">Edit</th><th style="text-align:center;">Delete</th></tr></thead>
+        <tbody>
+          {% for module in modules %}
+          {% with p=existing|default_if_none:'' %}
+          <tr>
+            <td style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ module }}</td>
+            <td style="text-align:center;"><input type="checkbox" name="view_{{ module }}" {% if existing|default_if_none:'' %}{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" checked /></td>
+            <td style="text-align:center;"><input type="checkbox" name="add_{{ module }}" style="width:18px;height:18px;accent-color:var(--success);" /></td>
+            <td style="text-align:center;"><input type="checkbox" name="edit_{{ module }}" style="width:18px;height:18px;accent-color:var(--warning);" /></td>
+            <td style="text-align:center;"><input type="checkbox" name="delete_{{ module }}" style="width:18px;height:18px;accent-color:var(--danger);" /></td>
+          </tr>
+          {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:16px 20px;border-top:1px solid var(--border);text-align:right;">
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Permissions</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

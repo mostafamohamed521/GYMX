@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Contracts — GymX{% endblock %}
+{% block page_breadcrumb %}HR / Contracts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Contracts</h1><p class="page-subtitle">{{ stats.total }} total · {{ stats.active }} active</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'hr:contract_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Contract</a>
+    <a href="{% url 'hr:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+{% if stats.expiring %}<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> <strong>{{ stats.expiring }}</strong> contract{{ stats.expiring|pluralize }} expiring within 30 days.</div>{% endif %}
+<div class="card-gymx">
+  <div style="overflow-x:auto;">
+    <table class="table-gymx">
+      <thead><tr><th>Employee</th><th>Type</th><th>Start</th><th>End</th><th>Salary</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for c in contract_list %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ c.employee.get_full_name }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.contract_type }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ c.start_date|date:"M d, Y" }}</td>
+          <td style="font-size:12.5px;color:{% if c.is_expiring_soon %}var(--warning){% else %}var(--text-muted){% endif %};font-weight:{% if c.is_expiring_soon %}700{% else %}400{% endif %};">{{ c.end_date|date:"M d, Y"|default:"Ongoing" }}</td>
+          <td style="font-size:13px;font-weight:600;">{{ c.salary|floatformat:0 }} EGP</td>
+          <td><span class="badge-gymx {{ c.get_status_color }}" style="font-size:11px;">{{ c.get_status_display }}</span>{% if c.is_expiring_soon %} <span class="badge-gymx orange" style="font-size:10px;">Expiring</span>{% endif %}</td>
+          <td>{% if c.document %}<a href="{{ c.document.url }}" target="_blank" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-download" style="font-size:11px;"></i></a>{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);">No contracts yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
