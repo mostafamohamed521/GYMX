@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from typing import Union
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ def send_sms(to_phone: str, message: str) -> bool:
 
 # ── Email via Django/SMTP ──────────────────────────────────
 def send_email(
-    to: str | list,
+    to: Union[str, list],
     subject: str,
     html_content: str,
     text_content: str = None,
