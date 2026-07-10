@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ cls.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Classes / {{ cls.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div>
+    <h1 class="page-title">{{ cls.name }}</h1>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <span class="badge-gymx {{ cls.get_status_color }}">{{ cls.get_status_display }}</span>
+      <span class="badge-gymx {{ cls.get_difficulty_color }}">{{ cls.get_difficulty_display }}</span>
+      {% if cls.category %}<span class="badge-gymx gray">{{ cls.category.name }}</span>{% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'classes:edit' cls.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-pen"></i> Edit</a>
+    <a href="{% url 'classes:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4">
+      <div style="background:{{ cls.color }};padding:28px;text-align:center;border-radius:var(--radius-xl) var(--radius-xl) 0 0;">
+        <i class="fa-solid fa-chalkboard-user" style="font-size:48px;color:white;opacity:0.9;"></i>
+        <div style="font-size:18px;font-weight:800;color:white;margin-top:12px;">{{ cls.name }}</div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {% if cls.coach %}<div style="display:flex;gap:10px;align-items:center;"><i class="fa-solid fa-person-running" style="color:var(--primary);width:16px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ cls.coach.get_full_name }}</span></div>{% endif %}
+          {% if cls.room %}<div style="display:flex;gap:10px;align-items:center;"><i class="fa-solid fa-door-open" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ cls.room }}</span></div>{% endif %}
+          <div style="display:flex;gap:10px;align-items:center;"><i class="fa-solid fa-clock" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;color:var(--text-secondary);">{{ cls.duration_min }} minutes</span></div>
+          <div style="display:flex;gap:10px;align-items:center;"><i class="fa-solid fa-users" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;color:var(--text-secondary);">Max {{ cls.max_capacity }} participants</span></div>
+          <div style="display:flex;gap:10px;align-items:center;"><i class="fa-solid fa-fire" style="color:var(--warning);width:16px;"></i><span style="font-size:13px;color:var(--text-secondary);">~{{ cls.calories_burn }} kcal/session</span></div>
+        </div>
+        {% if cls.description %}<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--text-secondary);line-height:1.6;">{{ cls.description }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-week"></i> Weekly Schedule</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for s in schedules %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:70px;font-size:12px;font-weight:600;color:var(--primary);">{{ s.get_day_of_week_display }}</div>
+          <div style="font-size:13px;color:var(--text-secondary);">{{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}</div>
+          <span class="badge-gymx {% if s.is_active %}green{% else %}gray{% endif %}" style="font-size:10px;">{% if s.is_active %}Active{% else %}Off{% endif %}</span>
+        </div>
+        {% empty %}
+        <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">No schedule set</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ stats.total_sessions }}</div><div class="stat-label">Sessions</div></div></div>
+      <div class="col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ stats.total_bookings }}</div><div class="stat-label">Bookings</div></div></div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Session</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-md-3"><label class="form-label">Start</label><input type="time" name="start_time" class="form-control" value="08:00" /></div>
+            <div class="col-md-3"><label class="form-label">End</label><input type="time" name="end_time" class="form-control" value="09:00" /></div>
+            <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i></button></div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-forward"></i> Upcoming Sessions ({{ stats.upcoming }})</span></div>
+      {% if upcoming %}
+      <div class="card-body" style="padding:0;">
+        {% for s in upcoming %}
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
+          <div style="width:50px;text-align:center;flex-shrink:0;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">{{ s.date|date:"D" }}</div>
+            <div style="font-size:20px;font-weight:800;color:{% if s.date == today %}var(--primary){% else %}var(--text-primary){% endif %};">{{ s.date|date:"d" }}</div>
+            <div style="font-size:9px;color:var(--text-muted);">{{ s.date|date:"M" }}</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ s.start_time|time:"H:i" }} — {{ s.end_time|time:"H:i" }}</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+              <span style="font-size:12px;color:var(--text-muted);">{{ s.booked_count }} / {{ cls.max_capacity }} booked</span>
+              <div class="progress-gymx" style="width:80px;"><div class="fill" style="width:{{ s.capacity_pct }}%;background:{% if s.capacity_pct >= 90 %}var(--danger){% elif s.capacity_pct >= 70 %}var(--warning){% else %}var(--success){% endif %};"></div></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <a href="{% url 'classes:booking' s.pk %}" class="btn-gymx primary" style="font-size:11px;padding:6px 12px;text-decoration:none;"><i class="fa-solid fa-ticket"></i> Book</a>
+            <a href="{% url 'classes:attendance' s.pk %}" class="btn-gymx outline" style="font-size:11px;padding:6px 12px;text-decoration:none;"><i class="fa-solid fa-clipboard-check"></i></a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}<div class="card-body" style="text-align:center;padding:32px;color:var(--text-muted);">No upcoming sessions</div>{% endif %}
+    </div>
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Past Sessions</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Date</th><th>Time</th><th>Attended</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for s in past %}
+            <tr>
+              <td style="font-size:13px;font-weight:500;">{{ s.date|date:"M d, Y" }}</td>
+              <td style="font-size:12.5px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }}</td>
+              <td style="font-size:13px;font-weight:600;color:var(--primary);">{{ s.booked_count }}/{{ cls.max_capacity }}</td>
+              <td><span class="badge-gymx {{ s.get_status_color }}" style="font-size:11px;">{{ s.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted);">No past sessions</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
