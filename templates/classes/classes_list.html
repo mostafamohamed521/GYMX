@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Classes — GymX{% endblock %}
+{% block page_breadcrumb %}Classes{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Group Classes</h1><p class="page-subtitle">Manage gym class programs</p></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'classes:schedule' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-calendar-week"></i> Schedule</a>
+    <a href="{% url 'classes:calendar' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-calendar"></i> Calendar</a>
+    <a href="{% url 'classes:capacity' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-gauge"></i> Capacity</a>
+    <a href="{% url 'classes:statistics' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-chart-bar"></i> Stats</a>
+    <a href="{% url 'classes:add' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Class</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-chalkboard-user"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total }}</div><div class="stat-label">Total Classes</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.active }}</div><div class="stat-label">Active</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-day"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.today }}</div><div class="stat-label">Sessions Today</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-ticket"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.bookings }}</div><div class="stat-label">Active Bookings</div></div></div>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+  <div style="flex:1;min-width:160px;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Class name..." /></div>
+  <div style="min-width:130px;"><label class="form-label">Status</label><select name="status" class="form-select"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status_f == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <div style="min-width:150px;"><label class="form-label">Category</label><select name="category" class="form-select"><option value="">All</option>{% for c in cats %}<option value="{{ c.pk }}" {% if cat_f == c.pk|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+  {% if q or status_f or cat_f %}<a href="{% url 'classes:list' %}" class="btn-gymx outline" style="text-decoration:none;">Clear</a>{% endif %}
+</form></div></div>
+<div class="row g-3">
+  {% for cls in classes %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;box-shadow:var(--shadow-xs);transition:all 0.2s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow-xs)'">
+      <div style="background:{{ cls.color }};padding:18px 20px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+          <div>
+            <div style="font-size:16px;font-weight:800;color:white;">{{ cls.name }}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px;">{% if cls.category %}{{ cls.category.name }} · {% endif %}{{ cls.duration_min }} min</div>
+          </div>
+          <span class="badge-gymx {{ cls.get_status_color }}" style="font-size:10px;">{{ cls.get_status_display }}</span>
+        </div>
+        {% if cls.description %}<div style="font-size:12.5px;color:rgba(255,255,255,0.85);margin-top:10px;line-height:1.5;">{{ cls.description|truncatechars:60 }}</div>{% endif %}
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;text-align:center;background:var(--bg-muted);padding:8px;border-radius:var(--radius-lg);"><div style="font-size:16px;font-weight:700;color:var(--text-primary);">{{ cls.max_capacity }}</div><div style="font-size:10px;color:var(--text-muted);">Capacity</div></div>
+          <div style="flex:1;text-align:center;background:var(--bg-muted);padding:8px;border-radius:var(--radius-lg);"><div style="font-size:16px;font-weight:700;color:var(--warning);">{{ cls.calories_burn }}</div><div style="font-size:10px;color:var(--text-muted);">Cal/session</div></div>
+          <div style="flex:1;text-align:center;background:var(--bg-muted);padding:8px;border-radius:var(--radius-lg);"><div style="font-size:13px;font-weight:700;color:var(--text-primary);">{{ cls.get_difficulty_display }}</div><div style="font-size:10px;color:var(--text-muted);">Level</div></div>
+        </div>
+        {% if cls.coach %}<div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;"><i class="fa-solid fa-person-running" style="color:var(--primary);"></i> {{ cls.coach.get_full_name }}</div>{% endif %}
+        <div style="display:flex;gap:6px;">
+          <a href="{% url 'classes:detail' cls.pk %}" class="btn-gymx primary" style="text-decoration:none;flex:1;justify-content:center;font-size:12.5px;"><i class="fa-solid fa-eye"></i> View</a>
+          <a href="{% url 'classes:edit' cls.pk %}" class="btn-gymx outline" style="text-decoration:none;padding:9px 12px;"><i class="fa-solid fa-pen"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <i class="fa-solid fa-chalkboard-user" style="font-size:40px;color:var(--text-muted);display:block;margin-bottom:14px;opacity:0.4;"></i>
+    <div style="font-size:17px;font-weight:700;margin-bottom:8px;">No classes found</div>
+    <a href="{% url 'classes:add' %}" class="btn-gymx primary" style="text-decoration:none;">Add First Class</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
