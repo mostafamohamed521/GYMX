@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Attendance — {{ session.gym_class.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Classes / Attendance{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Session Attendance</h1><p class="page-subtitle">{{ session.gym_class.name }} — {{ session.date|date:"M d, Y" }} · {{ session.start_time|time:"H:i" }}</p></div>
+  <a href="{% url 'classes:detail' session.gym_class.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post">{% csrf_token %}
+  <div class="card-gymx mb-4">
+    <div class="card-header">
+      <span class="card-header-title"><i class="fa-solid fa-clipboard-check"></i> Mark Attendance ({{ bookings|length }})</span>
+      <button type="button" onclick="toggleAll(true)" class="btn-gymx outline" style="font-size:11px;padding:5px 10px;margin-right:6px;">Check All</button>
+      <button type="button" onclick="toggleAll(false)" class="btn-gymx outline" style="font-size:11px;padding:5px 10px;">Uncheck All</button>
+    </div>
+    <div class="card-body" style="padding:0;">
+      {% for b in bookings %}
+      <label style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};cursor:pointer;">
+        <input type="checkbox" name="attended" value="{{ b.member.pk }}" class="attend-check" {% if b.status == 'attended' %}checked{% endif %} style="width:20px;height:20px;accent-color:var(--success);" />
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+          {% if b.member.profile_image %}<img src="{{ b.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ b.member.get_initials }}{% endif %}
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ b.member.get_full_name }}</div>
+          <div style="font-size:11px;color:var(--text-muted);">{{ b.member.member_id }}</div>
+        </div>
+        <span class="badge-gymx {{ b.get_status_color }}" style="font-size:10px;">{{ b.get_status_display }}</span>
+      </label>
+      {% empty %}
+      <div style="padding:40px;text-align:center;color:var(--text-muted);">No bookings for this session</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% if bookings %}
+  <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;padding:12px;font-size:14px;"><i class="fa-solid fa-floppy-disk"></i> Save Attendance & Complete Session</button>
+  {% endif %}
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function toggleAll(state) {
+  document.querySelectorAll('.attend-check').forEach(cb => cb.checked = state);
+}
+</script>
+{% endblock %}
