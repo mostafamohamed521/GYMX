@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Classes / {{ action }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ page_title }}</h1></div>
+  <a href="{% if cls %}{% url 'classes:detail' cls.pk %}{% else %}{% url 'classes:list' %}{% endif %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post">{% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chalkboard-user"></i> Class Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8"><label class="form-label">Class Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" value="{{ cls.name|default:'' }}" /></div>
+            <div class="col-md-4"><label class="form-label">Category</label><select name="category" class="form-select"><option value="">None</option>{% for c in cats %}<option value="{{ c.pk }}" {% if cls and cls.category and cls.category.pk == c.pk %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Coach</label><select name="coach" class="form-select"><option value="">None</option>{% for c in coaches %}<option value="{{ c.pk }}" {% if cls and cls.coach and cls.coach.pk == c.pk %}selected{% endif %}>{{ c.get_full_name }}</option>{% endfor %}</select></div>
+            <div class="col-md-3"><label class="form-label">Difficulty</label><select name="difficulty" class="form-select">{% for v,l in difficulties %}<option value="{{ v }}" {% if cls and cls.difficulty == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-md-3"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses|default:'' %}<option value="{{ v }}" {% if cls and cls.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-12"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3">{{ cls.description|default:'' }}</textarea></div>
+            <div class="col-md-3"><label class="form-label">Duration (min)</label><input type="number" name="duration_min" class="form-control" value="{{ cls.duration_min|default:60 }}" /></div>
+            <div class="col-md-3"><label class="form-label">Max Capacity</label><input type="number" name="max_capacity" class="form-control" value="{{ cls.max_capacity|default:20 }}" /></div>
+            <div class="col-md-3"><label class="form-label">Calories Burn</label><input type="number" name="calories_burn" class="form-control" value="{{ cls.calories_burn|default:300 }}" /></div>
+            <div class="col-md-3"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="{{ cls.color|default:'#3B82F6' }}" style="height:38px;" /></div>
+            <div class="col-md-6"><label class="form-label">Room</label><input type="text" name="room" class="form-control" value="{{ cls.room|default:'' }}" placeholder="e.g. Studio A" /></div>
+            <div class="col-12"><label class="form-label">Equipment Needed</label><textarea name="equipment_needed" class="form-control" rows="2">{{ cls.equipment_needed|default:'' }}</textarea></div>
+          </div>
+        </div>
+      </div>
+      {% if not cls %}
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock"></i> Weekly Schedule</span><button type="button" onclick="addSlot()" class="btn-gymx outline" style="font-size:12px;padding:5px 12px;"><i class="fa-solid fa-plus"></i> Add Slot</button></div>
+        <div class="card-body" id="scheduleSlots">
+          <div class="schedule-slot row g-2 mb-2">
+            <div class="col-4"><select name="days" class="form-select" style="font-size:13px;">{% for v,l in days %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-4"><input type="time" name="start_times" class="form-control" value="08:00" style="font-size:13px;" /></div>
+            <div class="col-4"><input type="time" name="end_times" class="form-control" value="09:00" style="font-size:13px;" /></div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="col-lg-4">
+      <div class="card-gymx">
+        <div class="card-body" style="text-align:center;padding:28px;">
+          <div id="colorPreview" style="width:80px;height:80px;border-radius:var(--radius-2xl);background:{{ cls.color|default:'#3B82F6' }};margin:0 auto 12px;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-chalkboard-user" style="font-size:32px;color:white;"></i></div>
+          <div style="font-size:13px;color:var(--text-muted);">Class card preview</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% if cls %}{% url 'classes:detail' cls.pk %}{% else %}{% url 'classes:list' %}{% endif %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> {% if cls %}Save{% else %}Create Class{% endif %}</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.querySelector('input[name="color"]').addEventListener('input', function() {
+  document.getElementById('colorPreview').style.background = this.value;
+});
+function addSlot() {
+  const c = document.getElementById('scheduleSlots');
+  const d = c.querySelector('.schedule-slot').cloneNode(true);
+  c.appendChild(d);
+}
+</script>
+{% endblock %}
