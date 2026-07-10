@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'apps.coaches',
     'apps.workouts',
     'apps.nutrition',
+    'apps.classes',
 ]
 
 MIDDLEWARE = [
@@ -56,16 +57,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-
 # PostgreSQL (uncomment when ready):
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql',
+         'NAME': config('DB_NAME'),
+         'USER': config('DB_USER'),
+         'PASSWORD': config('DB_PASSWORD'),
+         'HOST': config('DB_HOST', default='localhost'),
+         'PORT': config('DB_PORT', default='5432'),
     }
  }
 
