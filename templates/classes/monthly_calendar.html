@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Class Calendar — GymX{% endblock %}
+{% block page_breadcrumb %}Classes / Calendar{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Class Calendar</h1><p class="page-subtitle">{{ month_name }} {{ year }}</p></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn-gymx outline" style="text-decoration:none;padding:8px 14px;"><i class="fa-solid fa-chevron-left"></i></a>
+    <span style="font-size:14px;font-weight:600;min-width:130px;text-align:center;">{{ month_name }} {{ year }}</span>
+    <a href="?year={{ next_year }}&month={{ next_month }}" class="btn-gymx outline" style="text-decoration:none;padding:8px 14px;"><i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'classes:schedule' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-calendar-week"></i> Week</a>
+  </div>
+</div>
+<div class="card-gymx">
+  <div class="card-body" style="padding:20px;">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;">
+      {% for d in "Mon,Tue,Wed,Thu,Fri,Sat,Sun"|split:"," %}
+      <div style="text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);padding:6px 0;">{{ d }}</div>
+      {% endfor %}
+    </div>
+    {% for week in cal_weeks %}
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
+      {% for day in week %}
+      {% if day == 0 %}
+      <div style="min-height:80px;border-radius:var(--radius-lg);background:var(--bg-muted);opacity:0.3;"></div>
+      {% else %}
+      <div style="min-height:80px;border-radius:var(--radius-lg);border:1.5px solid {% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--border){% endif %};padding:6px;background:{% if day == today.day and month == today.month and year == today.year %}#EFF6FF{% else %}white{% endif %};">
+        <div style="font-size:12px;font-weight:{% if day == today.day and month == today.month and year == today.year %}800{% else %}500{% endif %};color:{% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--text-primary){% endif %};margin-bottom:4px;">{{ day }}</div>
+        {% for d, sessions in smap.items %}{% if d == day %}
+          {% for s in sessions %}
+          <a href="{% url 'classes:booking' s.pk %}" style="text-decoration:none;">
+            <div style="background:{{ s.gym_class.color }};border-radius:4px;padding:2px 5px;margin-bottom:2px;font-size:10px;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.gym_class.name }}</div>
+          </a>
+          {% endfor %}
+        {% endif %}{% endfor %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
