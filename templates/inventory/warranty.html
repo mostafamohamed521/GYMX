@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Warranty Tracking — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Warranty{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Warranty Tracking</h1></div>
+  <a href="{% url 'inventory:equipment' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% if expiring %}
+<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> <strong>{{ expiring|length }}</strong> warranties expiring within 30 days.</div>
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Expiring Soon</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Equipment</th><th>Brand</th><th>Warranty Until</th></tr></thead>
+    <tbody>
+      {% for eq in expiring %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ eq.name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ eq.brand.name|default:"—" }}</td>
+        <td style="font-size:13px;font-weight:700;color:var(--warning);">{{ eq.warranty_until|date:"M d, Y" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-shield-halved" style="color:var(--success);"></i> Active Warranties</span></div>
+      <div style="overflow-x:auto;max-height:400px;overflow-y:auto;"><table class="table-gymx">
+        <thead style="position:sticky;top:0;background:white;"><tr><th>Equipment</th><th>Until</th></tr></thead>
+        <tbody>
+          {% for eq in active %}
+          <tr><td style="font-size:13px;font-weight:500;">{{ eq.name }}</td><td style="font-size:12.5px;color:var(--success);font-weight:600;">{{ eq.warranty_until|date:"M d, Y" }}</td></tr>
+          {% empty %}<tr><td colspan="2" style="text-align:center;padding:32px;color:var(--text-muted);">None</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-shield-halved" style="color:var(--danger);"></i> Expired Warranties</span></div>
+      <div style="overflow-x:auto;max-height:400px;overflow-y:auto;"><table class="table-gymx">
+        <thead style="position:sticky;top:0;background:white;"><tr><th>Equipment</th><th>Expired</th></tr></thead>
+        <tbody>
+          {% for eq in expired %}
+          <tr><td style="font-size:13px;font-weight:500;">{{ eq.name }}</td><td style="font-size:12.5px;color:var(--danger);font-weight:600;">{{ eq.warranty_until|date:"M d, Y" }}</td></tr>
+          {% empty %}<tr><td colspan="2" style="text-align:center;padding:32px;color:var(--text-muted);">None</td></tr>{% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
