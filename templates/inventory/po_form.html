@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Purchase Order — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Purchase Orders / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Purchase Order</h1></div>
+  <a href="{% url 'inventory:purchase_orders' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post">{% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-truck"></i> Order Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Supplier</label><select name="supplier" class="form-select">{% for s in suppliers %}<option value="{{ s.pk }}">{{ s.name }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Warehouse</label><select name="warehouse" class="form-select"><option value="">None</option>{% for w in warehouses %}<option value="{{ w.pk }}">{{ w.name }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Order Date</label><input type="date" name="order_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-md-6"><label class="form-label">Expected Date</label><input type="date" name="expected_date" class="form-control" /></div>
+            <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card-gymx">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Select Products</span></div>
+        <div class="card-body" style="max-height:400px;overflow-y:auto;">
+          {% for p in products %}
+          <label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+            <input type="checkbox" name="product_ids" value="{{ p.pk }}" style="width:16px;height:16px;accent-color:var(--primary);" />
+            <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ p.name }}</span>
+            <input type="number" name="qty_{{ p.pk }}" placeholder="Qty" value="1" min="1" class="form-control" style="width:70px;height:28px;font-size:12px;" />
+            <input type="number" name="price_{{ p.pk }}" placeholder="Price" value="{{ p.cost_price }}" step="0.01" class="form-control" style="width:80px;height:28px;font-size:12px;" />
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% url 'inventory:purchase_orders' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-file-invoice"></i> Create Purchase Order</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
