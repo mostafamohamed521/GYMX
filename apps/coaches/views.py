@@ -3,6 +3,7 @@ from calendar import monthcalendar, monthrange
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.accounts.permissions import role_required, STAFF_ROLES
 from django.contrib import messages
 from django.db.models import Q, Count, Avg, Sum
 from django.utils import timezone
@@ -21,7 +22,7 @@ def _coach_context(pk):
 
 
 # ── 1. Coach List ──────────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_list(request):
     coaches = Coach.objects.prefetch_related('specializations').order_by('first_name')
     q       = request.GET.get('q', '')
@@ -52,7 +53,7 @@ def coach_list(request):
 
 
 # ── 2. Add Coach ───────────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_add(request):
     if request.method == 'POST':
         try:
@@ -102,7 +103,7 @@ def coach_add(request):
 
 
 # ── 3. Coach Detail ────────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_detail(request, pk):
     coach   = _coach_context(pk)
     today   = timezone.now().date()
@@ -148,7 +149,7 @@ def coach_detail(request, pk):
 
 
 # ── 4. Edit Coach ──────────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_edit(request, pk):
     coach = _coach_context(pk)
     if request.method == 'POST':
@@ -197,7 +198,7 @@ def coach_edit(request, pk):
 
 
 # ── 5. Coach Schedule ──────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_schedule(request, pk):
     coach = _coach_context(pk)
     today = timezone.now().date()
@@ -235,7 +236,7 @@ def coach_schedule(request, pk):
 
 
 # ── 6. Coach Calendar ─────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_calendar(request, pk):
     coach = _coach_context(pk)
     today = timezone.now().date()
@@ -272,7 +273,7 @@ def coach_calendar(request, pk):
 
 
 # ── 7. Assigned Members ────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def assigned_members(request, pk):
     coach   = _coach_context(pk)
     members = Member.objects.filter(assigned_coach=coach.user).select_related('assigned_coach') if coach.user else Member.objects.none()
@@ -285,7 +286,7 @@ def assigned_members(request, pk):
 
 
 # ── 8. Assigned Classes ────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def assigned_classes(request, pk):
     coach   = _coach_context(pk)
     today   = timezone.now().date()
@@ -303,7 +304,7 @@ def assigned_classes(request, pk):
 
 
 # ── 9. Coach Attendance ────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_attendance(request, pk):
     coach = _coach_context(pk)
     today = timezone.now().date()
@@ -337,7 +338,7 @@ def coach_attendance(request, pk):
 
 
 # ── 10. Coach Salary ───────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_salary(request, pk):
     coach = _coach_context(pk)
 
@@ -379,7 +380,7 @@ def coach_salary(request, pk):
 
 
 # ── 11. Coach Commissions ──────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_commissions(request, pk):
     coach = _coach_context(pk)
 
@@ -413,7 +414,7 @@ def coach_commissions(request, pk):
 
 
 # ── 12. Coach Performance ──────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_performance(request, pk):
     coach     = _coach_context(pk)
     today     = timezone.now().date()
@@ -451,7 +452,7 @@ def coach_performance(request, pk):
 
 
 # ── 13. Coach Certificates ────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_certificates(request, pk):
     coach = _coach_context(pk)
 
@@ -476,7 +477,7 @@ def coach_certificates(request, pk):
 
 
 # ── 14. Coach Notes ────────────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_notes(request, pk):
     coach = _coach_context(pk)
 
@@ -505,7 +506,7 @@ def coach_notes(request, pk):
 
 
 # ── 15. Coach Availability ────────────────────────────────
-@login_required
+@role_required(*STAFF_ROLES)
 def coach_availability(request, pk):
     coach = _coach_context(pk)
 
