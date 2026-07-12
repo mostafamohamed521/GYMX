@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Damaged Items — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Damaged{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Damaged Items</h1></div>
+  <a href="{% url 'inventory:products' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Report Damage</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Product</label><select name="product" class="form-select">{% for p in products %}<option value="{{ p.pk }}">{{ p.name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Warehouse</label><select name="warehouse" class="form-select"><option value="">None</option>{% for w in warehouses %}<option value="{{ w.pk }}">{{ w.name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Quantity</label><input type="number" name="quantity" class="form-control" value="1" min="1" /></div>
+          <div class="mb-3"><label class="form-label">Reason</label><textarea name="reason" class="form-control" rows="3"></textarea></div>
+          <button type="submit" class="btn-gymx danger" style="width:100%;justify-content:center;"><i class="fa-solid fa-box-open"></i> Report</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Product</th><th>Warehouse</th><th>Qty</th><th>Reason</th><th>Reported</th></tr></thead>
+      <tbody>
+        {% for i in items %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ i.product.name }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ i.warehouse.name|default:"—" }}</td>
+          <td><span class="badge-gymx red" style="font-size:11px;">{{ i.quantity }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ i.reason|truncatechars:40 }}</td>
+          <td style="font-size:12px;color:var(--text-muted);">{{ i.reported_at|date:"M d, Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No damaged items reported</td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
