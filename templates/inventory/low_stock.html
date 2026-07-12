@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Low Stock — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Low Stock{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Low Stock Alert</h1><p class="page-subtitle">{{ low_products|length }} products below reorder level</p></div>
+  <a href="{% url 'inventory:products' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% if low_products %}<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> These products need restocking soon.</div>{% endif %}
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Product</th><th>Category</th><th>Current Stock</th><th>Reorder Level</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for p in low_products %}
+    <tr>
+      <td style="font-size:13.5px;font-weight:600;">{{ p.name }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ p.category.name|default:"—" }}</td>
+      <td><span class="badge-gymx red" style="font-size:12px;">{{ p.total_stock }}</span></td>
+      <td style="font-size:13px;color:var(--text-muted);">{{ p.reorder_level }}</td>
+      <td><a href="{% url 'inventory:po_new' %}" class="btn-gymx primary" style="font-size:11px;padding:5px 10px;text-decoration:none;"><i class="fa-solid fa-cart-plus"></i> Reorder</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-circle-check" style="font-size:32px;color:var(--success);display:block;margin-bottom:10px;opacity:0.6;"></i>All stock levels are healthy!</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
