@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.accounts.permissions import role_required, FRONT_DESK_ROLES
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Sum, Count
@@ -12,7 +13,7 @@ from apps.memberships.models import MemberSubscription
 
 
 # ── Revenue Dashboard ──────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def revenue_dashboard(request):
     today     = timezone.now().date()
     month_ago = today - timedelta(days=30)
@@ -63,7 +64,7 @@ def revenue_dashboard(request):
 
 
 # ── Payment List ───────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def payment_list(request):
     payments = Payment.objects.select_related('member').order_by('-payment_date', '-created_at')
     q          = request.GET.get('q', '')
@@ -95,7 +96,7 @@ def payment_list(request):
 
 
 # ── New Payment ────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def payment_new(request):
     member_pk = request.GET.get('member')
     member    = Member.objects.filter(pk=member_pk).first() if member_pk else None
@@ -146,7 +147,7 @@ def payment_new(request):
 
 
 # ── Payment Detail ─────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def payment_detail(request, pk):
     pay = get_object_or_404(Payment.objects.select_related('member', 'received_by', 'invoice'), pk=pk)
     receipt = getattr(pay, 'receipt', None)
@@ -154,7 +155,7 @@ def payment_detail(request, pk):
 
 
 # ── Pending Payments ───────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def pending_payments(request):
     payments = Payment.objects.filter(status='pending').select_related('member').order_by('-payment_date')
     invoices = Invoice.objects.filter(status__in=['sent','draft']).select_related('member').order_by('due_date')
@@ -165,7 +166,7 @@ def pending_payments(request):
 
 
 # ── Overdue Payments ───────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def overdue_payments(request):
     today    = timezone.now().date()
     invoices = Invoice.objects.filter(due_date__lt=today, status__in=['sent','partial']).select_related('member').order_by('due_date')
@@ -184,7 +185,7 @@ def overdue_payments(request):
 
 
 # ── Invoice List ───────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def invoice_list(request):
     invoices = Invoice.objects.select_related('member').order_by('-issue_date')
     status_f = request.GET.get('status', '')
@@ -206,7 +207,7 @@ def invoice_list(request):
 
 
 # ── New Invoice ────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def invoice_new(request):
     member_pk = request.GET.get('member')
     member    = Member.objects.filter(pk=member_pk).first() if member_pk else None
@@ -245,7 +246,7 @@ def invoice_new(request):
 
 
 # ── Invoice Detail ─────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def invoice_detail(request, pk):
     inv     = get_object_or_404(Invoice.objects.select_related('member','created_by').prefetch_related('items'), pk=pk)
     payments= Payment.objects.filter(invoice=inv).select_related('received_by')
@@ -269,7 +270,7 @@ def invoice_detail(request, pk):
 
 
 # ── Receipts ───────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def receipt_list(request):
     receipts = Receipt.objects.select_related('payment__member','issued_by').order_by('-issued_at')
     q = request.GET.get('q', '')
@@ -280,14 +281,14 @@ def receipt_list(request):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def receipt_detail(request, pk):
     receipt = get_object_or_404(Receipt.objects.select_related('payment__member','issued_by'), pk=pk)
     return render(request, 'payments/receipt_detail.html', {'receipt': receipt})
 
 
 # ── Installments ───────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def installment_list(request):
     plans = InstallmentPlan.objects.select_related('member').prefetch_related('installments').order_by('-created_at')
     status_f = request.GET.get('status', '')
@@ -298,7 +299,7 @@ def installment_list(request):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def installment_new(request):
     member_pk = request.GET.get('member')
     member    = Member.objects.filter(pk=member_pk).first() if member_pk else None
@@ -337,13 +338,13 @@ def installment_new(request):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def installment_detail(request, pk):
     plan = get_object_or_404(InstallmentPlan.objects.select_related('member').prefetch_related('installments'), pk=pk)
     return render(request, 'payments/installment_detail.html', {'plan': plan})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def installment_pay(request, pk, inst_pk):
     plan = get_object_or_404(InstallmentPlan, pk=pk)
     inst = get_object_or_404(Installment, pk=inst_pk, plan=plan)
@@ -379,7 +380,7 @@ def installment_pay(request, pk, inst_pk):
 
 
 # ── Refunds ────────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def refund_list(request):
     refunds = Refund.objects.select_related('payment__member','requested_by').order_by('-requested_at')
     return render(request, 'payments/refund_list.html', {
@@ -387,7 +388,7 @@ def refund_list(request):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def refund_new(request, payment_pk):
     pay = get_object_or_404(Payment, pk=payment_pk)
 
@@ -410,7 +411,7 @@ def refund_new(request, payment_pk):
 
 
 # ── Cash Register ──────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def daily_cash_register(request):
     today    = timezone.now().date()
     register, created = CashRegister.objects.get_or_create(
@@ -432,7 +433,7 @@ def daily_cash_register(request):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def daily_closing(request):
     today    = timezone.now().date()
     register = get_object_or_404(CashRegister, date=today)
@@ -456,7 +457,7 @@ def daily_closing(request):
 
 
 # ── Payment Reports ────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def payment_reports(request):
     today     = timezone.now().date()
     date_from = request.GET.get('from', str(today.replace(day=1)))
@@ -497,7 +498,7 @@ def payment_reports(request):
 
 
 # ── AJAX ───────────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def ajax_member_info(request, pk):
     member = get_object_or_404(Member, pk=pk)
     sub    = MemberSubscription.objects.filter(member=member, status='active').select_related('plan').first()
