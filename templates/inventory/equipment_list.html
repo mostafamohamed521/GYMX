@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Equipment — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Equipment{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Equipment</h1><p class="page-subtitle">Gym machines and equipment tracking</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'inventory:maintenance' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-wrench"></i> Maintenance</a>
+    <a href="{% url 'inventory:equipment_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Equipment</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total }}</div><div class="stat-label">Total</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.operational }}</div><div class="stat-label">Operational</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.maintenance }}</div><div class="stat-label">In Maintenance</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.broken }}</div><div class="stat-label">Broken</div></div></div>
+</div>
+<div class="card-gymx mb-3"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+  <div><label class="form-label">Status</label><select name="status" class="form-select" style="width:160px;"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status_f == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+</form></div></div>
+<div class="row g-3">
+  {% for eq in equipment %}
+  <div class="col-md-6 col-lg-4">
+    <a href="{% url 'inventory:equipment_detail' eq.pk %}" style="text-decoration:none;">
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)'">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+          <div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ eq.name }}</div><div style="font-size:12px;color:var(--text-muted);">{{ eq.brand.name|default:"—" }}</div></div>
+          <span class="badge-gymx {{ eq.get_status_color }}" style="font-size:10px;">{{ eq.get_status_display }}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);">{% if eq.location %}<i class="fa-solid fa-location-dot"></i> {{ eq.location }}{% endif %}</div>
+        {% if eq.is_under_warranty %}<span class="badge-gymx blue" style="font-size:10px;margin-top:6px;display:inline-block;"><i class="fa-solid fa-shield-halved"></i> Under Warranty</span>{% endif %}
+      </div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No equipment yet</div>
+  {% endfor %}
+</div>
+{% endblock %}
