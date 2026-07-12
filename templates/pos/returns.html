@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Returns — GymX{% endblock %}
+{% block page_breadcrumb %}POS / Returns{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Returns</h1><p class="page-subtitle">{{ stats.total }} returns · {{ stats.amount|floatformat:0 }} EGP refunded</p></div>
+  <a href="{% url 'pos:sales' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Sales History</a>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Sale</th><th>Item</th><th>Qty</th><th>Reason</th><th>Refund</th><th>Date</th></tr></thead>
+  <tbody>
+    {% for r in return_list %}
+    <tr>
+      <td><a href="{% url 'pos:sale_detail' r.sale.pk %}" style="font-size:12.5px;font-family:monospace;color:var(--primary);text-decoration:none;">{{ r.sale.invoice_number }}</a></td>
+      <td style="font-size:13px;color:var(--text-secondary);">{{ r.sale_item.product_name }}</td>
+      <td style="font-size:13px;font-weight:600;">{{ r.quantity }}</td>
+      <td><span class="badge-gymx gray" style="font-size:10px;">{{ r.get_reason_display }}</span></td>
+      <td style="font-size:14px;font-weight:700;color:var(--danger);">-{{ r.refund_amount|floatformat:0 }} EGP</td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ r.created_at|date:"M d, Y" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text-muted);">No returns recorded</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}

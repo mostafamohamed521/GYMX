@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Barcode Scanner — GymX{% endblock %}
+{% block page_breadcrumb %}POS / Scanner{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Barcode Scanner</h1></div>
+  <a href="{% url 'pos:screen' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> POS Screen</a>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-body" style="text-align:center;padding:40px;">
+        <i class="fa-solid fa-barcode" style="font-size:56px;color:var(--primary);display:block;margin-bottom:20px;"></i>
+        <input type="text" id="scanInput" class="form-control" placeholder="Scan or type barcode..." style="text-align:center;font-size:18px;padding:14px;margin-bottom:16px;" autofocus onkeypress="if(event.key==='Enter')scanCode(this.value)" />
+        <div id="scanResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function scanCode(code) {
+  if (!code) return;
+  fetch(`/pos/ajax/scan/?code=${encodeURIComponent(code)}`)
+    .then(r => r.json())
+    .then(d => {
+      const el = document.getElementById('scanResult');
+      if (d.found) {
+        el.innerHTML = `<div style="background:#ECFDF5;border-radius:var(--radius-xl);padding:16px;">
+          <div style="font-size:15px;font-weight:700;color:var(--success);">${d.name}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--text-primary);margin-top:6px;">${d.price} EGP</div>
+        </div>`;
+      } else {
+        el.innerHTML = `<div style="background:#FEF2F2;border-radius:var(--radius-xl);padding:16px;color:var(--danger);font-size:14px;">Product not found</div>`;
+      }
+      document.getElementById('scanInput').value = '';
+    });
+}
+</script>
+{% endblock %}

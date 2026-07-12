@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}POS — GymX{% endblock %}
+{% block page_breadcrumb %}POS{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Point of Sale</h1></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'pos:scanner' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-barcode"></i> Scanner</a>
+    <a href="{% url 'pos:sales' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-clock-rotate-left"></i> Sales History</a>
+    <a href="{% url 'pos:daily' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-chart-bar"></i> Daily Sales</a>
+  </div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'pos:catalog' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-shop"></i> Product Catalog</a>
+  <a href="{% url 'pos:categories' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-tags"></i> Categories</a>
+  <a href="{% url 'pos:discounts' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-percent"></i> Discounts</a>
+  <a href="{% url 'pos:gift_cards' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-gift"></i> Gift Cards</a>
+  <a href="{% url 'pos:returns' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-rotate-left"></i> Returns</a>
+</div>
+
+<div class="row g-4">
+  <!-- Product grid -->
+  <div class="col-lg-8">
+    <div class="card-gymx mb-3">
+      <div class="card-body" style="padding:12px 16px;">
+        <input type="text" id="prodSearch" class="form-control" placeholder="🔍 Search products..." oninput="filterProds(this.value)" />
+      </div>
+    </div>
+    <div class="row g-3" id="productGrid">
+      {% for p in products %}
+      <div class="col-md-4 col-6 prod-card" data-name="{{ p.name|lower }}">
+        <form method="post" action="{% url 'pos:cart_add' %}">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ p.pk }}" />
+          <input type="hidden" name="qty" value="1" />
+          <button type="submit" style="width:100%;border:none;background:none;padding:0;cursor:pointer;text-align:left;">
+            <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;transition:all 0.15s;box-shadow:var(--shadow-xs);" onmouseenter="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--border)';this.style.transform=''">
+              <div style="width:100%;height:70px;background:{% if p.category %}{{ p.category.color }}15{% else %}#F1F5F9{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+                <i class="fa-solid {% if p.category %}{{ p.category.icon }}{% else %}fa-box{% endif %}" style="font-size:26px;color:{% if p.category %}{{ p.category.color }}{% else %}var(--text-muted){% endif %};"></i>
+              </div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</div>
+              <div style="font-size:14px;font-weight:800;color:var(--success);margin-top:4px;">{{ p.sale_price|floatformat:0 }} EGP</div>
+            </div>
+          </button>
+        </form>
+      </div>
+      {% empty %}
+      <div class="col-12" style="text-align:center;padding:48px;color:var(--text-muted);">No sellable products found</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Cart -->
+  <div class="col-lg-4">
+    <div class="card-gymx" style="position:sticky;top:16px;">
+      <div class="card-header">
+        <span class="card-header-title"><i class="fa-solid fa-cart-shopping"></i> Cart</span>
+        <form method="post" action="{% url 'pos:cart_clear' %}"><button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;">Clear</button></form>
+      </div>
+      <div style="max-height:340px;overflow-y:auto;">
+        {% for item in cart %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ item.name }}</div><div style="font-size:11px;color:var(--text-muted);">{{ item.price|floatformat:0 }} EGP × {{ item.qty }}</div></div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--success);">{{ item.price|floatformat:0|add:0 }}</div>
+          <form method="post" action="{% url 'pos:cart_remove' forloop.counter0 %}"><button type="submit" style="border:none;background:none;color:var(--danger);cursor:pointer;font-size:14px;">×</button></form>
+        </div>
+        {% empty %}
+        <div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px;"><i class="fa-solid fa-cart-shopping" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3;"></i>Cart is empty</div>
+        {% endfor %}
+      </div>
+      <div class="card-body" style="border-top:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;color:var(--text-muted);">Subtotal</span><span style="font-size:13px;font-weight:600;">{{ subtotal|floatformat:0 }} EGP</span></div>
+        {% if discount_code %}<div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;color:var(--success);">{{ discount_code }}</span><span style="font-size:13px;font-weight:600;color:var(--success);">-{{ discount_amount|floatformat:0 }} EGP</span></div>{% endif %}
+        <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);margin-bottom:14px;"><span style="font-size:16px;font-weight:700;">Total</span><span style="font-size:22px;font-weight:800;color:var(--primary);">{{ total|floatformat:0 }} EGP</span></div>
+        <a href="{% url 'pos:checkout' %}" class="btn-gymx primary" style="width:100%;justify-content:center;text-decoration:none;font-size:14px;padding:11px;{% if not cart %}pointer-events:none;opacity:0.5;{% endif %}"><i class="fa-solid fa-check"></i> Checkout</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function filterProds(q) {
+  document.querySelectorAll('.prod-card').forEach(el => {
+    el.style.display = el.dataset.name.includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Discounts — GymX{% endblock %}
+{% block page_breadcrumb %}POS / Discounts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Discount Codes</h1></div>
+  <a href="{% url 'pos:screen' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> POS Screen</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> New Discount Code</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Code <span style="color:var(--danger);">*</span></label><input type="text" name="code" class="form-control" placeholder="e.g. SUMMER20" style="text-transform:uppercase;" /></div>
+          <div class="mb-3"><label class="form-label">Description</label><input type="text" name="description" class="form-control" /></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Type</label><select name="discount_type" class="form-select">{% for v,l in types %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-6"><label class="form-label">Value</label><input type="number" name="value" class="form-control" step="0.01" /></div>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Valid From</label><input type="date" name="valid_from" class="form-control" value="{{ today }}" /></div>
+            <div class="col-6"><label class="form-label">Valid Until</label><input type="date" name="valid_until" class="form-control" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Max Uses</label><input type="number" name="max_uses" class="form-control" placeholder="Unlimited" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-percent"></i> Create Code</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Uses</th><th>Valid Until</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for d in discount_list %}
+        <tr>
+          <td style="font-size:13px;font-family:monospace;font-weight:700;color:var(--primary);">{{ d.code }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ d.get_discount_type_display }}</td>
+          <td style="font-size:14px;font-weight:700;">{% if d.discount_type == 'percent' %}{{ d.value }}%{% else %}{{ d.value|floatformat:0 }} EGP{% endif %}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ d.used_count }}{% if d.max_uses %}/{{ d.max_uses }}{% endif %}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ d.valid_until|date:"M d, Y"|default:"No expiry" }}</td>
+          <td><span class="badge-gymx {% if d.is_valid %}green{% else %}gray{% endif %}" style="font-size:11px;">{% if d.is_valid %}Active{% else %}Inactive{% endif %}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text-muted);">No discount codes yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}

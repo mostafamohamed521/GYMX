@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Sales History — GymX{% endblock %}
+{% block page_breadcrumb %}POS / Sales{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Sales History</h1><p class="page-subtitle">{{ stats.revenue|floatformat:0 }} EGP total revenue</p></div>
+  <a href="{% url 'pos:screen' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-cash-register"></i> New Sale</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total }}</div><div class="stat-label">Total Sales</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:22px;">{{ stats.revenue|floatformat:0 }}</div><div class="stat-label">Total Revenue (EGP)</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.today }}</div><div class="stat-label">Today's Sales</div></div></div>
+</div>
+<div class="card-gymx mb-3"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+  <div style="flex:1;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Invoice # or member..." /></div>
+  <div><label class="form-label">Status</label><select name="status" class="form-select" style="width:150px;"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status_f == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+</form></div></div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Invoice #</th><th>Member</th><th>Cashier</th><th>Total</th><th>Method</th><th>Status</th><th>Date</th><th></th></tr></thead>
+  <tbody>
+    {% for s in sales %}
+    <tr>
+      <td style="font-size:12.5px;font-family:monospace;font-weight:600;color:var(--primary);">{{ s.invoice_number }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.member.get_full_name|default:"Walk-in" }}</td>
+      <td style="font-size:12.5px;color:var(--text-muted);">{{ s.cashier.get_short_name|default:"—" }}</td>
+      <td style="font-size:14px;font-weight:700;color:var(--success);">{{ s.total|floatformat:0 }} EGP</td>
+      <td><i class="fa-solid {{ s.get_method_icon }}" style="color:var(--text-muted);font-size:13px;"></i></td>
+      <td><span class="badge-gymx {{ s.get_status_color }}" style="font-size:11px;">{{ s.get_status_display }}</span></td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ s.created_at|date:"M d, Y H:i" }}</td>
+      <td><a href="{% url 'pos:sale_detail' s.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" style="text-align:center;padding:48px;color:var(--text-muted);">No sales recorded</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}

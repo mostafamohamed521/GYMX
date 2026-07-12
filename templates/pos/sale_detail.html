@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ sale.invoice_number }} — GymX{% endblock %}
+{% block page_breadcrumb %}POS / Sales / {{ sale.invoice_number }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ sale.invoice_number }}</h1><span class="badge-gymx {{ sale.get_status_color }}">{{ sale.get_status_display }}</span></div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="window.print()" class="btn-gymx outline"><i class="fa-solid fa-print"></i> Print</button>
+    {% if sale.status == 'completed' %}<a href="{% url 'pos:return_new' sale.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-rotate-left"></i> Return Item</a>{% endif %}
+    <a href="{% url 'pos:sales' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div style="background:linear-gradient(135deg,#1D4ED8,#0369A1);padding:24px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:white;">🏋️ GymX Store</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">{{ sale.invoice_number }}</div>
+      </div>
+      <div style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">
+          <span>{{ sale.member.get_full_name|default:"Walk-in Customer" }}</span>
+          <span>{{ sale.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <table class="table-gymx">
+          <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Total</th></tr></thead>
+          <tbody>
+            {% for item in sale.items.all %}
+            <tr>
+              <td style="font-size:13px;{% if item.is_returned %}text-decoration:line-through;color:var(--text-muted);{% endif %}">{{ item.product_name }}</td>
+              <td style="text-align:center;font-size:12.5px;color:var(--text-secondary);">{{ item.quantity }}</td>
+              <td style="text-align:right;font-size:13px;font-weight:600;">{{ item.total|floatformat:0 }} EGP</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div style="margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:13px;color:var(--text-muted);">Subtotal</span><span style="font-size:13px;">{{ sale.subtotal|floatformat:0 }} EGP</span></div>
+          {% if sale.discount_amount %}<div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:13px;color:var(--success);">Discount {% if sale.discount_code %}({{ sale.discount_code.code }}){% endif %}</span><span style="font-size:13px;color:var(--success);">-{{ sale.discount_amount|floatformat:0 }} EGP</span></div>{% endif %}
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);"><span style="font-size:16px;font-weight:700;">Total</span><span style="font-size:22px;font-weight:800;color:var(--primary);">{{ sale.total|floatformat:0 }} EGP</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:13px;color:var(--text-muted);">Payment Method</span><span style="font-size:13px;text-transform:capitalize;">{{ sale.get_payment_method_display }}</span></div>
+          {% if sale.change_due %}<div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:13px;color:var(--text-muted);">Change</span><span style="font-size:13px;">{{ sale.change_due|floatformat:0 }} EGP</span></div>{% endif %}
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--text-muted);border-top:1px dashed var(--border);padding-top:16px;margin-top:16px;">Thank you! · Cashier: {{ sale.cashier.get_full_name|default:"—" }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>@media print { .sidebar,.navbar,.app-footer,.page-header,.btn-gymx{display:none!important;} .main-content{margin-left:0!important;} }</style>
+{% endblock %}

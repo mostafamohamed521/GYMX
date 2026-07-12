@@ -34,20 +34,27 @@
     <a href="{% url 'workouts:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
       <i class="fa-solid fa-dumbbell"></i><span>Workouts</span>
     </a>
-    <div class="nav-section-label">Finance</div>
-    <a href="#" class="nav-item" title="Coming in Sprint 5">
-      <i class="fa-solid fa-credit-card"></i><span>Payments</span>
+    <a href="{% url 'nutrition:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'nutrition' %}active{% endif %}">
+      <i class="fa-solid fa-leaf"></i><span>Nutrition</span>
     </a>
-    <a href="#" class="nav-item">
-      <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+    <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
+      <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
+    </a>
+    <a href="{% url 'hr:list' %}" class="nav-item {% if request.resolver_match.app_name == 'hr' %}active{% endif %}">
+      <i class="fa-solid fa-id-badge"></i><span>HR & Employees</span>
+    </a>
+
+    <div class="nav-section-label">Finance</div>
+    <a href="{% url 'payments:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'payments' %}active{% endif %}">
+      <i class="fa-solid fa-credit-card"></i><span>Payments</span>
     </a>
 
     <div class="nav-section-label">Operations</div>
-    <a href="#" class="nav-item">
-      <i class="fa-solid fa-calendar-days"></i><span>Classes</span>
-    </a>
-    <a href="#" class="nav-item">
+    <a href="{% url 'inventory:products' %}" class="nav-item {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">
       <i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span>
+    </a>
+    <a href="{% url 'pos:screen' %}" class="nav-item {% if request.resolver_match.app_name == 'pos' %}active{% endif %}">
+      <i class="fa-solid fa-cash-register"></i><span>POS</span>
     </a>
 
     {% if request.user.can_manage_members %}

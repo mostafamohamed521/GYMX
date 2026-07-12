@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Return Item — GymX{% endblock %}
+{% block page_breadcrumb %}POS / Returns / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Return Item</h1><p class="page-subtitle">{{ sale.invoice_number }}</p></div>
+  <a href="{% url 'pos:sale_detail' sale.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Item</label>
+        <select name="sale_item" class="form-select">
+          {% for item in sale.items.all %}
+          {% if not item.is_returned %}<option value="{{ item.pk }}">{{ item.product_name }} (Qty: {{ item.quantity }})</option>{% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label">Quantity to Return</label><input type="number" name="quantity" class="form-control" value="1" min="1" /></div>
+      <div class="mb-3"><label class="form-label">Reason</label><select name="reason" class="form-select">{% for v,l in reasons %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+      <div class="mb-4"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3"></textarea></div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'pos:sale_detail' sale.pk %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx danger"><i class="fa-solid fa-rotate-left"></i> Process Return</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
