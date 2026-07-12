@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.accounts.permissions import role_required, FRONT_DESK_ROLES
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Sum, Count
@@ -29,7 +30,7 @@ def _cart_totals(cart):
 
 
 # ── 1. POS Screen ──────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def pos_screen(request):
     cart = _get_cart(request)
     products = Product.objects.filter(is_active=True, is_sellable=True).select_related('category')[:60]
@@ -50,7 +51,7 @@ def pos_screen(request):
 
 
 # ── 2. Product Catalog ─────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def product_catalog(request):
     products = Product.objects.filter(is_active=True, is_sellable=True).select_related('category')
     q     = request.GET.get('q','')
@@ -65,7 +66,7 @@ def product_catalog(request):
 
 
 # ── 3. Shopping Cart (add/remove/clear) ────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def cart_add(request):
     if request.method == 'POST':
         product = get_object_or_404(Product, pk=request.POST.get('product_id'))
@@ -90,7 +91,7 @@ def cart_add(request):
     return redirect('pos:screen')
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def cart_remove(request, index):
     cart = _get_cart(request)
     if 0 <= index < len(cart):
@@ -99,7 +100,7 @@ def cart_remove(request, index):
     return redirect('pos:screen')
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def cart_clear(request):
     _save_cart(request, [])
     request.session.pop('pos_discount_code', None)
@@ -108,12 +109,12 @@ def cart_clear(request):
 
 
 # ── 4. Barcode Scanner ─────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def barcode_scanner(request):
     return render(request, 'pos/barcode_scanner.html', {})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def ajax_scan(request):
     code = request.GET.get('code', '')
     product = Product.objects.filter(barcode=code, is_active=True).first()
@@ -122,7 +123,7 @@ def ajax_scan(request):
     return JsonResponse({'found': False})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def ajax_apply_discount(request):
     code = request.POST.get('code', '').upper()
     cart = _get_cart(request)
@@ -137,7 +138,7 @@ def ajax_apply_discount(request):
 
 
 # ── 5. Checkout ─────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def checkout(request):
     cart = _get_cart(request)
     if not cart:
@@ -204,7 +205,7 @@ def checkout(request):
 
 
 # ── 6. Sales History ────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def sales_history(request):
     sales = Sale.objects.select_related('member','cashier').order_by('-created_at')
     q        = request.GET.get('q','')
@@ -223,14 +224,14 @@ def sales_history(request):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def sale_detail(request, pk):
     sale = get_object_or_404(Sale.objects.select_related('member','cashier','discount_code').prefetch_related('items'), pk=pk)
     return render(request, 'pos/sale_detail.html', {'sale': sale})
 
 
 # ── 7. Returns ───────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def returns(request):
     return_list = Return.objects.select_related('sale','sale_item','processed_by').order_by('-created_at')
     stats = {
@@ -240,7 +241,7 @@ def returns(request):
     return render(request, 'pos/returns.html', {'return_list': return_list, 'stats': stats})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def return_new(request, sale_pk):
     sale = get_object_or_404(Sale.objects.prefetch_related('items'), pk=sale_pk)
 
@@ -283,7 +284,7 @@ def return_new(request, sale_pk):
 
 
 # ── 8. Daily Sales ───────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def daily_sales(request):
     day = request.GET.get('date', str(date.today()))
     sales = Sale.objects.filter(created_at__date=day, status='completed').select_related('member','cashier')
@@ -301,7 +302,7 @@ def daily_sales(request):
 
 
 # ── 9. Categories (POS view of product categories) ──────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def pos_categories(request):
     cats = ProductCategory.objects.annotate(
         prod_count=Count('products', filter=Q(products__is_sellable=True))
@@ -310,7 +311,7 @@ def pos_categories(request):
 
 
 # ── 10. Discounts ─────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def discounts(request):
     if request.method == 'POST':
         Discount.objects.create(
@@ -333,7 +334,7 @@ def discounts(request):
 
 
 # ── 11. Gift Cards ────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def gift_cards(request):
     cards = GiftCard.objects.select_related('purchased_by').order_by('-created_at')
     stats = {
@@ -344,7 +345,7 @@ def gift_cards(request):
     return render(request, 'pos/gift_cards.html', {'cards': cards, 'stats': stats})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def gift_card_new(request):
     if request.method == 'POST':
         member_pk = request.POST.get('purchased_by')
