@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.accounts.permissions import role_required, FRONT_DESK_ROLES
 from django.contrib import messages
 from django.db.models import Q, Count
 from django.utils import timezone
@@ -33,7 +34,7 @@ def _timeline(member, event_type, title, desc='', user=None):
 
 
 # ── Members List ───────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_list(request):
     form    = MemberSearchForm(request.GET)
     members = Member.objects.select_related('assigned_coach')
@@ -68,7 +69,7 @@ def member_list(request):
 
 
 # ── Add Member ─────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_add(request):
     if request.method == 'POST':
         form = MemberForm(request.POST, request.FILES)
@@ -92,7 +93,7 @@ def member_add(request):
 
 
 # ── Member Detail ──────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_detail(request, pk):
     member = get_object_or_404(Member, pk=pk)
     latest_measurement  = member.measurements.first()
@@ -124,7 +125,7 @@ def member_detail(request, pk):
 
 
 # ── Edit Member ────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_edit(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -146,7 +147,7 @@ def member_edit(request, pk):
 
 
 # ── Delete Member ──────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_delete(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -159,7 +160,7 @@ def member_delete(request, pk):
 
 
 # ── Archive / Restore ──────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_archive(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -174,7 +175,7 @@ def member_archive(request, pk):
     return render(request, 'members/member_archive.html', {'member': member})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_restore(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -189,7 +190,7 @@ def member_restore(request, pk):
 
 
 # ── Freeze Member ──────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_freeze(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -208,7 +209,7 @@ def member_freeze(request, pk):
     return render(request, 'members/member_freeze.html', {'form': form, 'member': member})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_unfreeze(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -224,7 +225,7 @@ def member_unfreeze(request, pk):
 
 
 # ── Blacklist ──────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_blacklist(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -243,7 +244,7 @@ def member_blacklist(request, pk):
 
 
 # ── Transfer ───────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_transfer(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -261,7 +262,7 @@ def member_transfer(request, pk):
 
 
 # ── Merge Members ──────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_merge(request):
     if request.method == 'POST':
         form = MergeMembersForm(request.POST)
@@ -282,7 +283,7 @@ def member_merge(request):
 
 
 # ── Timeline ───────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_timeline_view(request, pk):
     member = get_object_or_404(Member, pk=pk)
     events = member.timeline.select_related('created_by').all()
@@ -292,7 +293,7 @@ def member_timeline_view(request, pk):
 
 
 # ── Notes ──────────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_notes(request, pk):
     member = get_object_or_404(Member, pk=pk)
     notes  = member.member_notes.all()
@@ -313,7 +314,7 @@ def member_notes(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_note_delete(request, pk, note_pk):
     member = get_object_or_404(Member, pk=pk)
     note   = get_object_or_404(MemberNote, pk=note_pk, member=member)
@@ -323,7 +324,7 @@ def member_note_delete(request, pk, note_pk):
 
 
 # ── Medical Information ────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_medical(request, pk):
     member = get_object_or_404(Member, pk=pk)
     medical, _ = MedicalInformation.objects.get_or_create(member=member)
@@ -343,7 +344,7 @@ def member_medical(request, pk):
 
 
 # ── Emergency Contacts ─────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_emergency(request, pk):
     member   = get_object_or_404(Member, pk=pk)
     contacts = member.emergency_contacts.all()
@@ -362,7 +363,7 @@ def member_emergency(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def emergency_contact_delete(request, pk, contact_pk):
     member  = get_object_or_404(Member, pk=pk)
     contact = get_object_or_404(EmergencyContact, pk=contact_pk, member=member)
@@ -372,7 +373,7 @@ def emergency_contact_delete(request, pk, contact_pk):
 
 
 # ── Body Measurements ──────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_measurements(request, pk):
     member       = get_object_or_404(Member, pk=pk)
     measurements = member.measurements.all()
@@ -396,7 +397,7 @@ def member_measurements(request, pk):
 
 
 # ── Body Composition ───────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_composition(request, pk):
     member       = get_object_or_404(Member, pk=pk)
     compositions = member.body_compositions.all()
@@ -417,7 +418,7 @@ def member_composition(request, pk):
 
 
 # ── Progress Photos ────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_photos(request, pk):
     member = get_object_or_404(Member, pk=pk)
     photos = member.progress_photos.all()
@@ -436,7 +437,7 @@ def member_photos(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_photo_delete(request, pk, photo_pk):
     member = get_object_or_404(Member, pk=pk)
     photo  = get_object_or_404(ProgressPhoto, pk=photo_pk, member=member)
@@ -446,7 +447,7 @@ def member_photo_delete(request, pk, photo_pk):
 
 
 # ── Documents ──────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_documents(request, pk):
     member    = get_object_or_404(Member, pk=pk)
     documents = member.documents.all()
@@ -467,7 +468,7 @@ def member_documents(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_document_delete(request, pk, doc_pk):
     member = get_object_or_404(Member, pk=pk)
     doc    = get_object_or_404(MemberDocument, pk=doc_pk, member=member)
@@ -477,7 +478,7 @@ def member_document_delete(request, pk, doc_pk):
 
 
 # ── Assign Coach / Nutritionist ────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_assign(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if request.method == 'POST':
@@ -498,7 +499,7 @@ def member_assign(request, pk):
 
 
 # ── Goals ──────────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_goals(request, pk):
     member = get_object_or_404(Member, pk=pk)
     goals  = member.goals.all()
@@ -518,7 +519,7 @@ def member_goals(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_goal_achieve(request, pk, goal_pk):
     member = get_object_or_404(Member, pk=pk)
     goal   = get_object_or_404(MemberGoal, pk=goal_pk, member=member)
@@ -530,7 +531,7 @@ def member_goal_achieve(request, pk, goal_pk):
     return redirect('members:goals', pk=pk)
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_goal_delete(request, pk, goal_pk):
     member = get_object_or_404(Member, pk=pk)
     goal   = get_object_or_404(MemberGoal, pk=goal_pk, member=member)
@@ -540,7 +541,7 @@ def member_goal_delete(request, pk, goal_pk):
 
 
 # ── QR Code & Barcode ──────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_qr(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if not member.qr_code:
@@ -549,7 +550,7 @@ def member_qr(request, pk):
     return render(request, 'members/member_qr.html', {'member': member})
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_barcode(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if not member.barcode_image:
@@ -559,7 +560,7 @@ def member_barcode(request, pk):
 
 
 # ── Member Card ────────────────────────────────────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_card(request, pk):
     member = get_object_or_404(Member, pk=pk)
     if not member.qr_code:
@@ -569,7 +570,7 @@ def member_card(request, pk):
 
 
 # ── History stubs (linked to future sprints) ───────────────
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_membership_history(request, pk):
     member = get_object_or_404(Member, pk=pk)
     return render(request, 'members/member_history.html', {
@@ -579,7 +580,7 @@ def member_membership_history(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_attendance_history(request, pk):
     member = get_object_or_404(Member, pk=pk)
     return render(request, 'members/member_history.html', {
@@ -589,7 +590,7 @@ def member_attendance_history(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_payment_history(request, pk):
     member = get_object_or_404(Member, pk=pk)
     return render(request, 'members/member_history.html', {
@@ -599,7 +600,7 @@ def member_payment_history(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_workout_history(request, pk):
     member = get_object_or_404(Member, pk=pk)
     return render(request, 'members/member_history.html', {
@@ -609,7 +610,7 @@ def member_workout_history(request, pk):
     })
 
 
-@login_required
+@role_required(*FRONT_DESK_ROLES)
 def member_nutrition_history(request, pk):
     member = get_object_or_404(Member, pk=pk)
     return render(request, 'members/member_history.html', {
