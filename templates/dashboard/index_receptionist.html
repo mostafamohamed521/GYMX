@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Welcome back, {{ request.user.get_short_name }}</h1><p class="page-subtitle">Front desk overview</p></div>
+  <span class="badge-gymx {{ request.user.get_role_badge_class }}">{{ request.user.get_role_display }}</span>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.checkins_today }}</div><div class="stat-label">Check-ins Today</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-user-plus"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.new_this_week }}</div><div class="stat-label">New This Week</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-clock"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.pending_payments }}</div><div class="stat-label">Pending Payments</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-icon red" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.expiring_soon }}</div><div class="stat-label">Expiring This Week</div></div></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+  <a href="{% url 'attendance:live_checkin' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-right-to-bracket"></i> Check-In Member</a>
+  <a href="{% url 'members:add' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-user-plus"></i> New Member</a>
+  <a href="{% url 'payments:new' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-money-bill-wave"></i> Record Payment</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-check"></i> Today's Check-ins</span><a href="{% url 'attendance:today' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a></div>
+      <div class="card-body" style="padding:0;">
+        {% for r in recent_checkins %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ r.member.get_full_name }}</span>
+          <span style="font-size:12.5px;color:var(--text-muted);">{{ r.check_in|date:"H:i" }}</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No check-ins yet today</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Pending Payments</span><a href="{% url 'payments:pending' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a></div>
+      <div class="card-body" style="padding:0;">
+        {% for p in pending_pay %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ p.member.get_full_name }}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--warning);">{{ p.net_amount|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No pending payments</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chalkboard-user"></i> Upcoming Classes</span><a href="{% url 'classes:schedule' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">Full schedule</a></div>
+  <div class="card-body" style="padding:0;">
+    {% for s in upcoming_classes %}
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+      <span style="width:10px;height:10px;border-radius:50%;background:{{ s.gym_class.color }};display:inline-block;"></span>
+      <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ s.gym_class.name }}</span>
+      <span style="font-size:12px;color:var(--text-muted);">{{ s.date|date:"M d" }} · {{ s.start_time|time:"H:i" }}</span>
+    </div>
+    {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No upcoming classes</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

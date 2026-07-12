@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Welcome back, {{ request.user.get_short_name }}</h1><p class="page-subtitle">Full business overview — {{ request.user.get_role_display }}</p></div>
+  <span class="badge-gymx {{ request.user.get_role_badge_class }}">{{ request.user.get_role_display }}</span>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total_members }}</div><div class="stat-label">Total Members</div><div class="stat-change up"><i class="fa-solid fa-arrow-up"></i> {{ stats.new_this_month }} this month</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dollar-sign"></i></div><div class="stat-value" style="font-size:24px;">{{ stats.monthly_revenue|floatformat:0 }}</div><div class="stat-label">Revenue (30d, EGP)</div><div class="stat-change up"><i class="fa-solid fa-cash-register"></i> +{{ stats.pos_revenue|floatformat:0 }} POS</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.attendance_today }}</div><div class="stat-label">Check-ins Today</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-id-card"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.active_subs }}</div><div class="stat-label">Active Subscriptions</div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-value" style="font-size:20px;">{{ stats.total_coaches }}</div><div class="stat-label">Active Coaches</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-value" style="font-size:20px;">{{ stats.total_employees }}</div><div class="stat-label">Employees</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:14px;"><div class="stat-value" style="font-size:20px;">{{ stats.pending_payments }}</div><div class="stat-label">Pending Payments</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:14px;"><div class="stat-value" style="font-size:20px;">{{ stats.overdue_invoices }}</div><div class="stat-label">Overdue Invoices</div></div></div>
+</div>
+
+{% if stats.low_stock or stats.pending_leave %}
+<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i>
+  {% if stats.low_stock %}<strong>{{ stats.low_stock }}</strong> products low on stock. {% endif %}
+  {% if stats.pending_leave %}<strong>{{ stats.pending_leave }}</strong> leave request{{ stats.pending_leave|pluralize }} awaiting approval.{% endif %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card-gymx mb-4">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-user-plus"></i> Recent Members</span><a href="{% url 'members:list' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a></div>
+      <div class="card-body" style="padding:0;">
+        {% for m in recent_members %}
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+            {% if m.profile_image %}<img src="{{ m.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ m.get_initials }}{% endif %}
+          </div>
+          <a href="{% url 'members:detail' m.pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.get_full_name }}</a>
+          <span class="badge-gymx {{ m.get_status_color }}" style="font-size:10px;">{{ m.get_status_display }}</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No members yet</div>{% endfor %}
+      </div>
+    </div>
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-money-bill-wave"></i> Recent Payments</span><a href="{% url 'payments:list' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a></div>
+      <div class="card-body" style="padding:0;">
+        {% for p in recent_payments %}
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <i class="fa-solid {{ p.get_method_icon }}" style="color:var(--text-muted);width:16px;"></i>
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ p.member.get_full_name }}</span>
+          <span style="font-size:13.5px;font-weight:700;color:var(--success);">{{ p.net_amount|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No payments yet</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-star"></i> Top Coaches</span><a href="{% url 'coaches:list' %}" style="font-size:12px;color:var(--primary);text-decoration:none;">View all</a></div>
+      <div class="card-body" style="padding:0;">
+        {% for c in top_coaches %}
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
+            {% if c.profile_image %}<img src="{{ c.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ c.get_initials }}{% endif %}
+          </div>
+          <a href="{% url 'coaches:detail' c.pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ c.get_full_name }}</a>
+          <span style="font-size:13px;font-weight:700;color:var(--warning);">⭐ {{ c.rating }}</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No coaches yet</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

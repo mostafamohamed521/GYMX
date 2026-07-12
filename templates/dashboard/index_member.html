@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Welcome back, {{ request.user.get_short_name }}</h1><p class="page-subtitle">Your fitness journey at a glance</p></div>
+  <span class="badge-gymx {{ request.user.get_role_badge_class }}">{{ request.user.get_role_display }}</span>
+</div>
+
+{% if not member %}
+<div class="alert-gymx warning"><i class="fa-solid fa-triangle-exclamation"></i> Your account isn't linked to a member profile yet. Please contact the front desk.</div>
+{% else %}
+
+<!-- Membership status card -->
+<div style="background:linear-gradient(135deg,{% if active_sub %}#059669,#0284C7{% else %}#94A3B8,#64748B{% endif %});border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;box-shadow:var(--shadow-md);">
+  <div>
+    <div style="font-size:13px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;">Membership Status</div>
+    <div style="font-size:24px;font-weight:800;margin-top:4px;">{{ stats.membership_status }}</div>
+    {% if active_sub %}<div style="font-size:13px;opacity:0.85;margin-top:4px;">{{ active_sub.plan.name }}</div>{% endif %}
+  </div>
+  {% if stats.days_left is not None %}
+  <div style="text-align:right;">
+    <div style="font-size:32px;font-weight:900;">{{ stats.days_left }}</div>
+    <div style="font-size:12px;opacity:0.8;">days remaining</div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.attendance_month }}</div><div class="stat-label">Visits (30 days)</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dumbbell"></i></div><div class="stat-value" style="font-size:20px;">{% if stats.active_workout %}Active{% else %}None{% endif %}</div><div class="stat-label">Workout Plan</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-leaf"></i></div><div class="stat-value" style="font-size:20px;">{% if stats.active_nutrition %}Active{% else %}None{% endif %}</div><div class="stat-label">Nutrition Plan</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-chalkboard-user"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.upcoming_classes }}</div><div class="stat-label">Booked Classes</div></div></div>
+</div>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+  <a href="{% url 'members:detail' member.pk %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-user"></i> My Profile</a>
+  {% if stats.active_workout %}<a href="{% url 'workouts:progress' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-dumbbell"></i> My Workouts</a>{% endif %}
+  {% if stats.active_nutrition %}<a href="{% url 'nutrition:progress' member.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-leaf"></i> My Nutrition</a>{% endif %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-money-bill-wave"></i> Recent Payments</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for p in recent_payments %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ p.get_payment_type_display }}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--success);">{{ p.net_amount|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No payment history</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dumbbell"></i> Upcoming Workout Sessions</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for s in upcoming_sessions %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ s.name }}</span>
+          <span style="font-size:12px;color:var(--text-muted);">{{ s.scheduled_date|date:"M d" }}</span>
+        </div>
+        {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No upcoming sessions</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

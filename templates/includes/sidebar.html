@@ -17,6 +17,7 @@
       <i class="fa-solid fa-gauge"></i><span>Dashboard</span>
     </a>
 
+    {% if is_front_desk_role %}
     <div class="nav-section-label">Management</div>
     <a href="{% url 'members:list' %}" class="nav-item {% if request.resolver_match.app_name == 'members' %}active{% endif %}">
       <i class="fa-solid fa-users"></i><span>Members</span>
@@ -30,32 +31,67 @@
     <a href="{% url 'attendance:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'attendance' %}active{% endif %}">
       <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
     </a>
+    <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
+      <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
+    </a>
+    {% endif %}
 
+    {% if is_coach_role %}
+    <div class="nav-section-label">My Coaching</div>
+    <a href="{% url 'coaches:list' %}" class="nav-item {% if request.resolver_match.app_name == 'coaches' %}active{% endif %}">
+      <i class="fa-solid fa-person-running"></i><span>Coaches</span>
+    </a>
+    <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
+      <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
+    </a>
+    {% endif %}
+
+    {% if is_front_desk_role or is_coach_role %}
     <a href="{% url 'workouts:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
       <i class="fa-solid fa-dumbbell"></i><span>Workouts</span>
     </a>
     <a href="{% url 'nutrition:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'nutrition' %}active{% endif %}">
       <i class="fa-solid fa-leaf"></i><span>Nutrition</span>
     </a>
-    <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
-      <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
-    </a>
+    {% endif %}
+
+    {% if is_admin_role %}
     <a href="{% url 'hr:list' %}" class="nav-item {% if request.resolver_match.app_name == 'hr' %}active{% endif %}">
       <i class="fa-solid fa-id-badge"></i><span>HR & Employees</span>
     </a>
+    {% endif %}
 
+    {% if is_front_desk_role %}
     <div class="nav-section-label">Finance</div>
     <a href="{% url 'payments:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'payments' %}active{% endif %}">
       <i class="fa-solid fa-credit-card"></i><span>Payments</span>
     </a>
+    {% endif %}
 
+    {% if is_admin_role %}
     <div class="nav-section-label">Operations</div>
     <a href="{% url 'inventory:products' %}" class="nav-item {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">
       <i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span>
     </a>
+    {% endif %}
+    {% if is_front_desk_role %}
     <a href="{% url 'pos:screen' %}" class="nav-item {% if request.resolver_match.app_name == 'pos' %}active{% endif %}">
       <i class="fa-solid fa-cash-register"></i><span>POS</span>
     </a>
+    {% endif %}
+
+    {% if is_member_role %}
+    <div class="nav-section-label">My Gym</div>
+    <a href="{% url 'members:detail' request.user.member_profile.pk %}" class="nav-item {% if request.resolver_match.app_name == 'members' %}active{% endif %}">
+      <i class="fa-solid fa-id-card"></i><span>My Membership</span>
+    </a>
+    <a href="{% url 'workouts:progress' request.user.member_profile.pk %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
+      <i class="fa-solid fa-dumbbell"></i><span>My Workouts</span>
+    </a>
+    <a href="{% url 'nutrition:progress' request.user.member_profile.pk %}" class="nav-item {% if request.resolver_match.app_name == 'nutrition' %}active{% endif %}">
+      <i class="fa-solid fa-leaf"></i><span>My Nutrition</span>
+    </a>
+    {% endif %}
 
     {% if request.user.can_manage_members %}
     <div class="nav-section-label">Staff</div>
