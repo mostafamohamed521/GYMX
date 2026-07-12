@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ eq.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Equipment / {{ eq.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ eq.name }}</h1><span class="badge-gymx {{ eq.get_status_color }}">{{ eq.get_status_display }}</span></div>
+  <a href="{% url 'inventory:equipment' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4"><div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Brand</span><span style="font-size:13px;font-weight:600;">{{ eq.brand.name|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Serial #</span><span style="font-size:13px;font-family:monospace;">{{ eq.serial_number|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Location</span><span style="font-size:13px;">{{ eq.location|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Purchase Date</span><span style="font-size:13px;">{{ eq.purchase_date|date:"M d, Y"|default:"—" }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-muted);">Purchase Price</span><span style="font-size:13px;font-weight:600;">{{ eq.purchase_price|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:13px;color:var(--text-muted);">Warranty</span><span style="font-size:13px;font-weight:600;color:{% if eq.is_under_warranty %}var(--success){% else %}var(--danger){% endif %};">{{ eq.warranty_until|date:"M d, Y"|default:"—" }}</span></div>
+      </div>
+      {% if eq.notes %}<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--text-secondary);">{{ eq.notes }}</div>{% endif %}
+    </div></div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-wrench"></i> Maintenance History</span></div>
+      <div style="overflow-x:auto;">
+        <table class="table-gymx">
+          <thead><tr><th>Type</th><th>Scheduled</th><th>Completed</th><th>Cost</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for m in maintenance %}
+            <tr>
+              <td style="font-size:13px;font-weight:600;">{{ m.get_maintenance_type_display }}</td>
+              <td style="font-size:12.5px;color:var(--text-muted);">{{ m.scheduled_date|date:"M d, Y" }}</td>
+              <td style="font-size:12.5px;color:var(--text-muted);">{{ m.completed_date|date:"M d, Y"|default:"—" }}</td>
+              <td style="font-size:13px;color:var(--text-secondary);">{{ m.cost|floatformat:0 }} EGP</td>
+              <td><span class="badge-gymx {{ m.get_status_color }}" style="font-size:11px;">{{ m.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">No maintenance records</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
