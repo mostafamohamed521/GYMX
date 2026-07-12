@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.accounts.permissions import role_required, ADMIN_ROLES
 from django.contrib import messages
 from django.db.models import Q, Sum, Count
 
@@ -11,7 +12,7 @@ from .models import (
 )
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def products(request):
     prods = Product.objects.select_related('category','brand').filter(is_active=True)
     q     = request.GET.get('q','')
@@ -31,7 +32,7 @@ def products(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def product_new(request):
     if request.method == 'POST':
         try:
@@ -74,7 +75,7 @@ def product_new(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def categories(request):
     if request.method == 'POST':
         ProductCategory.objects.create(
@@ -89,7 +90,7 @@ def categories(request):
     return render(request, 'inventory/categories.html', {'cats': cats})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def brands(request):
     if request.method == 'POST':
         Brand.objects.create(name=request.POST.get('name'), website=request.POST.get('website',''))
@@ -100,7 +101,7 @@ def brands(request):
     return render(request, 'inventory/brands.html', {'brand_list': brand_list})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def equipment_list(request):
     equipment = Equipment.objects.select_related('category','brand').all()
     status_f  = request.GET.get('status','')
@@ -118,7 +119,7 @@ def equipment_list(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def equipment_new(request):
     if request.method == 'POST':
         try:
@@ -152,7 +153,7 @@ def equipment_new(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def equipment_detail(request, pk):
     eq = get_object_or_404(Equipment.objects.select_related('category','brand'), pk=pk)
     maintenance = eq.maintenance_records.all()[:10]
@@ -161,7 +162,7 @@ def equipment_detail(request, pk):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def equipment_maintenance(request):
     if request.method == 'POST':
         eq = get_object_or_404(Equipment, pk=request.POST.get('equipment'))
@@ -186,13 +187,13 @@ def equipment_maintenance(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def maintenance_history(request):
     history = EquipmentMaintenance.objects.select_related('equipment').filter(status='completed').order_by('-completed_date')
     return render(request, 'inventory/maintenance_history.html', {'history': history})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def inventory_stock(request):
     stocks = Stock.objects.select_related('product','warehouse')
     wh_f   = request.GET.get('warehouse','')
@@ -209,7 +210,7 @@ def inventory_stock(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def warehouses(request):
     if request.method == 'POST':
         Warehouse.objects.create(name=request.POST.get('name'), location=request.POST.get('location',''))
@@ -222,7 +223,7 @@ def warehouses(request):
     return render(request, 'inventory/warehouses.html', {'wh_list': wh_list})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def stock_movement(request):
     if request.method == 'POST':
         product   = get_object_or_404(Product, pk=request.POST.get('product'))
@@ -256,13 +257,13 @@ def stock_movement(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def low_stock(request):
     low_products = [p for p in Product.objects.filter(is_active=True).select_related('category') if p.is_low_stock]
     return render(request, 'inventory/low_stock.html', {'low_products': low_products})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def damaged_items(request):
     if request.method == 'POST':
         product = get_object_or_404(Product, pk=request.POST.get('product'))
@@ -285,7 +286,7 @@ def damaged_items(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def purchase_orders(request):
     orders = PurchaseOrder.objects.select_related('supplier','warehouse').order_by('-order_date')
     status_f = request.GET.get('status','')
@@ -301,7 +302,7 @@ def purchase_orders(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def po_new(request):
     if request.method == 'POST':
         try:
@@ -339,7 +340,7 @@ def po_new(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def suppliers(request):
     if request.method == 'POST':
         Supplier.objects.create(
@@ -356,14 +357,14 @@ def suppliers(request):
     return render(request, 'inventory/suppliers.html', {'supplier_list': supplier_list})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def supplier_detail(request, pk):
     supplier = get_object_or_404(Supplier, pk=pk)
     orders   = PurchaseOrder.objects.filter(supplier=supplier).order_by('-order_date')
     return render(request, 'inventory/supplier_detail.html', {'supplier': supplier, 'orders': orders})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def warranty_tracking(request):
     today = date.today()
     equipment = Equipment.objects.filter(warranty_until__isnull=False).order_by('warranty_until')
