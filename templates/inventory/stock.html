@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Inventory Stock — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Stock{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Inventory Stock</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'inventory:movement' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-right-left"></i> Movement</a>
+    <a href="{% url 'inventory:products' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total_products }}</div><div class="stat-label">Products</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total_stock }}</div><div class="stat-label">Total Units</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.warehouses }}</div><div class="stat-label">Warehouses</div></div></div>
+</div>
+<div class="card-gymx mb-3"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;align-items:flex-end;">
+  <div><label class="form-label">Warehouse</label><select name="warehouse" class="form-select" style="width:200px;"><option value="">All</option>{% for w in warehouses %}<option value="{{ w.pk }}" {% if wh_f == w.pk|stringformat:'s' %}selected{% endif %}>{{ w.name }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+</form></div></div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Product</th><th>Warehouse</th><th>Quantity</th><th>Updated</th></tr></thead>
+  <tbody>
+    {% for s in stocks %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ s.product.name }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.warehouse.name }}</td>
+      <td><span class="badge-gymx {% if s.quantity <= s.product.reorder_level %}red{% else %}green{% endif %}" style="font-size:12px;">{{ s.quantity }}</span></td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ s.updated_at|date:"M d, Y H:i" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4" style="text-align:center;padding:48px;color:var(--text-muted);">No stock records</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
