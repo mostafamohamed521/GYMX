@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ supplier.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Suppliers / {{ supplier.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ supplier.name }}</h1></div>
+  <a href="{% url 'inventory:suppliers' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-user" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ supplier.contact_person|default:"—" }}</span></div>
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-phone" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ supplier.phone|default:"—" }}</span></div>
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-envelope" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ supplier.email|default:"—" }}</span></div>
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-location-dot" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ supplier.address|default:"—" }}</span></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-file-invoice"></i> Purchase Orders ({{ orders|length }})</span></div>
+      <div style="overflow-x:auto;"><table class="table-gymx">
+        <thead><tr><th>PO #</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for po in orders %}
+          <tr>
+            <td style="font-size:13px;font-family:monospace;font-weight:600;color:var(--primary);">{{ po.po_number }}</td>
+            <td style="font-size:12.5px;color:var(--text-muted);">{{ po.order_date|date:"M d, Y" }}</td>
+            <td style="font-size:13px;font-weight:600;">{{ po.total_amount|floatformat:0 }} EGP</td>
+            <td><span class="badge-gymx {{ po.get_status_color }}" style="font-size:11px;">{{ po.get_status_display }}</span></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No orders yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
