@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Equipment — GymX{% endblock %}
+{% block page_breadcrumb %}Inventory / Equipment / Add{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Add Equipment</h1></div>
+  <a href="{% url 'inventory:equipment' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label">Equipment Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" placeholder="e.g. Treadmill Pro X" /></div>
+        <div class="col-md-6"><label class="form-label">Category</label><select name="category" class="form-select"><option value="">None</option>{% for c in cats %}<option value="{{ c.pk }}">{{ c.name }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Brand</label><select name="brand" class="form-select"><option value="">None</option>{% for b in brands %}<option value="{{ b.pk }}">{{ b.name }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Serial Number</label><input type="text" name="serial_number" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Location</label><input type="text" name="location" class="form-control" placeholder="e.g. Main Floor" /></div>
+        <div class="col-md-4"><label class="form-label">Purchase Date</label><input type="date" name="purchase_date" class="form-control" /></div>
+        <div class="col-md-4"><label class="form-label">Purchase Price</label><input type="number" name="purchase_price" class="form-control" step="0.01" /></div>
+        <div class="col-md-4"><label class="form-label">Warranty Until</label><input type="date" name="warranty_until" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <a href="{% url 'inventory:equipment' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Equipment</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
