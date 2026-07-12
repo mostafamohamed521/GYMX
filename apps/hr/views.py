@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.accounts.permissions import role_required, ADMIN_ROLES
 from django.contrib import messages
 from django.db.models import Q, Count, Sum, Avg
 from django.utils import timezone
@@ -14,7 +15,7 @@ from .models import (
 
 
 # ── 1. Employees List ──────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def employees_list(request):
     employees = Employee.objects.select_related('department','position','role').order_by('first_name')
     q        = request.GET.get('q','')
@@ -39,7 +40,7 @@ def employees_list(request):
 
 
 # ── 2. Add Employee ────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def employee_add(request):
     if request.method == 'POST':
         try:
@@ -83,7 +84,7 @@ def employee_add(request):
 
 
 # ── 3. Employee Detail ─────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def employee_detail(request, pk):
     emp = get_object_or_404(Employee.objects.select_related('department','position','role'), pk=pk)
     today = date.today()
@@ -102,7 +103,7 @@ def employee_detail(request, pk):
 
 
 # ── 4. Departments ─────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def departments(request):
     if request.method == 'POST':
         Department.objects.create(
@@ -117,7 +118,7 @@ def departments(request):
 
 
 # ── 5. Positions ───────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def positions(request):
     if request.method == 'POST':
         dept_pk = request.POST.get('department')
@@ -137,7 +138,7 @@ def positions(request):
 
 
 # ── 6. Roles ───────────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def roles(request):
     if request.method == 'POST':
         Role.objects.create(name=request.POST.get('name'), description=request.POST.get('description',''))
@@ -149,13 +150,13 @@ def roles(request):
 
 
 # ── 7. Permissions ─────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def permissions(request):
     role_list = Role.objects.all()
     return render(request, 'hr/permissions.html', {'roles': role_list})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def permissions_edit(request, role_pk):
     role = get_object_or_404(Role, pk=role_pk)
     MODULES = ['Members','Payments','Coaches','Workouts','Nutrition','Classes','HR','Inventory','POS']
@@ -181,7 +182,7 @@ def permissions_edit(request, role_pk):
 
 
 # ── 8. Shift Management ────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def shift_management(request):
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -218,7 +219,7 @@ def shift_management(request):
 
 
 # ── 9. Employee Attendance ─────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def employee_attendance(request):
     today = date.today()
     if request.method == 'POST':
@@ -252,7 +253,7 @@ def employee_attendance(request):
 
 
 # ── 10. Payroll ────────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def payroll(request):
     today = date.today()
     if request.method == 'POST':
@@ -287,7 +288,7 @@ def payroll(request):
 
 
 # ── 11. Salaries ───────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def salaries(request):
     employees = Employee.objects.filter(status='active').select_related('department','position').order_by('-base_salary')
     stats = {
@@ -299,7 +300,7 @@ def salaries(request):
 
 
 # ── 12. Bonuses ────────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def bonuses(request):
     if request.method == 'POST':
         emp = get_object_or_404(Employee, pk=request.POST.get('employee'))
@@ -321,7 +322,7 @@ def bonuses(request):
 
 
 # ── 13. Deductions ─────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def deductions(request):
     if request.method == 'POST':
         emp = get_object_or_404(Employee, pk=request.POST.get('employee'))
@@ -345,7 +346,7 @@ def deductions(request):
 
 
 # ── 14. Leave Requests ──────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def leave_requests(request):
     if request.method == 'POST':
         emp = get_object_or_404(Employee, pk=request.POST.get('employee'))
@@ -375,7 +376,7 @@ def leave_requests(request):
     })
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def leave_action(request, pk):
     lr = get_object_or_404(LeaveRequest, pk=pk)
     action = request.POST.get('action')
@@ -395,7 +396,7 @@ def leave_action(request, pk):
 
 
 # ── 15. Performance Reviews ─────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def performance_reviews(request):
     reviews = PerformanceReview.objects.select_related('employee').order_by('-review_date')
     stats = {
@@ -405,7 +406,7 @@ def performance_reviews(request):
     return render(request, 'hr/performance_reviews.html', {'reviews': reviews, 'stats': stats})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def performance_new(request):
     if request.method == 'POST':
         emp = get_object_or_404(Employee, pk=request.POST.get('employee'))
@@ -428,7 +429,7 @@ def performance_new(request):
 
 
 # ── 16. Contracts ──────────────────────────────────────────
-@login_required
+@role_required(*ADMIN_ROLES)
 def contracts(request):
     contract_list = Contract.objects.select_related('employee').order_by('-start_date')
     stats = {
@@ -439,7 +440,7 @@ def contracts(request):
     return render(request, 'hr/contracts.html', {'contract_list': contract_list, 'stats': stats})
 
 
-@login_required
+@role_required(*ADMIN_ROLES)
 def contract_new(request):
     if request.method == 'POST':
         emp = get_object_or_404(Employee, pk=request.POST.get('employee'))
