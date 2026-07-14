@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ branch.name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Branches / {{ branch.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ branch.name }}</h1><span class="badge-gymx {{ branch.get_status_color }}">{{ branch.get_status_display }}</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'branches:dashboard' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="{% url 'branches:employees' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-id-badge"></i> Employees</a>
+    <a href="{% url 'branches:members' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-users"></i> Members</a>
+    <a href="{% url 'branches:revenue' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-dollar-sign"></i> Revenue</a>
+    <a href="{% url 'branches:settings' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="{% url 'branches:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-building"></i> Branch Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8"><label class="form-label">Branch Name</label><input type="text" name="name" class="form-control" value="{{ branch.name }}" /></div>
+            <div class="col-md-4"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}" {% if branch.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">City</label><input type="text" name="city" class="form-control" value="{{ branch.city }}" /></div>
+            <div class="col-md-6"><label class="form-label">Manager</label><select name="manager" class="form-select"><option value="">None</option>{% for m in managers %}<option value="{{ m.pk }}" {% if branch.manager and branch.manager.pk == m.pk %}selected{% endif %}>{{ m.get_full_name }}</option>{% endfor %}</select></div>
+            <div class="col-12"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2">{{ branch.address }}</textarea></div>
+            <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control" value="{{ branch.phone }}" /></div>
+            <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="{{ branch.email }}" /></div>
+            <div class="col-md-4"><label class="form-label">Opening</label><input type="time" name="opening_time" class="form-control" value="{{ branch.opening_time|time:'H:i' }}" /></div>
+            <div class="col-md-4"><label class="form-label">Closing</label><input type="time" name="closing_time" class="form-control" value="{{ branch.closing_time|time:'H:i' }}" /></div>
+            <div class="col-md-4"><label class="form-label">Max Capacity</label><input type="number" name="max_capacity" class="form-control" value="{{ branch.max_capacity }}" /></div>
+            <div class="col-12"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;"><input type="checkbox" name="is_main_branch" {% if branch.is_main_branch %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--primary);" /> Main Branch</label></div>
+            <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2">{{ branch.notes }}</textarea></div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card-gymx mb-4">
+        <div class="card-body" style="text-align:center;">
+          <div style="width:100px;height:100px;border-radius:var(--radius-xl);background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;overflow:hidden;">
+            {% if branch.image %}<img src="{{ branch.image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}<i class="fa-solid fa-building" style="font-size:32px;color:white;"></i>{% endif %}
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);font-family:monospace;">{{ branch.code }}</div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ branch.member_count }}</div><div class="stat-label">Members</div></div></div>
+        <div class="col-6"><div class="stat-card green" style="padding:14px;"><div class="stat-value" style="font-size:22px;">{{ branch.employee_count }}</div><div class="stat-label">Employees</div></div></div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
