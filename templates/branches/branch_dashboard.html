@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ branch.name }} Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Branches / {{ branch.name }} / Dashboard{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ branch.name }} Dashboard</h1><p class="page-subtitle">{{ branch.code }} · {{ branch.city }}</p></div>
+  <a href="{% url 'branches:detail' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total_members }}</div><div class="stat-label">Total Members</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.active_members }}</div><div class="stat-label">Active Members</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-id-badge"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total_employees }}</div><div class="stat-label">Employees</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-dollar-sign"></i></div><div class="stat-value" style="font-size:22px;">{{ stats.revenue_30d|floatformat:0 }}</div><div class="stat-label">Revenue (30d)</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-line"></i> Revenue Trend (6 Months)</span></div>
+      <div class="card-body"><div style="height:220px;"><canvas id="mChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-gauge"></i> Capacity</span></div>
+      <div class="card-body" style="text-align:center;">
+        <div style="position:relative;width:120px;height:120px;margin:0 auto 12px;">
+          <svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:120px;height:120px;">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-muted)" stroke-width="10"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--primary)" stroke-width="10" stroke-dasharray="{{ stats.capacity_pct|floatformat:0 }} 251" stroke-linecap="round"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="font-size:22px;font-weight:800;">{{ stats.capacity_pct }}%</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);">{{ stats.total_members }} / {{ branch.max_capacity }} capacity</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+new Chart(document.getElementById('mChart').getContext('2d'), {
+  type:'bar',
+  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(59,130,246,0.75)', borderRadius:8 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#F1F5F9' }, beginAtZero:true } } }
+});
+</script>
+{% endblock %}
