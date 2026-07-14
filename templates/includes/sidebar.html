@@ -59,6 +59,9 @@
     <a href="{% url 'hr:list' %}" class="nav-item {% if request.resolver_match.app_name == 'hr' %}active{% endif %}">
       <i class="fa-solid fa-id-badge"></i><span>HR & Employees</span>
     </a>
+    <a href="{% url 'branches:list' %}" class="nav-item {% if request.resolver_match.app_name == 'branches' %}active{% endif %}">
+      <i class="fa-solid fa-building"></i><span>Branches</span>
+    </a>
     {% endif %}
 
     {% if is_front_desk_role %}
