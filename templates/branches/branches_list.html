@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Branches — GymX{% endblock %}
+{% block page_breadcrumb %}Branches{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Branches</h1><p class="page-subtitle">Manage gym locations</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'branches:transfer_members' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-right-left"></i> Transfer Members</a>
+    <a href="{% url 'branches:transfer_employees' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-right-left"></i> Transfer Employees</a>
+    <a href="{% url 'branches:add' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Branch</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-building"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total }}</div><div class="stat-label">Total Branches</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-circle-check"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.active }}</div><div class="stat-label">Active</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-icon purple" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-users"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.members }}</div><div class="stat-label">Assigned Members</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-icon orange" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-id-badge"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.employees }}</div><div class="stat-label">Assigned Employees</div></div></div>
+</div>
+<div class="row g-3">
+  {% for b in branches %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;box-shadow:var(--shadow-xs);transition:all 0.2s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow-xs)'">
+      <div style="background:linear-gradient(135deg,var(--primary),var(--accent));padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="font-size:16px;font-weight:800;color:white;">{{ b.name }}{% if b.is_main_branch %} <i class="fa-solid fa-star" style="color:#FDE047;font-size:13px;"></i>{% endif %}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px;font-family:monospace;">{{ b.code }}</div>
+          </div>
+          <span class="badge-gymx {{ b.get_status_color }}" style="font-size:10px;">{{ b.get_status_display }}</span>
+        </div>
+        {% if b.city %}<div style="font-size:12.5px;color:rgba(255,255,255,0.85);margin-top:10px;"><i class="fa-solid fa-location-dot"></i> {{ b.city }}</div>{% endif %}
+      </div>
+      <div style="display:flex;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="flex:1;text-align:center;padding:12px 0;border-right:1px solid var(--border);"><div style="font-size:18px;font-weight:800;color:var(--text-primary);">{{ b.member_count }}</div><div style="font-size:10px;color:var(--text-muted);">Members</div></div>
+        <div style="flex:1;text-align:center;padding:12px 0;"><div style="font-size:18px;font-weight:800;color:var(--text-primary);">{{ b.employee_count }}</div><div style="font-size:10px;color:var(--text-muted);">Employees</div></div>
+      </div>
+      <div style="padding:12px 16px;display:flex;gap:8px;">
+        <a href="{% url 'branches:dashboard' b.pk %}" class="btn-gymx primary" style="text-decoration:none;flex:1;justify-content:center;font-size:12.5px;"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <a href="{% url 'branches:detail' b.pk %}" class="btn-gymx outline" style="text-decoration:none;padding:9px 12px;"><i class="fa-solid fa-eye"></i></a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <i class="fa-solid fa-building" style="font-size:40px;color:var(--text-muted);display:block;margin-bottom:14px;opacity:0.4;"></i>
+    <div style="font-size:17px;font-weight:700;margin-bottom:8px;">No branches yet</div>
+    <a href="{% url 'branches:add' %}" class="btn-gymx primary" style="text-decoration:none;">Add First Branch</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
