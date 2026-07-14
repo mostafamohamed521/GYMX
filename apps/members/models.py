@@ -74,6 +74,8 @@ class Member(models.Model):
                                         default=BloodType.UNKNOWN)
 
     # ── Assignments ───────────────────────────────────────
+    branch               = models.ForeignKey('branches.Branch', on_delete=models.SET_NULL,
+                                             null=True, blank=True, related_name='members')
     assigned_coach       = models.ForeignKey(User, on_delete=models.SET_NULL,
                                              null=True, blank=True,
                                              related_name='coached_members',

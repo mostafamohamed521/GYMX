@@ -94,6 +94,8 @@ class Employee(models.Model):
 
     department      = models.ForeignKey(Department, on_delete=models.SET_NULL,
                                         null=True, blank=True, related_name='employees')
+    branch          = models.ForeignKey('branches.Branch', on_delete=models.SET_NULL,
+                                        null=True, blank=True, related_name='employees')
     position        = models.ForeignKey(Position, on_delete=models.SET_NULL,
                                         null=True, blank=True, related_name='employees')
     role            = models.ForeignKey(Role, on_delete=models.SET_NULL,
