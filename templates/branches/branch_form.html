@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ page_title }} — GymX{% endblock %}
+{% block page_breadcrumb %}Branches / {{ action }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ page_title }}</h1></div>
+  <a href="{% url 'branches:list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-gymx mb-4">
+        <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-building"></i> Branch Details</span></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8"><label class="form-label">Branch Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" placeholder="e.g. GymX — Maadi" /></div>
+            <div class="col-md-4"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">City</label><input type="text" name="city" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Manager</label><select name="manager" class="form-select"><option value="">None</option>{% for m in managers %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+            <div class="col-12"><label class="form-label">Address</label><textarea name="address" class="form-control" rows="2"></textarea></div>
+            <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Opening Time</label><input type="time" name="opening_time" class="form-control" value="06:00" /></div>
+            <div class="col-md-4"><label class="form-label">Closing Time</label><input type="time" name="closing_time" class="form-control" value="23:00" /></div>
+            <div class="col-md-4"><label class="form-label">Max Capacity</label><input type="number" name="max_capacity" class="form-control" value="200" /></div>
+            <div class="col-12"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;"><input type="checkbox" name="is_main_branch" style="width:16px;height:16px;accent-color:var(--primary);" /> Set as Main Branch</label></div>
+            <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card-gymx"><div class="card-body" style="text-align:center;">
+        <div id="imgPreview" style="width:120px;height:120px;border-radius:var(--radius-xl);background:var(--bg-muted);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;overflow:hidden;"><i class="fa-solid fa-building" style="font-size:32px;color:var(--text-muted);"></i></div>
+        <input type="file" name="image" id="imgInput" accept="image/*" style="display:none;" onchange="previewImg(this)" />
+        <button type="button" onclick="document.getElementById('imgInput').click()" class="btn-gymx outline" style="font-size:12.5px;"><i class="fa-solid fa-upload"></i> Upload</button>
+      </div></div>
+    </div>
+    <div class="col-12 d-flex justify-content-end gap-2">
+      <a href="{% url 'branches:list' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+      <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Branch</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function previewImg(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { document.getElementById('imgPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" />`; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}
