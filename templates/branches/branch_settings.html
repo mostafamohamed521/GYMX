@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ branch.name }} Settings — GymX{% endblock %}
+{% block page_breadcrumb %}Branches / {{ branch.name }} / Settings{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">{{ branch.name }} — Settings</h1></div>
+  <a href="{% url 'branches:detail' branch.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+        <span style="font-size:13.5px;color:var(--text-primary);">Allow Walk-ins</span>
+        <input type="checkbox" name="allow_walk_ins" {% if settings_obj.allow_walk_ins %}checked{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" />
+      </label>
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+        <span style="font-size:13.5px;color:var(--text-primary);">Allow Online Booking</span>
+        <input type="checkbox" name="allow_online_booking" {% if settings_obj.allow_online_booking %}checked{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" />
+      </label>
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+        <span style="font-size:13.5px;color:var(--text-primary);">Require Appointment</span>
+        <input type="checkbox" name="require_appointment" {% if settings_obj.require_appointment %}checked{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" />
+      </label>
+      <div class="row g-3 mt-3">
+        <div class="col-md-6"><label class="form-label">Tax Rate (%)</label><input type="number" name="tax_rate" class="form-control" value="{{ settings_obj.tax_rate }}" step="0.01" /></div>
+        <div class="col-md-6"><label class="form-label">Currency</label><input type="text" name="currency" class="form-control" value="{{ settings_obj.currency }}" /></div>
+      </div>
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;margin-top:20px;"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
