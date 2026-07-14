@@ -25,6 +25,7 @@ urlpatterns = [
     path('hr/',            include('apps.hr.urls',             namespace='hr')),
     path('inventory/',     include('apps.inventory.urls',     namespace='inventory')),
     path('pos/',           include('apps.pos.urls',           namespace='pos')),
+    path('branches/',      include('apps.branches.urls',      namespace='branches')),
 ]
 
 if settings.DEBUG:
