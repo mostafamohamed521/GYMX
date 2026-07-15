@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Meetings — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Meetings{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Meetings</h1></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Leads</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Schedule Meeting</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Title</label><input type="text" name="title" class="form-control" placeholder="e.g. Membership consultation" /></div>
+          <div class="mb-3"><label class="form-label">Lead</label><select name="lead" class="form-select"><option value="">— None —</option>{% for l in leads %}<option value="{{ l.pk }}">{{ l.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Or Member</label><select name="member" class="form-select"><option value="">— None —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Start</label><input type="time" name="start_time" class="form-control" value="10:00" /></div>
+            <div class="col-6"><label class="form-label">End</label><input type="time" name="end_time" class="form-control" value="11:00" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Location</label><input type="text" name="location" class="form-control" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-handshake"></i> Schedule</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Title</th><th>With</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for m in meeting_list %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ m.title }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ m.lead.get_full_name|default:m.member.get_full_name|default:"—" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ m.date|date:"M d, Y" }}</td>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ m.start_time|time:"H:i" }} — {{ m.end_time|time:"H:i" }}</td>
+          <td><span class="badge-gymx {{ m.get_status_color }}" style="font-size:11px;">{{ m.get_status_display }}</span></td>
+        </tr>
+        {% empty %}<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No meetings scheduled</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
