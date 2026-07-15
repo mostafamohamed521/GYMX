@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Lead — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Leads / Add{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Add Lead</h1></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">First Name <span style="color:var(--danger);">*</span></label><input type="text" name="first_name" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Last Name <span style="color:var(--danger);">*</span></label><input type="text" name="last_name" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Phone <span style="color:var(--danger);">*</span></label><input type="text" name="phone" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Source</label><select name="source" class="form-select">{% for v,l in sources %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Interest</label><input type="text" name="interest" class="form-control" placeholder="e.g. Weight loss, PT" /></div>
+        <div class="col-12"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3"></textarea></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-plus"></i> Add Lead</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
