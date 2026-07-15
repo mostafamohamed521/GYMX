@@ -34,6 +34,9 @@
     <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
       <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
     </a>
+    <a href="{% url 'crm:leads' %}" class="nav-item {% if request.resolver_match.app_name == 'crm' %}active{% endif %}">
+      <i class="fa-solid fa-address-book"></i><span>CRM</span>
+    </a>
     {% endif %}
 
     {% if is_coach_role %}
@@ -43,6 +46,9 @@
     </a>
     <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
       <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
+    </a>
+    <a href="{% url 'crm:leads' %}" class="nav-item {% if request.resolver_match.app_name == 'crm' %}active{% endif %}">
+      <i class="fa-solid fa-address-book"></i><span>CRM</span>
     </a>
     {% endif %}
 
