@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Complaints — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Complaints{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Complaints</h1></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.open }}</div><div class="stat-label">Open</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.urgent }}</div><div class="stat-label">Urgent</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.resolved }}</div><div class="stat-label">Resolved</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Log Complaint</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member</label><select name="member" class="form-select"><option value="">— Anonymous —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Subject</label><input type="text" name="subject" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Priority</label><select name="priority" class="form-select">{% for v,l in priorities %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+          <button type="submit" class="btn-gymx danger" style="width:100%;justify-content:center;"><i class="fa-solid fa-triangle-exclamation"></i> Log Complaint</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Subject</th><th>Member</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for c in complaint_list %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ c.subject }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.member.get_full_name|default:"Anonymous" }}</td>
+          <td><span class="badge-gymx {{ c.get_priority_color }}" style="font-size:11px;">{{ c.get_priority_display }}</span></td>
+          <td><span class="badge-gymx {{ c.get_status_color }}" style="font-size:11px;">{{ c.get_status_display }}</span></td>
+          <td><a href="{% url 'crm:complaint_detail' c.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+        </tr>
+        {% empty %}<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No complaints logged</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
