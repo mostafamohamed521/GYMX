@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ lead.get_full_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Leads / {{ lead.get_full_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ lead.get_full_name }}</h1><span class="badge-gymx {{ lead.get_status_color }}">{{ lead.get_status_display }}</span></div>
+  <div style="display:flex;gap:8px;">
+    {% if lead.status != 'converted' %}
+    <form method="post" action="{% url 'crm:lead_convert' lead.pk %}" onsubmit="return confirm('Convert this lead to a member?')"><button type="submit" class="btn-gymx primary"><i class="fa-solid fa-user-plus"></i> Convert to Member</button></form>
+    {% endif %}
+    <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-4"><div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-phone" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ lead.phone }}</span></div>
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-envelope" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ lead.email|default:"—" }}</span></div>
+        <div style="display:flex;gap:10px;"><i class="fa-solid {{ lead.get_source_icon }}" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ lead.get_source_display }}</span></div>
+        <div style="display:flex;gap:10px;"><i class="fa-solid fa-heart" style="color:var(--text-muted);width:16px;"></i><span style="font-size:13px;">{{ lead.interest|default:"—" }}</span></div>
+      </div>
+    </div></div>
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-pen"></i> Update Status</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}" {% if lead.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="3">{{ lead.notes }}</textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx mb-4"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-check"></i> Follow-Ups</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for f in follow_ups %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:12.5px;color:var(--text-muted);width:90px;">{{ f.scheduled_date|date:"M d, Y" }}</span>
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ f.notes|default:"—"|truncatechars:40 }}</span>
+          <span class="badge-gymx {{ f.get_status_color }}" style="font-size:10px;">{{ f.get_status_display }}</span>
+        </div>
+        {% empty %}<div style="padding:20px;text-align:center;color:var(--text-muted);">No follow-ups scheduled</div>{% endfor %}
+      </div>
+    </div>
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-phone"></i> Call History</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for c in calls %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:12.5px;color:var(--text-muted);width:90px;">{{ c.called_at|date:"M d, Y" }}</span>
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ c.get_direction_display }}</span>
+          <span class="badge-gymx {{ c.get_outcome_color }}" style="font-size:10px;">{{ c.get_outcome_display }}</span>
+        </div>
+        {% empty %}<div style="padding:20px;text-align:center;color:var(--text-muted);">No calls logged</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
