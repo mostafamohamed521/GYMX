@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Prospects — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Prospects{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Prospects</h1><p class="page-subtitle">Qualified leads ready to convert</p></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> All Leads</a>
+</div>
+<div class="row g-3">
+  {% for l in prospect_list %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;">{{ l.get_initials }}</div>
+        <div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ l.get_full_name }}</div><div style="font-size:12px;color:var(--text-muted);">{{ l.phone }}</div></div>
+      </div>
+      {% if l.interest %}<div style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px;">💡 {{ l.interest }}</div>{% endif %}
+      <a href="{% url 'crm:lead_detail' l.pk %}" class="btn-gymx primary" style="text-decoration:none;width:100%;justify-content:center;font-size:12.5px;"><i class="fa-solid fa-eye"></i> View & Convert</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No qualified prospects yet</div>
+  {% endfor %}
+</div>
+{% endblock %}
