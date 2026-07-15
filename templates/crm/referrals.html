@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Referral Program — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Referrals{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Referral Program</h1><p class="page-subtitle">{{ stats.total }} referrals · {{ stats.converted }} converted</p></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> New Referral</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Referring Member</label><select name="referrer" class="form-select">{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Referred Person's Name</label><input type="text" name="referred_name" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Referred Phone</label><input type="text" name="referred_phone" class="form-control" /></div>
+          <div class="mb-3"><label class="form-label">Reward Points</label><input type="number" name="reward_points" class="form-control" value="100" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-share-nodes"></i> Add Referral</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Referrer</th><th>Referred</th><th>Status</th><th>Reward</th></tr></thead>
+      <tbody>
+        {% for r in referral_list %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ r.referrer.get_full_name }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ r.referred_name }}</td>
+          <td><span class="badge-gymx {{ r.get_status_color }}" style="font-size:11px;">{{ r.get_status_display }}</span></td>
+          <td style="font-size:13px;font-weight:600;color:var(--warning);">{{ r.reward_points }} pts</td>
+        </tr>
+        {% empty %}<tr><td colspan="4" style="text-align:center;padding:48px;color:var(--text-muted);">No referrals yet</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
