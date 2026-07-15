@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Campaign — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Campaigns / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Campaign</h1></div>
+  <a href="{% url 'crm:campaigns' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Campaign Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" placeholder="e.g. Summer Membership Promo" /></div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6"><label class="form-label">Channel</label><select name="channel" class="form-select">{% for v,l in channels %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Status</label><select name="status" class="form-select">{% for v,l in statuses %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Subject Line</label><input type="text" name="subject" class="form-control" /></div>
+      <div class="mb-3"><label class="form-label">Target Audience</label><input type="text" name="target_audience" class="form-control" placeholder="e.g. All active members" /></div>
+      <div class="mb-3"><label class="form-label">Message</label><textarea name="message" class="form-control" rows="5"></textarea></div>
+      <div class="mb-4"><label class="form-label">Scheduled At (optional)</label><input type="datetime-local" name="scheduled_at" class="form-control" /></div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'crm:campaigns' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-bullhorn"></i> Create Campaign</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
