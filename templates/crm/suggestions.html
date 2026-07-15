@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Suggestions — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Suggestions{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Member Suggestions</h1></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3">
+  {% for s in suggestion_list %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <span style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ s.title }}</span>
+        <span class="badge-gymx {{ s.get_status_color }}" style="font-size:10px;">{{ s.get_status_display }}</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:12px;line-height:1.5;">{{ s.description|truncatechars:100 }}</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:11px;color:var(--text-muted);">{{ s.member.get_full_name|default:"Anonymous" }}</span>
+        <form method="post" action="{% url 'crm:suggestion_vote' s.pk %}"><button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-thumbs-up"></i> {{ s.votes }}</button></form>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No suggestions yet</div>
+  {% endfor %}
+</div>
+{% endblock %}
