@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Follow-Ups — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Follow-Ups{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Follow-Ups</h1></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Leads</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.pending }}</div><div class="stat-label">Pending</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.today }}</div><div class="stat-label">Today</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.overdue }}</div><div class="stat-label">Overdue</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Schedule Follow-Up</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Lead</label><select name="lead" class="form-select">{% for l in leads %}<option value="{{ l.pk }}">{{ l.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Date</label><input type="date" name="scheduled_date" class="form-control" value="{{ today }}" /></div>
+            <div class="col-6"><label class="form-label">Time</label><input type="time" name="scheduled_time" class="form-control" value="10:00" /></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-calendar-plus"></i> Schedule</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Lead</th><th>Date</th><th>Notes</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for f in followups %}
+        <tr>
+          <td><a href="{% url 'crm:lead_detail' f.lead.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ f.lead.get_full_name }}</a></td>
+          <td style="font-size:12.5px;color:{% if f.scheduled_date < today and f.status == 'pending' %}var(--danger){% else %}var(--text-secondary){% endif %};">{{ f.scheduled_date|date:"M d, Y" }} {{ f.scheduled_time|time:"H:i" }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ f.notes|default:"—"|truncatechars:30 }}</td>
+          <td><span class="badge-gymx {{ f.get_status_color }}" style="font-size:11px;">{{ f.get_status_display }}</span></td>
+          <td>{% if f.status == 'pending' %}<form method="post" action="{% url 'crm:follow_up_complete' f.pk %}"><button type="submit" class="btn-gymx primary" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-check"></i></button></form>{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No follow-ups scheduled</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
