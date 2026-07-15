@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Call Logs — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Call Logs{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Call Logs</h1></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Leads</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Log Call</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Lead</label><select name="lead" class="form-select"><option value="">— None —</option>{% for l in leads %}<option value="{{ l.pk }}">{{ l.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Or Member</label><select name="member" class="form-select"><option value="">— None —</option>{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Direction</label><select name="direction" class="form-select">{% for v,l in directions %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+            <div class="col-6"><label class="form-label">Outcome</label><select name="outcome" class="form-select">{% for v,l in outcomes %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Duration (min)</label><input type="number" name="duration_min" class="form-control" value="0" /></div>
+          <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-phone"></i> Log Call</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Contact</th><th>Direction</th><th>Outcome</th><th>Duration</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for c in calls %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ c.lead.get_full_name|default:c.member.get_full_name|default:"Unknown" }}</td>
+          <td><i class="fa-solid {% if c.direction == 'inbound' %}fa-phone-arrow-down-left{% else %}fa-phone-arrow-up-right{% endif %}" style="color:var(--text-muted);font-size:12px;"></i> <span style="font-size:12px;">{{ c.get_direction_display }}</span></td>
+          <td><span class="badge-gymx {{ c.get_outcome_color }}" style="font-size:11px;">{{ c.get_outcome_display }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.duration_min }} min</td>
+          <td style="font-size:12px;color:var(--text-muted);">{{ c.called_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No calls logged</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
