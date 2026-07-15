@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Loyalty Program — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Loyalty{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Loyalty Program</h1><p class="page-subtitle">{{ stats.total_points }} total points across {{ stats.total_members }} members</p></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% if tiers %}
+<div class="row g-3 mb-4">
+  {% for t in tiers %}
+  <div class="col-md-3 col-6">
+    <div style="background:linear-gradient(135deg,{{ t.color }},{{ t.color }}AA);border-radius:var(--radius-xl);padding:16px;color:white;text-align:center;">
+      <i class="fa-solid fa-crown" style="font-size:20px;opacity:0.9;"></i>
+      <div style="font-size:15px;font-weight:800;margin-top:8px;">{{ t.name }}</div>
+      <div style="font-size:11px;opacity:0.85;">{{ t.min_points }}+ points</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Member</th><th>Points</th><th>Tier</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for a in accounts %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ a.member.get_full_name }}</td>
+      <td style="font-size:16px;font-weight:800;color:var(--primary);">{{ a.points }}</td>
+      <td>{% if a.tier %}<span style="background:{{ a.tier.color }}20;color:{{ a.tier.color }};padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;">{{ a.tier.name }}</span>{% else %}<span style="color:var(--text-muted);font-size:12px;">—</span>{% endif %}</td>
+      <td>
+        <form method="post" action="{% url 'crm:loyalty_add_points' a.pk %}" style="display:flex;gap:6px;">
+          {% csrf_token %}
+          <input type="number" name="points" placeholder="+pts" class="form-control" style="width:80px;height:30px;font-size:12px;" />
+          <button type="submit" class="btn-gymx primary" style="font-size:11px;padding:5px 10px;"><i class="fa-solid fa-plus"></i></button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}<tr><td colspan="4" style="text-align:center;padding:48px;color:var(--text-muted);">No loyalty accounts yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
