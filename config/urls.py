@@ -26,6 +26,7 @@ urlpatterns = [
     path('inventory/',     include('apps.inventory.urls',     namespace='inventory')),
     path('pos/',           include('apps.pos.urls',           namespace='pos')),
     path('branches/',      include('apps.branches.urls',      namespace='branches')),
+    path('crm/',           include('apps.crm.urls',           namespace='crm')),
 ]
 
 if settings.DEBUG:
