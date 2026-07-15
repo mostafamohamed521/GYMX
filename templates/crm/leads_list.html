@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Leads — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Leads{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Leads</h1><p class="page-subtitle">Sales pipeline & prospect tracking</p></div>
+  <a href="{% url 'crm:lead_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Lead</a>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'crm:prospects' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-user-check"></i> Prospects</a>
+  <a href="{% url 'crm:follow_ups' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-calendar-check"></i> Follow-Ups</a>
+  <a href="{% url 'crm:calls' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-phone"></i> Call Logs</a>
+  <a href="{% url 'crm:meetings' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-handshake"></i> Meetings</a>
+  <a href="{% url 'crm:feedback' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-star"></i> Feedback</a>
+  <a href="{% url 'crm:complaints' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a>
+  <a href="{% url 'crm:suggestions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-lightbulb"></i> Suggestions</a>
+  <a href="{% url 'crm:loyalty' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-crown"></i> Loyalty</a>
+  <a href="{% url 'crm:referrals' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-share-nodes"></i> Referrals</a>
+  <a href="{% url 'crm:campaigns' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-bullhorn"></i> Campaigns</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:26px;">{{ stats.total }}</div><div class="stat-label">Total Leads</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:26px;">{{ stats.new }}</div><div class="stat-label">New</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-value" style="font-size:26px;">{{ stats.qualified }}</div><div class="stat-label">Qualified</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:26px;">{{ stats.converted }}</div><div class="stat-label">Converted</div></div></div>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:12px 20px;"><form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+  <div style="flex:1;min-width:160px;"><label class="form-label">Search</label><input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Name or phone..." /></div>
+  <div style="min-width:150px;"><label class="form-label">Status</label><select name="status" class="form-select"><option value="">All</option>{% for v,l in statuses %}<option value="{{ v }}" {% if status_f == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i></button>
+</form></div></div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Lead</th><th>Phone</th><th>Source</th><th>Interest</th><th>Assigned To</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    {% for l in leads %}
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0;">{{ l.get_initials }}</div>
+          <a href="{% url 'crm:lead_detail' l.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ l.get_full_name }}</a>
+        </div>
+      </td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ l.phone }}</td>
+      <td><i class="fa-solid {{ l.get_source_icon }}" style="color:var(--text-muted);font-size:12px;"></i> <span style="font-size:12px;color:var(--text-secondary);">{{ l.get_source_display }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ l.interest|default:"—"|truncatechars:30 }}</td>
+      <td style="font-size:12.5px;color:var(--text-muted);">{{ l.assigned_to.get_short_name|default:"—" }}</td>
+      <td><span class="badge-gymx {{ l.get_status_color }}" style="font-size:11px;">{{ l.get_status_display }}</span></td>
+      <td><a href="{% url 'crm:lead_detail' l.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);">No leads yet</td></tr>
+    {% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
