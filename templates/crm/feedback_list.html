@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Customer Feedback — GymX{% endblock %}
+{% block page_breadcrumb %}CRM / Feedback{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Customer Feedback</h1><p class="page-subtitle">Avg rating: {{ stats.avg_rating|floatformat:1 }}/5 ({{ stats.total }} entries)</p></div>
+  <a href="{% url 'crm:leads' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3">
+  {% for f in feedback %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ f.member.get_full_name|default:"Anonymous" }}</span>
+        <span style="font-size:14px;">{% for i in "12345" %}{% if forloop.counter <= f.rating %}⭐{% endif %}{% endfor %}</span>
+      </div>
+      <span class="badge-gymx gray" style="font-size:10px;">{{ f.get_category_display }}</span>
+      {% if f.comments %}<p style="font-size:12.5px;color:var(--text-secondary);margin-top:10px;line-height:1.5;">{{ f.comments|truncatechars:100 }}</p>{% endif %}
+      <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">{{ f.submitted_at|date:"M d, Y" }}</div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No feedback submitted yet</div>
+  {% endfor %}
+</div>
+{% endblock %}
