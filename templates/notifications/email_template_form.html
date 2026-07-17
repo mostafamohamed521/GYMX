@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Email Template — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Email Templates / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Email Template</h1></div>
+  <a href="{% url 'notifications:email_templates' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Template Name</label><input type="text" name="name" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Purpose</label><select name="purpose" class="form-select">{% for v,l in purposes %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="col-12"><label class="form-label">Subject</label><input type="text" name="subject" class="form-control" /></div>
+        <div class="col-12"><label class="form-label">Body</label><textarea name="body" class="form-control" rows="6" placeholder="Use {{member_name}}, {{gym_name}}, {{expiry_date}} as placeholders"></textarea></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <a href="{% url 'notifications:email_templates' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Template</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
