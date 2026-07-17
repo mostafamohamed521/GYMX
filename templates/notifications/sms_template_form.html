@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New SMS Template — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / SMS Templates / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New SMS Template</h1></div>
+  <a href="{% url 'notifications:sms_templates' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Template Name</label><input type="text" name="name" class="form-control" /></div>
+      <div class="mb-3"><label class="form-label">Purpose</label><select name="purpose" class="form-select">{% for v,l in purposes %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+      <div class="mb-3"><label class="form-label">Message (max 160 chars)</label><textarea name="body" class="form-control" rows="3" maxlength="160"></textarea></div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'notifications:sms_templates' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Template</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
