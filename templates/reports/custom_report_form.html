@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Custom Report — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / Custom / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Custom Report</h1></div>
+  <a href="{% url 'reports:custom' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Report Name</label><input type="text" name="name" class="form-control" placeholder="e.g. Q3 Revenue Summary" /></div>
+      <div class="mb-3"><label class="form-label">Report Type</label><select name="report_type" class="form-select">{% for v,l in report_types %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+      <div class="row g-2 mb-4">
+        <div class="col-6"><label class="form-label">From</label><input type="date" name="date_from" class="form-control" /></div>
+        <div class="col-6"><label class="form-label">To</label><input type="date" name="date_to" class="form-control" /></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'reports:custom' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Save Report</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
