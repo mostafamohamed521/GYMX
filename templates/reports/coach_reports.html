@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Coach Reports — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / Coaches{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Coach Reports</h1></div>
+  <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total }}</div><div class="stat-label">Active Coaches</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.avg_rating|floatformat:1 }}</div><div class="stat-label">Avg Rating</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:22px;">{{ stats.total_salary|floatformat:0 }}</div><div class="stat-label">Total Salaries (EGP)</div></div></div>
+</div>
+<div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-trophy"></i> Top Coaches by Rating</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Coach</th><th>Rating</th><th>Experience</th><th>Salary</th></tr></thead>
+    <tbody>
+      {% for c in top_coaches %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ c.get_full_name }}</td>
+        <td style="font-size:13px;font-weight:700;color:var(--warning);">⭐ {{ c.rating }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.experience_years }} yrs</td>
+        <td style="font-size:13px;font-weight:600;">{{ c.base_salary|floatformat:0 }} EGP</td>
+      </tr>
+      {% empty %}<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);">No coaches found</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}
