@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment Reports — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / Payments{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Payment Reports</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:22px;">{{ stats.completed|floatformat:0 }}</div><div class="stat-label">Completed (EGP)</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.pending }}</div><div class="stat-label">Pending</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.failed }}</div><div class="stat-label">Failed</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.refunded }}</div><div class="stat-label">Refunded</div></div></div>
+</div>
+<div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-file-invoice"></i> Invoices</span></div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-4" style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--text-primary);">{{ invoice_stats.total }}</div><div style="font-size:11px;color:var(--text-muted);">Total</div></div>
+      <div class="col-4" style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--success);">{{ invoice_stats.paid }}</div><div style="font-size:11px;color:var(--text-muted);">Paid</div></div>
+      <div class="col-4" style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--danger);">{{ invoice_stats.overdue }}</div><div style="font-size:11px;color:var(--text-muted);">Overdue</div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
