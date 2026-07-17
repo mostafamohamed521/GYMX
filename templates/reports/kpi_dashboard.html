@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}KPI Dashboard — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / KPI{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">KPI Dashboard</h1><p class="page-subtitle">Key performance indicators as of {{ today|date:"M d, Y" }}</p></div>
+  <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3">
+  {% for k in kpis %}
+  <div class="col-md-3 col-6">
+    <div class="stat-card {{ k.color }}" style="padding:20px;">
+      <div class="stat-icon {{ k.color }}" style="width:40px;height:40px;font-size:16px;margin-bottom:12px;"><i class="fa-solid {{ k.icon }}"></i></div>
+      <div class="stat-value" style="font-size:28px;">{{ k.value }}</div>
+      <div class="stat-label">{{ k.label }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
