@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Announcement Center — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Announcements{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Announcement Center</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'notifications:announcement_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Announcement</a>
+    <a href="{% url 'notifications:center' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-3">
+  {% for a in announcements %}
+  <div class="col-md-6">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);{% if a.is_pinned %}border-left:4px solid var(--warning);{% endif %}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <span style="font-size:14px;font-weight:700;color:var(--text-primary);">{% if a.is_pinned %}📌 {% endif %}{{ a.title }}</span>
+        <span class="badge-gymx {{ a.get_priority_color }}" style="font-size:10px;">{{ a.get_priority_display }}</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.5;">{{ a.body|truncatechars:150 }}</p>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">{{ a.created_at|date:"M d, Y" }}</div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No announcements yet</div>
+  {% endfor %}
+</div>
+{% endblock %}
