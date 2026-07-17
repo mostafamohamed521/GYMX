@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profit & Loss — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / P&L{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Profit & Loss</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card-gymx">
+      <div class="card-body" style="padding:28px;">
+        <div style="font-size:13px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Revenue</div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Membership Payments</span><span style="font-size:13px;font-weight:600;">{{ membership_rev|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">POS Sales</span><span style="font-size:13px;font-weight:600;">{{ pos_rev|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:14px;font-weight:700;">Total Revenue</span><span style="font-size:16px;font-weight:800;color:var(--success);">{{ total_revenue|floatformat:0 }} EGP</span></div>
+
+        <div style="font-size:13px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:0.5px;margin:20px 0 10px;">Expenses</div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Employee Payroll</span><span style="font-size:13px;font-weight:600;">{{ payroll_cost|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Coach Salaries</span><span style="font-size:13px;font-weight:600;">{{ coach_salary|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:14px;font-weight:700;">Total Expenses</span><span style="font-size:16px;font-weight:800;color:var(--danger);">{{ total_expenses|floatformat:0 }} EGP</span></div>
+
+        <div style="margin-top:20px;padding:20px;background:{% if net_profit >= 0 %}#ECFDF5{% else %}#FEF2F2{% endif %};border-radius:var(--radius-xl);text-align:center;">
+          <div style="font-size:13px;color:var(--text-muted);">Net {% if net_profit >= 0 %}Profit{% else %}Loss{% endif %}</div>
+          <div style="font-size:32px;font-weight:900;color:{% if net_profit >= 0 %}var(--success){% else %}var(--danger){% endif %};">{{ net_profit|floatformat:0 }} EGP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
