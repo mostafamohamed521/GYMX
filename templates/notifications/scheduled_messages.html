@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Scheduled Messages — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Scheduled{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Scheduled Messages</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'notifications:scheduled_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Schedule Message</a>
+    <a href="{% url 'notifications:center' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Name</th><th>Channel</th><th>Audience</th><th>Scheduled For</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for s in scheduled %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ s.name }}</td>
+      <td><i class="fa-solid {{ s.get_channel_icon }}" style="color:var(--text-muted);font-size:12px;"></i> <span style="font-size:12px;">{{ s.get_channel_display }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.target_audience }}</td>
+      <td style="font-size:12.5px;color:var(--text-muted);">{{ s.scheduled_for|date:"M d, Y H:i" }}</td>
+      <td><span class="badge-gymx {{ s.get_status_color }}" style="font-size:11px;">{{ s.get_status_display }}</span></td>
+    </tr>
+    {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No scheduled messages</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
