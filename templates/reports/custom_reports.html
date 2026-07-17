@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Custom Reports — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / Custom{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Custom Reports</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'reports:custom_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Report</a>
+    <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Name</th><th>Type</th><th>Date Range</th><th>Created By</th><th>Created</th></tr></thead>
+  <tbody>
+    {% for r in reports %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ r.name }}</td>
+      <td><span class="badge-gymx blue" style="font-size:10px;">{{ r.get_report_type_display }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ r.date_from|date:"M d"|default:"—" }} — {{ r.date_to|date:"M d, Y"|default:"—" }}</td>
+      <td style="font-size:12.5px;color:var(--text-muted);">{{ r.created_by.get_short_name|default:"—" }}</td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ r.created_at|date:"M d, Y" }}</td>
+    </tr>
+    {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No custom reports saved yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
