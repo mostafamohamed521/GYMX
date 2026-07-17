@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Membership Reports — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / Membership{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Membership Reports</h1></div>
+  <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total }}</div><div class="stat-label">Total Subscriptions</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.active }}</div><div class="stat-label">Active</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card gray" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.expired }}</div><div class="stat-label">Expired</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.expiring_soon }}</div><div class="stat-label">Expiring in 7 Days</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-id-card"></i> Subscriptions by Plan</span></div>
+      <div class="card-body">
+        {% for p in by_plan %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);">{{ p.plan__name|default:"Unknown" }}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--primary);">{{ p.count }}</span>
+        </div>
+        {% empty %}<div style="text-align:center;color:var(--text-muted);padding:20px;">No data</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-users"></i> Members by Status</span></div>
+      <div class="card-body">
+        {% for s in member_status %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ s.status }}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--primary);">{{ s.count }}</span>
+        </div>
+        {% empty %}<div style="text-align:center;color:var(--text-muted);padding:20px;">No data</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
