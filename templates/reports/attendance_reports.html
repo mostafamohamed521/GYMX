@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Attendance Reports — GymX{% endblock %}
+{% block page_breadcrumb %}Reports / Attendance{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Attendance Reports</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <a href="{% url 'reports:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total }}</div><div class="stat-label">Total Visits</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card purple" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.unique_members }}</div><div class="stat-label">Unique Members</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.avg_per_day }}</div><div class="stat-label">Avg/Day</div></div></div>
+</div>
+<div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> By Status</span></div>
+  <div class="card-body">
+    {% for s in by_status %}
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ s.status }}</span>
+      <span style="font-size:13px;font-weight:700;color:var(--primary);">{{ s.count }}</span>
+    </div>
+    {% empty %}<div style="text-align:center;color:var(--text-muted);padding:20px;">No data</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}
