@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Notification Center — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Notification Center</h1><p class="page-subtitle">{{ unread_count }} unread</p></div>
+  {% if unread_count %}<form method="post" action="{% url 'notifications:mark_all_read' %}">{% csrf_token %}<button type="submit" class="btn-gymx outline"><i class="fa-solid fa-check-double"></i> Mark All Read</button></form>{% endif %}
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'notifications:email_templates' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-envelope"></i> Email Templates</a>
+  <a href="{% url 'notifications:sms_templates' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-comment-sms"></i> SMS Templates</a>
+  <a href="{% url 'notifications:push' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-bell"></i> Push</a>
+  <a href="{% url 'notifications:announcements' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-bullhorn"></i> Announcements</a>
+  <a href="{% url 'notifications:birthdays' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-cake-candles"></i> Birthdays</a>
+  <a href="{% url 'notifications:expiry_alerts' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-triangle-exclamation"></i> Expiry Alerts</a>
+  <a href="{% url 'notifications:payment_reminders' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-money-bill-wave"></i> Payment Reminders</a>
+  <a href="{% url 'notifications:scheduled' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-clock"></i> Scheduled</a>
+</div>
+<div class="card-gymx"><div style="padding:0;">
+  {% for n in notifications %}
+  <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);{% if not n.is_read %}background:#EFF6FF;{% endif %}">
+    <div style="width:34px;height:34px;border-radius:50%;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-bell" style="color:var(--primary);font-size:13px;"></i></div>
+    <div style="flex:1;">
+      <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ n.title }}</div>
+      <div style="font-size:12.5px;color:var(--text-secondary);margin-top:2px;">{{ n.message }}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">{{ n.created_at|date:"M d, Y H:i" }}</div>
+    </div>
+    {% if not n.is_read %}<form method="post" action="{% url 'notifications:mark_read' n.pk %}"><button type="submit" class="btn-gymx outline" style="font-size:10px;padding:3px 8px;">Mark Read</button></form>{% endif %}
+  </div>
+  {% empty %}
+  <div style="text-align:center;padding:56px;color:var(--text-muted);"><i class="fa-solid fa-bell-slash" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.4;"></i>No notifications yet</div>
+  {% endfor %}
+</div></div>
+{% endblock %}
