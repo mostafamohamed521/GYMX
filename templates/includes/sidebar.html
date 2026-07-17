@@ -45,6 +45,11 @@
       <i class="fa-solid fa-chart-line"></i><span>Reports</span>
     </a>
     {% endif %}
+    {% if is_front_desk_role %}
+    <a href="{% url 'notifications:center' %}" class="nav-item {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
+    </a>
+    {% endif %}
 
     {% if is_coach_role %}
     <div class="nav-section-label">My Coaching</div>
@@ -63,6 +68,11 @@
     <div class="nav-section-label">Insights</div>
     <a href="{% url 'reports:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
       <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+    </a>
+    {% endif %}
+    {% if is_front_desk_role %}
+    <a href="{% url 'notifications:center' %}" class="nav-item {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
     </a>
     {% endif %}
 
