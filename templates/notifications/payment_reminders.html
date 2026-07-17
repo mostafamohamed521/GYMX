@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment Reminders — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Payment Reminders{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Payment Reminders</h1></div>
+  <a href="{% url 'notifications:center' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Pending Payments ({{ pending_payments|length }})</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      {% for p in pending_payments %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ p.member.get_full_name }}</td>
+        <td style="font-size:13px;font-weight:700;color:var(--warning);">{{ p.net_amount|floatformat:0 }} EGP</td>
+        <td style="font-size:12.5px;color:var(--text-muted);">{{ p.payment_date|date:"M d, Y" }}</td>
+        <td><button class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></td>
+      </tr>
+      {% empty %}<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No pending payments</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-file-invoice" style="color:var(--danger);"></i> Overdue Invoices ({{ overdue_invoices|length }})</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Member</th><th>Invoice</th><th>Due Date</th><th></th></tr></thead>
+    <tbody>
+      {% for i in overdue_invoices %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ i.member.get_full_name }}</td>
+        <td style="font-size:13px;font-weight:700;color:var(--danger);">{{ i.total_amount|floatformat:0 }} EGP</td>
+        <td style="font-size:12.5px;color:var(--text-muted);">{{ i.due_date|date:"M d, Y" }}</td>
+        <td><button class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></td>
+      </tr>
+      {% empty %}<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No overdue invoices</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}
