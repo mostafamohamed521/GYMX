@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Membership Expiry Alerts — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Expiry Alerts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Membership Expiry Alerts</h1></div>
+  <a href="{% url 'notifications:center' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock" style="color:var(--warning);"></i> Expiring in 14 Days ({{ expiring|length }})</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Member</th><th>Plan</th><th>Expires</th><th></th></tr></thead>
+    <tbody>
+      {% for s in expiring %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ s.member.get_full_name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.plan.name }}</td>
+        <td style="font-size:13px;font-weight:600;color:var(--warning);">{{ s.end_date|date:"M d, Y" }}</td>
+        <td><button class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></td>
+      </tr>
+      {% empty %}<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No memberships expiring soon</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-circle-xmark" style="color:var(--danger);"></i> Already Expired</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Member</th><th>Plan</th><th>Expired On</th></tr></thead>
+    <tbody>
+      {% for s in expired %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ s.member.get_full_name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.plan.name }}</td>
+        <td style="font-size:13px;font-weight:600;color:var(--danger);">{{ s.end_date|date:"M d, Y" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted);">No expired memberships</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}
