@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'apps.branches',
     'apps.crm',
     'apps.reports',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [
