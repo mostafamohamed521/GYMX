@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'apps.pos',
     'apps.branches',
     'apps.crm',
+    'apps.reports',
 ]
 
 MIDDLEWARE = [
