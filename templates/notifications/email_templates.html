@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Email Templates — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Email Templates{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Email Templates</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'notifications:email_template_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Template</a>
+    <a href="{% url 'notifications:center' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-3">
+  {% for t in templates %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <span style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ t.name }}</span>
+        <span class="badge-gymx {% if t.is_active %}green{% else %}gray{% endif %}" style="font-size:10px;">{% if t.is_active %}Active{% else %}Inactive{% endif %}</span>
+      </div>
+      <span class="badge-gymx blue" style="font-size:10px;">{{ t.get_purpose_display }}</span>
+      <div style="font-size:12.5px;color:var(--text-secondary);margin-top:10px;font-style:italic;">"{{ t.subject }}"</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ t.body|truncatechars:80 }}</p>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No email templates yet</div>
+  {% endfor %}
+</div>
+{% endblock %}
