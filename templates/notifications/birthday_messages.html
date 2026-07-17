@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Birthday Messages — GymX{% endblock %}
+{% block page_breadcrumb %}Notifications / Birthdays{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Birthday Messages</h1></div>
+  <a href="{% url 'notifications:center' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% if todays_birthdays %}
+<div class="alert-gymx success mb-4"><i class="fa-solid fa-cake-candles"></i> <strong>{{ todays_birthdays|length }}</strong> member{{ todays_birthdays|length|pluralize }} celebrating today! 🎉</div>
+<div class="row g-3 mb-4">
+  {% for m in todays_birthdays %}
+  <div class="col-md-6 col-lg-4">
+    <div style="background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:var(--radius-xl);padding:16px;color:white;">
+      <div style="font-size:24px;">🎂</div>
+      <div style="font-size:14px;font-weight:700;margin-top:6px;">{{ m.get_full_name }}</div>
+      <form method="post" action="{% url 'notifications:birthday_send' m.pk %}" style="margin-top:10px;">
+        {% csrf_token %}
+        <button type="submit" class="btn-gymx" style="background:white;color:#F59E0B;width:100%;justify-content:center;font-size:12px;"><i class="fa-solid fa-paper-plane"></i> Send Wishes</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-days"></i> Upcoming Birthdays (Next 7 Days)</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Member</th><th>Birthday</th><th></th></tr></thead>
+    <tbody>
+      {% for m, bday in upcoming_birthdays %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ m.get_full_name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ bday|date:"M d, Y" }}</td>
+        <td><form method="post" action="{% url 'notifications:birthday_send' m.pk %}"><button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Early</button></form></td>
+      </tr>
+      {% empty %}<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--text-muted);">No upcoming birthdays this week</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}
