@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Add Expense — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Expenses / Add{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Add Expense</h1></div>
+  <a href="{% url 'finance:expenses' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+        <div class="col-md-6"><label class="form-label">Category</label><select name="category" class="form-select">{% for v,l in categories %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="col-12"><label class="form-label">Description</label><input type="text" name="description" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Amount (EGP)</label><input type="number" name="amount" class="form-control" step="0.01" /></div>
+        <div class="col-md-6"><label class="form-label">Vendor</label><input type="text" name="vendor" class="form-control" /></div>
+        <div class="col-12"><label class="form-label">Account</label><select name="account" class="form-select"><option value="">None</option>{% for a in accounts %}<option value="{{ a.pk }}">{{ a.code }} — {{ a.name }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <a href="{% url 'finance:expenses' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx danger"><i class="fa-solid fa-plus"></i> Add Expense</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
