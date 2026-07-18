@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ entry.entry_number }} — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Journal / {{ entry.entry_number }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ entry.entry_number }}</h1><span class="badge-gymx {{ entry.get_status_color }}">{{ entry.get_status_display }}</span></div>
+  <a href="{% url 'finance:journal' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx">
+    <div class="card-body">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">{{ entry.date|date:"M d, Y" }} {% if entry.reference %}· Ref: {{ entry.reference }}{% endif %}</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:16px;">{{ entry.description }}</div>
+      <table class="table-gymx">
+        <thead><tr><th>Account</th><th style="text-align:right;">Debit</th><th style="text-align:right;">Credit</th></tr></thead>
+        <tbody>
+          {% for l in entry.lines.all %}
+          <tr>
+            <td style="font-size:13px;">{{ l.account.code }} — {{ l.account.name }}</td>
+            <td style="text-align:right;font-size:13px;">{% if l.debit %}{{ l.debit|floatformat:0 }}{% endif %}</td>
+            <td style="text-align:right;font-size:13px;">{% if l.credit %}{{ l.credit|floatformat:0 }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr style="border-top:2px solid var(--border);"><td style="font-size:13px;font-weight:700;">Total</td><td style="text-align:right;font-size:13px;font-weight:700;">{{ entry.total_debit|floatformat:0 }}</td><td style="text-align:right;font-size:13px;font-weight:700;">{{ entry.total_credit|floatformat:0 }}</td></tr>
+        </tfoot>
+      </table>
+      {% if entry.is_balanced %}<div class="alert-gymx success mt-3" style="margin:16px 0 0;"><i class="fa-solid fa-check-circle"></i> Entry is balanced.</div>{% else %}<div class="alert-gymx warning mt-3" style="margin:16px 0 0;"><i class="fa-solid fa-triangle-exclamation"></i> Entry is NOT balanced.</div>{% endif %}
+    </div>
+  </div>
+</div></div>
+{% endblock %}
