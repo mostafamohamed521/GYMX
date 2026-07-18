@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Financial Statements — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Statements{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Financial Statements</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <a href="{% url 'finance:income' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-file-invoice-dollar"></i> Income Statement</span></div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Total Income</span><span style="font-size:13px;font-weight:700;color:var(--success);">{{ total_income|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Total Expenses</span><span style="font-size:13px;font-weight:700;color:var(--danger);">{{ total_expense|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;"><span style="font-size:14px;font-weight:700;">Net Income</span><span style="font-size:18px;font-weight:800;color:{% if net_income >= 0 %}var(--success){% else %}var(--danger){% endif %};">{{ net_income|floatformat:0 }} EGP</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-scale-balanced"></i> Balance Sheet</span></div>
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Total Assets</span><span style="font-size:13px;font-weight:700;">{{ total_assets|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Total Liabilities</span><span style="font-size:13px;font-weight:700;">{{ total_liabilities|floatformat:0 }} EGP</span></div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;"><span style="font-size:14px;font-weight:700;">Total Equity</span><span style="font-size:18px;font-weight:800;color:var(--primary);">{{ total_equity|floatformat:0 }} EGP</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
