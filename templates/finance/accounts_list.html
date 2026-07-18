@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Chart of Accounts — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Accounts{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Chart of Accounts</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'finance:account_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Account</a>
+    <a href="{% url 'finance:income' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Balance</th></tr></thead>
+  <tbody>
+    {% for a in accounts %}
+    <tr>
+      <td style="font-size:13px;font-family:monospace;font-weight:700;color:var(--primary);">{{ a.code }}</td>
+      <td style="font-size:13px;font-weight:600;">{{ a.name }}</td>
+      <td><span class="badge-gymx {{ a.get_type_color }}" style="font-size:10px;">{{ a.get_account_type_display }}</span></td>
+      <td style="font-size:14px;font-weight:700;color:{% if a.balance >= 0 %}var(--success){% else %}var(--danger){% endif %};">{{ a.balance|floatformat:0 }} EGP</td>
+    </tr>
+    {% empty %}<tr><td colspan="4" style="text-align:center;padding:48px;color:var(--text-muted);">No accounts set up yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
