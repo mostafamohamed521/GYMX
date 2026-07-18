@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Budget — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Budget / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Budget</h1></div>
+  <a href="{% url 'finance:budget' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Budget Name</label><input type="text" name="name" class="form-control" placeholder="e.g. Q3 Marketing Budget" /></div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6"><label class="form-label">Category</label><select name="category" class="form-select">{% for v,l in categories %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="col-md-6"><label class="form-label">Period</label><select name="period" class="form-select">{% for v,l in periods %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Allocated Amount (EGP)</label><input type="number" name="allocated_amount" class="form-control" step="0.01" /></div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" name="start_date" class="form-control" value="{{ today }}" /></div>
+        <div class="col-md-6"><label class="form-label">End Date</label><input type="date" name="end_date" class="form-control" /></div>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'finance:budget' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-wallet"></i> Create Budget</button>
+      </div>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
