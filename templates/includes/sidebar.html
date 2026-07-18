@@ -50,6 +50,11 @@
       <i class="fa-solid fa-bell"></i><span>Notifications</span>
     </a>
     {% endif %}
+    {% if is_admin_role %}
+    <a href="{% url 'finance:income' %}" class="nav-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
+      <i class="fa-solid fa-sack-dollar"></i><span>Finance</span>
+    </a>
+    {% endif %}
 
     {% if is_coach_role %}
     <div class="nav-section-label">My Coaching</div>
@@ -73,6 +78,11 @@
     {% if is_front_desk_role %}
     <a href="{% url 'notifications:center' %}" class="nav-item {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
       <i class="fa-solid fa-bell"></i><span>Notifications</span>
+    </a>
+    {% endif %}
+    {% if is_admin_role %}
+    <a href="{% url 'finance:income' %}" class="nav-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
+      <i class="fa-solid fa-sack-dollar"></i><span>Finance</span>
     </a>
     {% endif %}
 
