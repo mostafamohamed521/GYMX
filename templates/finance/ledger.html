@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}General Ledger — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / General Ledger{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">General Ledger</h1></div>
+  <a href="{% url 'finance:income' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;align-items:flex-end;">
+    <div style="flex:1;"><label class="form-label">Account</label>
+      <select name="account" class="form-select" onchange="this.form.submit()">
+        {% for a in accounts %}<option value="{{ a.pk }}" {% if selected_account.pk == a.pk %}selected{% endif %}>{{ a.code }} — {{ a.name }}</option>{% endfor %}
+      </select>
+    </div>
+  </form>
+</div></div>
+{% if selected_account %}
+<div class="card-gymx">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-scroll"></i> {{ selected_account.name }} ({{ selected_account.code }})</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Date</th><th>Entry</th><th style="text-align:right;">Debit</th><th style="text-align:right;">Credit</th><th style="text-align:right;">Balance</th></tr></thead>
+    <tbody>
+      {% for row in ledger_rows %}
+      <tr>
+        <td style="font-size:12.5px;color:var(--text-muted);">{{ row.line.entry.date|date:"M d, Y" }}</td>
+        <td style="font-size:12.5px;font-family:monospace;color:var(--primary);">{{ row.line.entry.entry_number }}</td>
+        <td style="text-align:right;font-size:13px;">{% if row.line.debit %}{{ row.line.debit|floatformat:0 }}{% endif %}</td>
+        <td style="text-align:right;font-size:13px;">{% if row.line.credit %}{{ row.line.credit|floatformat:0 }}{% endif %}</td>
+        <td style="text-align:right;font-size:13px;font-weight:700;">{{ row.balance|floatformat:0 }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No ledger entries for this account</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+{% endblock %}
