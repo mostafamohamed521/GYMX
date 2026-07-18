@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Taxes — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Taxes{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Taxes</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'finance:tax_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Tax Record</a>
+    <a href="{% url 'finance:income' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:22px;">{{ stats.total_due|floatformat:0 }}</div><div class="stat-label">Pending Tax Due (EGP)</div></div></div>
+  <div class="col-md-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:22px;">{{ stats.total_paid|floatformat:0 }}</div><div class="stat-label">Paid (EGP)</div></div></div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Type</th><th>Period</th><th>Taxable Amount</th><th>Rate</th><th>Tax Due</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for t in taxes %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ t.get_tax_type_display }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ t.period_start|date:"M d" }} — {{ t.period_end|date:"M d, Y" }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ t.taxable_amount|floatformat:0 }} EGP</td>
+      <td style="font-size:12.5px;color:var(--text-muted);">{{ t.tax_rate }}%</td>
+      <td style="font-size:14px;font-weight:700;color:var(--warning);">{{ t.tax_due|floatformat:0 }} EGP</td>
+      <td><span class="badge-gymx {{ t.get_status_color }}" style="font-size:11px;">{{ t.get_status_display }}</span></td>
+    </tr>
+    {% empty %}<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text-muted);">No tax records yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
