@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Transactions — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Transactions{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Transactions</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }} · Combined income & expense feed</p></div>
+  <a href="{% url 'finance:income' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th></tr></thead>
+  <tbody>
+    {% for t in combined %}
+    <tr>
+      <td style="font-size:12.5px;color:var(--text-muted);">{{ t.date|date:"M d, Y" }}</td>
+      <td style="font-size:13px;font-weight:600;">{{ t.description }}</td>
+      <td style="font-size:12px;color:var(--text-secondary);text-transform:capitalize;">{{ t.category }}</td>
+      <td><span class="badge-gymx {% if t.kind == 'income' %}green{% else %}red{% endif %}" style="font-size:10px;">{{ t.kind|title }}</span></td>
+      <td style="font-size:14px;font-weight:700;color:{% if t.kind == 'income' %}var(--success){% else %}var(--danger){% endif %};">{% if t.kind == 'income' %}+{% else %}-{% endif %}{{ t.amount|floatformat:0 }} EGP</td>
+    </tr>
+    {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No transactions in this period</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
