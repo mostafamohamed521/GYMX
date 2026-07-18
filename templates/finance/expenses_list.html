@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Expenses — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Expenses{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Expenses</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'finance:expense_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Expense</a>
+    <a href="{% url 'finance:income' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="row g-3 mb-4">
+  <div class="col-md-6"><div class="stat-card red" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total|floatformat:0 }}</div><div class="stat-label">Total Expenses (EGP)</div></div></div>
+  <div class="col-md-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.count }}</div><div class="stat-label">Entries</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tags"></i> By Category</span></div>
+      <div class="card-body">
+        {% for c in by_category %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ c.category }}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--danger);">{{ c.total|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}<div style="text-align:center;color:var(--text-muted);padding:20px;">No data</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Vendor</th><th>Amount</th></tr></thead>
+      <tbody>
+        {% for e in expenses %}
+        <tr>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ e.date|date:"M d, Y" }}</td>
+          <td style="font-size:13px;font-weight:600;">{{ e.description }}</td>
+          <td><span class="badge-gymx {{ e.get_category_color }}" style="font-size:10px;">{{ e.get_category_display }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ e.vendor|default:"—" }}</td>
+          <td style="font-size:14px;font-weight:700;color:var(--danger);">-{{ e.amount|floatformat:0 }} EGP</td>
+        </tr>
+        {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No expenses recorded in this period</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
