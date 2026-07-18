@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Income — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Income{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Income</h1><p class="page-subtitle">{{ date_from }} → {{ date_to }}</p></div>
+  <a href="{% url 'finance:income_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> Add Income</a>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'finance:expenses' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-money-bill-transfer"></i> Expenses</a>
+  <a href="{% url 'finance:transactions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-receipt"></i> Transactions</a>
+  <a href="{% url 'finance:accounts' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-sitemap"></i> Accounts</a>
+  <a href="{% url 'finance:cash_flow' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-water"></i> Cash Flow</a>
+  <a href="{% url 'finance:budget' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-wallet"></i> Budget</a>
+  <a href="{% url 'finance:taxes' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-percent"></i> Taxes</a>
+  <a href="{% url 'finance:statements' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-file-lines"></i> Statements</a>
+  <a href="{% url 'finance:journal' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-book"></i> Journal Entries</a>
+  <a href="{% url 'finance:ledger' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-scroll"></i> General Ledger</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-body" style="padding:14px 20px;">
+  <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div><label class="form-label">From</label><input type="date" name="from" value="{{ date_from }}" class="form-control" /></div>
+    <div><label class="form-label">To</label><input type="date" name="to" value="{{ date_to }}" class="form-control" /></div>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-filter"></i> Apply</button>
+  </form>
+</div></div>
+<div class="row g-3 mb-4">
+  <div class="col-md-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.total|floatformat:0 }}</div><div class="stat-label">Total Income (EGP)</div></div></div>
+  <div class="col-md-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.count }}</div><div class="stat-label">Entries</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-tags"></i> By Category</span></div>
+      <div class="card-body">
+        {% for c in by_category %}
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);text-transform:capitalize;">{{ c.category }}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--success);">{{ c.total|floatformat:0 }} EGP</span>
+        </div>
+        {% empty %}<div style="text-align:center;color:var(--text-muted);padding:20px;">No data</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>
+      <tbody>
+        {% for i in income %}
+        <tr>
+          <td style="font-size:12.5px;color:var(--text-muted);">{{ i.date|date:"M d, Y" }}</td>
+          <td style="font-size:13px;font-weight:600;">{{ i.description }}</td>
+          <td><span class="badge-gymx {{ i.get_category_color }}" style="font-size:10px;">{{ i.get_category_display }}</span></td>
+          <td style="font-size:14px;font-weight:700;color:var(--success);">+{{ i.amount|floatformat:0 }} EGP</td>
+        </tr>
+        {% empty %}<tr><td colspan="4" style="text-align:center;padding:48px;color:var(--text-muted);">No income recorded in this period</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
