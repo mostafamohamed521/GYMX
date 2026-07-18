@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Journal Entry — GymX{% endblock %}
+{% block page_breadcrumb %}Finance / Journal / New{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">New Journal Entry</h1></div>
+  <a href="{% url 'finance:journal' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<form method="post">{% csrf_token %}
+  <div class="card-gymx mb-4">
+    <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-book"></i> Entry Details</span></div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label">Date</label><input type="date" name="date" class="form-control" value="{{ today }}" /></div>
+        <div class="col-md-8"><label class="form-label">Description</label><input type="text" name="description" class="form-control" /></div>
+        <div class="col-12"><label class="form-label">Reference</label><input type="text" name="reference" class="form-control" placeholder="e.g. Invoice #, PO #" /></div>
+      </div>
+    </div>
+  </div>
+  <div class="card-gymx mb-4">
+    <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-list"></i> Lines (must balance: total debit = total credit)</span></div>
+    <div class="card-body">
+      <div id="linesContainer">
+        {% for i in "12" %}
+        <div class="row g-2 mb-2">
+          <div class="col-6"><select name="account" class="form-select"><option value="">Select account</option>{% for a in accounts %}<option value="{{ a.pk }}">{{ a.code }} — {{ a.name }}</option>{% endfor %}</select></div>
+          <div class="col-3"><input type="number" name="debit" class="form-control" placeholder="Debit" step="0.01" /></div>
+          <div class="col-3"><input type="number" name="credit" class="form-control" placeholder="Credit" step="0.01" /></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-end gap-2">
+    <a href="{% url 'finance:journal' %}" class="btn-gymx outline" style="text-decoration:none;">Cancel</a>
+    <button type="submit" class="btn-gymx primary"><i class="fa-solid fa-floppy-disk"></i> Post Entry</button>
+  </div>
+</form>
+{% endblock %}
