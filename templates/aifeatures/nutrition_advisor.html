@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}AI Nutrition Advisor — GymX{% endblock %}
+{% block page_breadcrumb %}AI / Nutrition Advisor{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">AI Nutrition Advisor</h1></div>
+  <a href="{% url 'aifeatures:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calculator"></i> Calculate Macros</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member</label><select name="member" class="form-select">{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Weight (kg)</label><input type="number" name="weight_kg" class="form-control" step="0.1" /></div>
+            <div class="col-6"><label class="form-label">Height (cm)</label><input type="number" name="height_cm" class="form-control" step="0.1" /></div>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6"><label class="form-label">Age</label><input type="number" name="age" class="form-control" /></div>
+            <div class="col-6"><label class="form-label">Gender</label><select name="gender" class="form-select"><option value="male">Male</option><option value="female">Female</option></select></div>
+          </div>
+          <div class="mb-3"><label class="form-label">Activity Level</label>
+            <select name="activity_level" class="form-select">
+              <option value="sedentary">Sedentary</option><option value="light">Lightly Active</option>
+              <option value="moderate" selected>Moderately Active</option><option value="active">Active</option><option value="very_active">Very Active</option>
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label">Goal</label><select name="goal" class="form-select"><option value="lose">Lose Weight</option><option value="maintain" selected>Maintain</option><option value="gain">Gain Weight</option></select></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-calculator"></i> Calculate</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    {% if result %}
+    <div class="card-gymx mb-3"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> Results for {{ result.member.get_full_name }}</span></div>
+      <div class="card-body">
+        <div class="row g-3 mb-3">
+          <div class="col-6"><div class="stat-card blue" style="padding:14px;"><div class="stat-value" style="font-size:20px;">{{ result.bmr|floatformat:0 }}</div><div class="stat-label">BMR (kcal)</div></div></div>
+          <div class="col-6"><div class="stat-card purple" style="padding:14px;"><div class="stat-value" style="font-size:20px;">{{ result.tdee|floatformat:0 }}</div><div class="stat-label">TDEE (kcal)</div></div></div>
+        </div>
+        <div style="background:var(--bg-muted);border-radius:var(--radius-xl);padding:20px;text-align:center;margin-bottom:16px;">
+          <div style="font-size:12px;color:var(--text-muted);">Recommended Daily Calories</div>
+          <div style="font-size:32px;font-weight:800;color:var(--primary);">{{ result.recommended_calories|floatformat:0 }} kcal</div>
+        </div>
+        <div class="row g-2">
+          <div class="col-4" style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--success);">{{ result.protein_g|floatformat:0 }}g</div><div style="font-size:11px;color:var(--text-muted);">Protein</div></div>
+          <div class="col-4" style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--warning);">{{ result.carbs_g|floatformat:0 }}g</div><div style="font-size:11px;color:var(--text-muted);">Carbs</div></div>
+          <div class="col-4" style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--danger);">{{ result.fat_g|floatformat:0 }}g</div><div style="font-size:11px;color:var(--text-muted);">Fat</div></div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:80px 20px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">
+      <i class="fa-solid fa-leaf" style="font-size:36px;display:block;margin-bottom:14px;opacity:0.3;"></i>
+      Fill out the form to get personalized nutrition recommendations.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

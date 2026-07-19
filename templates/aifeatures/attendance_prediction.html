@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Attendance Prediction — GymX{% endblock %}
+{% block page_breadcrumb %}AI / Attendance Prediction{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Attendance Prediction</h1><p class="page-subtitle">Weekly average: {{ weekly_avg }} visits</p></div>
+  <a href="{% url 'aifeatures:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  {% for f in forecast %}
+  <div class="col-md-4"><div class="stat-card blue" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ f }}</div><div class="stat-label">Week +{{ forloop.counter }} Predicted Visits</div></div></div>
+  {% endfor %}
+</div>
+<div class="card-gymx"><div class="card-body"><div style="height:280px;"><canvas id="attChart"></canvas></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const historyLabels = [{% for h in history %}"{{ h.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const historyData   = [{% for h in history %}{{ h.value }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const forecastData  = [{% for f in forecast %}{{ f }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const forecastLabels = ['+1 Wk','+2 Wk','+3 Wk'];
+
+new Chart(document.getElementById('attChart').getContext('2d'), {
+  type:'bar',
+  data:{
+    labels: [...historyLabels, ...forecastLabels],
+    datasets:[
+      { label:'Actual', data:[...historyData, null, null, null], backgroundColor:'rgba(59,130,246,0.75)', borderRadius:6 },
+      { label:'Predicted', data:[...Array(historyData.length).fill(null), ...forecastData], backgroundColor:'rgba(245,158,11,0.6)', borderRadius:6 }
+    ]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#F1F5F9' }, beginAtZero:true } } }
+});
+</script>
+{% endblock %}

@@ -33,6 +33,7 @@ urlpatterns = [
     path('settings/',      include('apps.settings.urls',      namespace='gymsettings')),
     path('portal/',        include('apps.portal.urls',        namespace='portal')),
     path('site/',          include('apps.website.urls',       namespace='website')),
+    path('ai/',            include('apps.aifeatures.urls',    namespace='aifeatures')),
 ]
 
 if settings.DEBUG:

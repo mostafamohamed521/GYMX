@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}AI Workout Generator — GymX{% endblock %}
+{% block page_breadcrumb %}AI / Workout Generator{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">AI Workout Generator</h1></div>
+  <a href="{% url 'aifeatures:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Plan</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Member</label><select name="member" class="form-select">{% for m in members %}<option value="{{ m.pk }}">{{ m.get_full_name }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Goal</label><select name="goal" class="form-select">{% for v,l in goals %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Fitness Level</label><select name="level" class="form-select">{% for v,l in levels %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label">Days per Week</label><input type="number" name="days_per_week" class="form-control" value="3" min="1" max="6" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Plan</button>
+        </form>
+      </div>
+    </div>
+    <div class="card-gymx mt-4"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Plans</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for p in recent_plans %}
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:12.5px;font-weight:600;">{{ p.member.get_full_name }}</span>
+          <span style="font-size:11px;color:var(--text-muted);display:block;">{{ p.get_goal_display }} · {{ p.get_level_display }}</span>
+        </div>
+        {% empty %}<div style="padding:20px;text-align:center;color:var(--text-muted);">No plans generated yet</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    {% if generated %}
+    <div class="alert-gymx success mb-3"><i class="fa-solid fa-check-circle"></i> Plan generated using AI-based exercise matching for <strong>{{ generated.goal }}</strong> at <strong>{{ generated.level }}</strong> level.</div>
+    <div class="row g-3">
+      {% for day in generated.schedule %}
+      <div class="col-md-6">
+        <div class="card-gymx"><div class="card-header"><span class="card-header-title">Day {{ day.day }} — {{ day.focus }}</span></div>
+          <div class="card-body">
+            <ul style="padding-left:18px;margin:0;font-size:13px;color:var(--text-secondary);">
+              {% for ex in day.exercises %}<li style="margin-bottom:6px;">{{ ex }} <span style="color:var(--text-muted);font-size:11.5px;">({{ day.sets_reps }})</span></li>{% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:80px 20px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">
+      <i class="fa-solid fa-dumbbell" style="font-size:36px;display:block;margin-bottom:14px;opacity:0.3;"></i>
+      Fill out the form to generate an AI-crafted workout plan.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

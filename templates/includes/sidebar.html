@@ -56,6 +56,12 @@
     </a>
     {% endif %}
     {% if is_admin_role %}
+    <div class="nav-section-label">Intelligence</div>
+    <a href="{% url 'aifeatures:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'aifeatures' %}active{% endif %}">
+      <i class="fa-solid fa-brain"></i><span>AI & Smart Features</span>
+    </a>
+    {% endif %}
+    {% if is_admin_role %}
     <div class="nav-section-label">System</div>
     <a href="{% url 'gymsettings:general' %}" class="nav-item {% if request.resolver_match.app_name == 'gymsettings' %}active{% endif %}">
       <i class="fa-solid fa-gear"></i><span>Settings</span>
@@ -89,6 +95,12 @@
     {% if is_admin_role %}
     <a href="{% url 'finance:income' %}" class="nav-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
       <i class="fa-solid fa-sack-dollar"></i><span>Finance</span>
+    </a>
+    {% endif %}
+    {% if is_admin_role %}
+    <div class="nav-section-label">Intelligence</div>
+    <a href="{% url 'aifeatures:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'aifeatures' %}active{% endif %}">
+      <i class="fa-solid fa-brain"></i><span>AI & Smart Features</span>
     </a>
     {% endif %}
     {% if is_admin_role %}

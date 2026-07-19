@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Smart Recommendations — GymX{% endblock %}
+{% block page_breadcrumb %}AI / Smart Recommendations{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Smart Recommendations</h1></div>
+  <a href="{% url 'aifeatures:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+{% for r in recommendations %}
+<div class="card-gymx mb-4">
+  <div class="card-header"><span class="card-header-title"><i class="fa-solid {{ r.icon }}" style="color:var(--{{ r.color|default:'primary' }});"></i> {{ r.title }}</span></div>
+  <div class="card-body">
+    <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:16px;">{{ r.description }}</p>
+    {% if r.members %}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      {% for m in r.members %}<span class="badge-gymx gray" style="font-size:11px;">{{ m.get_full_name }}</span>{% endfor %}
+    </div>
+    {% endif %}
+    {% if r.products %}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      {% for p in r.products %}<span class="badge-gymx blue" style="font-size:11px;">{{ p.items__product_name }} ({{ p.total }})</span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% empty %}
+<div style="text-align:center;padding:80px 20px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">
+  <i class="fa-solid fa-lightbulb" style="font-size:36px;display:block;margin-bottom:14px;opacity:0.3;"></i>
+  No recommendations right now — everything looks healthy!
+</div>
+{% endfor %}
+{% endblock %}

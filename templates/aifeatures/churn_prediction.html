@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Member Churn Prediction — GymX{% endblock %}
+{% block page_breadcrumb %}AI / Churn Prediction{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Member Churn Prediction</h1><p class="page-subtitle">Risk scoring based on attendance, subscription, and payment signals</p></div>
+  <a href="{% url 'aifeatures:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6"><div class="stat-card red" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.high }}</div><div class="stat-label">High Risk</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card orange" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.medium }}</div><div class="stat-label">Medium Risk</div></div></div>
+  <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:24px;">{{ stats.low }}</div><div class="stat-label">Low Risk</div></div></div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Member</th><th>Risk Score</th><th>Risk Level</th><th>Days Since Visit</th><th>Days Left on Plan</th></tr></thead>
+  <tbody>
+    {% for s in scores %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ s.member.get_full_name }}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:60px;height:6px;background:var(--bg-muted);border-radius:999px;overflow:hidden;"><div style="height:100%;width:{{ s.risk_score }}%;background:{% if s.risk_level == 'High' %}var(--danger){% elif s.risk_level == 'Medium' %}var(--warning){% else %}var(--success){% endif %};"></div></div>
+          <span style="font-size:12px;font-weight:600;">{{ s.risk_score }}</span>
+        </div>
+      </td>
+      <td><span class="badge-gymx {% if s.risk_level == 'High' %}red{% elif s.risk_level == 'Medium' %}orange{% else %}green{% endif %}" style="font-size:11px;">{{ s.risk_level }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.days_since_visit }} days</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{% if s.days_left >= 0 %}{{ s.days_left }} days{% else %}Expired{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No active members to analyze</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}

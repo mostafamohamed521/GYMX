@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'apps.settings',
     'apps.portal',
     'apps.website',
+    'apps.aifeatures',
 ]
 
 MIDDLEWARE = [
@@ -75,16 +76,16 @@ DATABASES = {
 }
 
 # PostgreSQL (uncomment when ready):
-DATABASES = {
-         'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'NAME': config('DB_NAME'),
-         'USER': config('DB_USER'),
-         'PASSWORD': config('DB_PASSWORD'),
-         'HOST': config('DB_HOST', default='localhost'),
-         'PORT': config('DB_PORT', default='5432'),
-     }
- }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST', default='localhost'),
+#         'PORT': config('DB_PORT', default='5432'),
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

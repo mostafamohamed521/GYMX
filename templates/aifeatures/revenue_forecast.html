@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Revenue Forecast — GymX{% endblock %}
+{% block page_breadcrumb %}AI / Revenue Forecast{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Revenue Forecast</h1><p class="page-subtitle">Projected using historical growth trend ({{ avg_growth_pct }}% avg monthly growth)</p></div>
+  <a href="{% url 'aifeatures:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-3 mb-4">
+  {% for f in forecast %}
+  <div class="col-md-4"><div class="stat-card green" style="padding:16px;"><div class="stat-value" style="font-size:22px;">{{ f|floatformat:0 }}</div><div class="stat-label">Month +{{ forloop.counter }} Forecast (EGP)</div></div></div>
+  {% endfor %}
+</div>
+<div class="card-gymx"><div class="card-body"><div style="height:280px;"><canvas id="revChart"></canvas></div></div></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const historyLabels = [{% for h in history %}"{{ h.label }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const historyData   = [{% for h in history %}{{ h.value }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const forecastData  = [{% for f in forecast %}{{ f }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const forecastLabels = ['+1 Mo','+2 Mo','+3 Mo'];
+
+new Chart(document.getElementById('revChart').getContext('2d'), {
+  type:'line',
+  data:{
+    labels: [...historyLabels, ...forecastLabels],
+    datasets:[
+      { label:'Actual', data:[...historyData, null, null, null], borderColor:'#10B981', backgroundColor:'rgba(16,185,129,0.1)', borderWidth:2.5, pointRadius:4, tension:0.3, fill:true },
+      { label:'Forecast', data:[...Array(historyData.length-1).fill(null), historyData[historyData.length-1], ...forecastData], borderColor:'#F59E0B', borderDash:[6,4], borderWidth:2.5, pointRadius:4, tension:0.3, fill:false }
+    ]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#F1F5F9' }, beginAtZero:true } } }
+});
+</script>
+{% endblock %}
