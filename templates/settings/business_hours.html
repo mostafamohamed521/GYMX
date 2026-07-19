@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Business Hours — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Business Hours{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Business Hours</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      {% for h in hours_list %}
+      <div class="row g-2 align-items-center mb-3" style="padding-bottom:12px;border-bottom:1px solid var(--border);">
+        <div class="col-3"><label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" name="day_{{ h.day }}_open" {% if h.is_open %}checked{% endif %} style="width:16px;height:16px;accent-color:var(--primary);" /> {{ h.get_day_display }}</label></div>
+        <div class="col-4"><input type="time" name="day_{{ h.day }}_start" class="form-control" value="{{ h.open_time|time:'H:i' }}" /></div>
+        <div class="col-4"><input type="time" name="day_{{ h.day }}_end" class="form-control" value="{{ h.close_time|time:'H:i' }}" /></div>
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;margin-top:10px;"><i class="fa-solid fa-floppy-disk"></i> Save Hours</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
