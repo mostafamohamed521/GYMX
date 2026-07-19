@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Security Center — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Security{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Security Center</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'gymsettings:password_policy' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-lock"></i> Password Policy</a>
+  <a href="{% url 'gymsettings:login_history' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-right-to-bracket"></i> Login History</a>
+  <a href="{% url 'gymsettings:audit_logs' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-clipboard-list"></i> Audit Logs</a>
+  <a href="{% url 'hr:roles' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-user-tag"></i> Roles</a>
+  <a href="{% url 'hr:permissions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-key"></i> Permissions</a>
+</div>
+{% if failed_logins_week %}
+<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> <strong>{{ failed_logins_week }}</strong> failed login attempt{{ failed_logins_week|pluralize }} in the last 7 days.</div>
+{% endif %}
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-right-to-bracket"></i> Recent Logins</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for l in recent_logins %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="flex:1;font-size:13px;color:var(--text-primary);">{{ l.user.get_full_name|default:"Unknown" }}</span>
+          <span class="badge-gymx {% if l.status == 'success' %}green{% elif l.status == 'failed' %}red{% else %}gray{% endif %}" style="font-size:10px;">{{ l.get_status_display }}</span>
+        </div>
+        {% empty %}<div style="padding:20px;text-align:center;color:var(--text-muted);">No login records</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clipboard-list"></i> Recent Activity</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for a in recent_audits %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span class="badge-gymx {{ a.get_action_color }}" style="font-size:10px;">{{ a.get_action_display }}</span>
+          <span style="flex:1;font-size:12.5px;color:var(--text-secondary);">{{ a.object_repr|truncatechars:30 }}</span>
+        </div>
+        {% empty %}<div style="padding:20px;text-align:center;color:var(--text-muted);">No activity logged</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
