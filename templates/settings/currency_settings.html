@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Currency Settings — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Currency{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Currency Settings</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Default Currency</label><input type="text" name="default_currency" class="form-control" value="{{ settings_obj.default_currency }}" placeholder="EGP" /></div>
+        <div class="col-md-6"><label class="form-label">Currency Symbol</label><input type="text" name="currency_symbol" class="form-control" value="{{ settings_obj.currency_symbol }}" placeholder="EGP" /></div>
+      </div>
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;margin-top:16px;"><i class="fa-solid fa-floppy-disk"></i> Save Currency</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
