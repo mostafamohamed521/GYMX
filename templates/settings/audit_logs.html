@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Audit Logs — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Audit Logs{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Audit Logs</h1></div>
+  <a href="{% url 'gymsettings:security' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>User</th><th>Action</th><th>Model</th><th>Object</th><th>Date</th></tr></thead>
+  <tbody>
+    {% for l in logs %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ l.user.get_full_name|default:"System" }}</td>
+      <td><span class="badge-gymx {{ l.get_action_color }}" style="font-size:10px;">{{ l.get_action_display }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ l.model_name|default:"—" }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ l.object_repr|truncatechars:40 }}</td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ l.created_at|date:"M d, Y H:i" }}</td>
+    </tr>
+    {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No audit logs yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
