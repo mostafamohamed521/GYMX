@@ -34,45 +34,16 @@
     <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
       <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
     </a>
+    <a href="{% url 'workouts:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
+      <i class="fa-solid fa-dumbbell"></i><span>Workouts</span>
+    </a>
+    <a href="{% url 'nutrition:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'nutrition' %}active{% endif %}">
+      <i class="fa-solid fa-leaf"></i><span>Nutrition</span>
+    </a>
     <a href="{% url 'crm:leads' %}" class="nav-item {% if request.resolver_match.app_name == 'crm' %}active{% endif %}">
       <i class="fa-solid fa-address-book"></i><span>CRM</span>
     </a>
     {% endif %}
-
-    {% if is_admin_role %}
-    <div class="nav-section-label">Insights</div>
-    <a href="{% url 'reports:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
-      <i class="fa-solid fa-chart-line"></i><span>Reports</span>
-    </a>
-    {% endif %}
-    {% if is_front_desk_role %}
-    <a href="{% url 'notifications:center' %}" class="nav-item {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
-      <i class="fa-solid fa-bell"></i><span>Notifications</span>
-    </a>
-    {% endif %}
-    {% if is_admin_role %}
-    <a href="{% url 'finance:income' %}" class="nav-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
-      <i class="fa-solid fa-sack-dollar"></i><span>Finance</span>
-    </a>
-    {% endif %}
-    {% if is_admin_role %}
-    <div class="nav-section-label">Intelligence</div>
-    <a href="{% url 'aifeatures:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'aifeatures' %}active{% endif %}">
-      <i class="fa-solid fa-brain"></i><span>AI & Smart Features</span>
-    </a>
-    {% endif %}
-    {% if is_admin_role %}
-    <div class="nav-section-label">System</div>
-    <a href="{% url 'gymsettings:general' %}" class="nav-item {% if request.resolver_match.app_name == 'gymsettings' %}active{% endif %}">
-      <i class="fa-solid fa-gear"></i><span>Settings</span>
-    </a>
-    <a href="{% url 'coresystem:status' %}" class="nav-item {% if request.resolver_match.app_name == 'coresystem' %}active{% endif %}">
-      <i class="fa-solid fa-server"></i><span>System Status</span>
-    </a>
-    {% endif %}
-    <a href="{% url 'coresystem:help' %}" class="nav-item">
-      <i class="fa-solid fa-circle-question"></i><span>Help Center</span>
-    </a>
 
     {% if is_coach_role %}
     <div class="nav-section-label">My Coaching</div>
@@ -82,47 +53,6 @@
     <a href="{% url 'classes:list' %}" class="nav-item {% if request.resolver_match.app_name == 'classes' %}active{% endif %}">
       <i class="fa-solid fa-chalkboard-user"></i><span>Classes</span>
     </a>
-    <a href="{% url 'crm:leads' %}" class="nav-item {% if request.resolver_match.app_name == 'crm' %}active{% endif %}">
-      <i class="fa-solid fa-address-book"></i><span>CRM</span>
-    </a>
-    {% endif %}
-
-    {% if is_admin_role %}
-    <div class="nav-section-label">Insights</div>
-    <a href="{% url 'reports:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
-      <i class="fa-solid fa-chart-line"></i><span>Reports</span>
-    </a>
-    {% endif %}
-    {% if is_front_desk_role %}
-    <a href="{% url 'notifications:center' %}" class="nav-item {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
-      <i class="fa-solid fa-bell"></i><span>Notifications</span>
-    </a>
-    {% endif %}
-    {% if is_admin_role %}
-    <a href="{% url 'finance:income' %}" class="nav-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
-      <i class="fa-solid fa-sack-dollar"></i><span>Finance</span>
-    </a>
-    {% endif %}
-    {% if is_admin_role %}
-    <div class="nav-section-label">Intelligence</div>
-    <a href="{% url 'aifeatures:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'aifeatures' %}active{% endif %}">
-      <i class="fa-solid fa-brain"></i><span>AI & Smart Features</span>
-    </a>
-    {% endif %}
-    {% if is_admin_role %}
-    <div class="nav-section-label">System</div>
-    <a href="{% url 'gymsettings:general' %}" class="nav-item {% if request.resolver_match.app_name == 'gymsettings' %}active{% endif %}">
-      <i class="fa-solid fa-gear"></i><span>Settings</span>
-    </a>
-    <a href="{% url 'coresystem:status' %}" class="nav-item {% if request.resolver_match.app_name == 'coresystem' %}active{% endif %}">
-      <i class="fa-solid fa-server"></i><span>System Status</span>
-    </a>
-    {% endif %}
-    <a href="{% url 'coresystem:help' %}" class="nav-item">
-      <i class="fa-solid fa-circle-question"></i><span>Help Center</span>
-    </a>
-
-    {% if is_front_desk_role or is_coach_role %}
     <a href="{% url 'workouts:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
       <i class="fa-solid fa-dumbbell"></i><span>Workouts</span>
     </a>
@@ -132,6 +62,7 @@
     {% endif %}
 
     {% if is_admin_role %}
+    <div class="nav-section-label">HR & Branches</div>
     <a href="{% url 'hr:list' %}" class="nav-item {% if request.resolver_match.app_name == 'hr' %}active{% endif %}">
       <i class="fa-solid fa-id-badge"></i><span>HR & Employees</span>
     </a>
@@ -140,15 +71,23 @@
     </a>
     {% endif %}
 
-    {% if is_front_desk_role %}
+    {% if is_front_desk_role or is_admin_role %}
     <div class="nav-section-label">Finance</div>
+    {% if is_front_desk_role %}
     <a href="{% url 'payments:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'payments' %}active{% endif %}">
       <i class="fa-solid fa-credit-card"></i><span>Payments</span>
     </a>
     {% endif %}
-
     {% if is_admin_role %}
+    <a href="{% url 'finance:income' %}" class="nav-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
+      <i class="fa-solid fa-sack-dollar"></i><span>Finance</span>
+    </a>
+    {% endif %}
+    {% endif %}
+
+    {% if is_admin_role or is_front_desk_role %}
     <div class="nav-section-label">Operations</div>
+    {% if is_admin_role %}
     <a href="{% url 'inventory:products' %}" class="nav-item {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">
       <i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span>
     </a>
@@ -158,6 +97,24 @@
       <i class="fa-solid fa-cash-register"></i><span>POS</span>
     </a>
     {% endif %}
+    {% endif %}
+
+    {% if is_admin_role %}
+    <div class="nav-section-label">Insights & Intelligence</div>
+    <a href="{% url 'reports:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
+      <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+    </a>
+    <a href="{% url 'aifeatures:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'aifeatures' %}active{% endif %}">
+      <i class="fa-solid fa-brain"></i><span>AI & Smart Features</span>
+    </a>
+    {% endif %}
+
+    {% if is_front_desk_role %}
+    <div class="nav-section-label">Communication</div>
+    <a href="{% url 'notifications:center' %}" class="nav-item {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
+    </a>
+    {% endif %}
 
     {% if is_member_role %}
     <div class="nav-section-label">My Gym</div>
@@ -165,6 +122,19 @@
       <i class="fa-solid fa-user-group"></i><span>My Portal</span>
     </a>
     {% endif %}
+
+    {% if is_admin_role %}
+    <div class="nav-section-label">System</div>
+    <a href="{% url 'gymsettings:general' %}" class="nav-item {% if request.resolver_match.app_name == 'gymsettings' %}active{% endif %}">
+      <i class="fa-solid fa-gear"></i><span>Settings</span>
+    </a>
+    <a href="{% url 'coresystem:status' %}" class="nav-item {% if request.resolver_match.app_name == 'coresystem' %}active{% endif %}">
+      <i class="fa-solid fa-server"></i><span>System Status</span>
+    </a>
+    {% endif %}
+    <a href="{% url 'coresystem:help' %}" class="nav-item {% if request.resolver_match.url_name == 'help' %}active{% endif %}">
+      <i class="fa-solid fa-circle-question"></i><span>Help Center</span>
+    </a>
 
     {% if request.user.can_manage_members %}
     <div class="nav-section-label">Staff</div>
