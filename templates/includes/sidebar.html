@@ -135,16 +135,10 @@
     </a>
     {% endif %}
 
-    {% if is_member_role and request.user.member_profile %}
+    {% if is_member_role %}
     <div class="nav-section-label">My Gym</div>
-    <a href="{% url 'members:detail' request.user.member_profile.pk %}" class="nav-item {% if request.resolver_match.app_name == 'members' %}active{% endif %}">
-      <i class="fa-solid fa-id-card"></i><span>My Membership</span>
-    </a>
-    <a href="{% url 'workouts:progress' request.user.member_profile.pk %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
-      <i class="fa-solid fa-dumbbell"></i><span>My Workouts</span>
-    </a>
-    <a href="{% url 'nutrition:progress' request.user.member_profile.pk %}" class="nav-item {% if request.resolver_match.app_name == 'nutrition' %}active{% endif %}">
-      <i class="fa-solid fa-leaf"></i><span>My Nutrition</span>
+    <a href="{% url 'portal:dashboard' %}" class="nav-item {% if request.resolver_match.app_name == 'portal' %}active{% endif %}">
+      <i class="fa-solid fa-user-group"></i><span>My Portal</span>
     </a>
     {% endif %}
 
