@@ -1,0 +1,20 @@
+{% extends 'website/base_public.html' %}
+{% block title %}Gallery — GymX{% endblock %}
+{% block content %}
+<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Take a Look</div><h1 style="font-size:40px;">Gallery</h1></div></section>
+<section class="gx-section">
+  <div class="container">
+    <div style="display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;">
+      <a href="{% url 'website:gallery' %}" class="gx-badge dark-on-light" style="text-decoration:none;{% if not category %}background:var(--gx-black);color:white;{% endif %}">All</a>
+      {% for v,l in categories %}<a href="?category={{ v }}" class="gx-badge dark-on-light" style="text-decoration:none;{% if category == v %}background:var(--gx-black);color:white;{% endif %}">{{ l }}</a>{% endfor %}
+    </div>
+    <div class="gx-grid gx-grid-3">
+      {% for img in images %}
+      <div style="border-radius:14px;overflow:hidden;aspect-ratio:4/3;background:var(--gx-cream);">
+        <img src="{{ img.image.url }}" style="width:100%;height:100%;object-fit:cover;" alt="{{ img.title }}" />
+      </div>
+      {% empty %}<p style="color:var(--gx-muted);">No images uploaded yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

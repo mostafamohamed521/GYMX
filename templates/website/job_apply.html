@@ -1,0 +1,24 @@
+{% extends 'website/base_public.html' %}
+{% block title %}Apply — {{ job.title }} — GymX{% endblock %}
+{% block content %}
+<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Apply Now</div><h1 style="font-size:36px;">{{ job.title }}</h1></div></section>
+<section class="gx-section">
+  <div class="container" style="max-width:640px;">
+    <div class="gx-card" style="margin-bottom:24px;">
+      <p style="font-size:13.5px;color:var(--gx-muted);line-height:1.7;">{{ job.description }}</p>
+      {% if job.requirements %}<h4 style="font-size:14px;margin-top:16px;">Requirements</h4><p style="font-size:13px;color:var(--gx-muted);white-space:pre-line;">{{ job.requirements }}</p>{% endif %}
+    </div>
+    <div class="gx-card">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin-bottom:14px;"><input type="text" name="full_name" placeholder="Full Name" required style="width:100%;padding:12px;border:1px solid #ECE7DA;border-radius:10px;font-family:inherit;font-size:13.5px;" /></div>
+        <div style="margin-bottom:14px;"><input type="email" name="email" placeholder="Email" required style="width:100%;padding:12px;border:1px solid #ECE7DA;border-radius:10px;font-family:inherit;font-size:13.5px;" /></div>
+        <div style="margin-bottom:14px;"><input type="text" name="phone" placeholder="Phone" style="width:100%;padding:12px;border:1px solid #ECE7DA;border-radius:10px;font-family:inherit;font-size:13.5px;" /></div>
+        <div style="margin-bottom:14px;"><label style="font-size:12.5px;color:var(--gx-muted);display:block;margin-bottom:6px;">Resume/CV</label><input type="file" name="resume" style="width:100%;font-size:13px;" /></div>
+        <div style="margin-bottom:18px;"><textarea name="cover_letter" placeholder="Cover letter (optional)" rows="4" style="width:100%;padding:12px;border:1px solid #ECE7DA;border-radius:10px;font-family:inherit;font-size:13.5px;"></textarea></div>
+        <button type="submit" class="btn-gold" style="width:100%;justify-content:center;border:none;">Submit Application</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

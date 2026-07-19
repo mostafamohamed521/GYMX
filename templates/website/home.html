@@ -1,0 +1,92 @@
+{% extends 'website/base_public.html' %}
+{% block title %}GymX — Premium Fitness in Mansoura{% endblock %}
+{% block content %}
+
+<section class="gx-hero">
+  <div class="container">
+    <div class="gx-hero-eyebrow">Mansoura's Premium Fitness Club</div>
+    <h1>Train harder.<br>Live stronger.</h1>
+    <p>State-of-the-art equipment, expert coaches, and a community that pushes you further — every single day.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <a href="{% url 'website:plans' %}" class="btn-gold">Start Your Journey <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="{% url 'website:classes' %}" class="btn-outline-light">Explore Classes</a>
+    </div>
+  </div>
+</section>
+
+<section class="gx-section">
+  <div class="container">
+    <div class="gx-eyebrow">Why GymX</div>
+    <h2>Everything you need to succeed</h2>
+    <p class="lead">From personal training to nutrition planning, we've built a complete ecosystem around your fitness goals.</p>
+    <div class="gx-grid gx-grid-4">
+      <div class="gx-card"><i class="fa-solid fa-dumbbell" style="font-size:26px;color:var(--gx-gold);"></i><h3 style="font-size:17px;margin:14px 0 6px;">Modern Equipment</h3><p style="font-size:13.5px;color:var(--gx-muted);">Top-tier machines and free weights, always well-maintained.</p></div>
+      <div class="gx-card"><i class="fa-solid fa-person-running" style="font-size:26px;color:var(--gx-gold);"></i><h3 style="font-size:17px;margin:14px 0 6px;">Expert Coaches</h3><p style="font-size:13.5px;color:var(--gx-muted);">Certified trainers dedicated to your personal progress.</p></div>
+      <div class="gx-card"><i class="fa-solid fa-chalkboard-user" style="font-size:26px;color:var(--gx-gold);"></i><h3 style="font-size:17px;margin:14px 0 6px;">Group Classes</h3><p style="font-size:13.5px;color:var(--gx-muted);">Yoga, HIIT, spin, and more — every level welcome.</p></div>
+      <div class="gx-card"><i class="fa-solid fa-leaf" style="font-size:26px;color:var(--gx-gold);"></i><h3 style="font-size:17px;margin:14px 0 6px;">Nutrition Plans</h3><p style="font-size:13.5px;color:var(--gx-muted);">Personalized guidance to fuel your transformation.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="gx-section cream">
+  <div class="container">
+    <div class="gx-eyebrow">Membership Plans</div>
+    <h2>Simple, transparent pricing</h2>
+    <p class="lead">Choose the plan that fits your lifestyle. No hidden fees, cancel anytime.</p>
+    <div class="gx-grid gx-grid-3">
+      {% for p in plans %}
+      <div class="gx-card" style="text-align:center;">
+        <div class="gx-badge dark-on-light">{{ p.duration_days }} days</div>
+        <h3 style="font-size:20px;margin:16px 0 6px;">{{ p.name }}</h3>
+        <div style="font-size:34px;font-weight:800;color:var(--gx-charcoal);">{{ p.price|floatformat:0 }} <span style="font-size:14px;font-weight:500;color:var(--gx-muted);">EGP</span></div>
+        <a href="{% url 'website:plans' %}" class="btn-outline-dark" style="margin-top:18px;width:100%;justify-content:center;">Choose Plan</a>
+      </div>
+      {% empty %}<p style="color:var(--gx-muted);">Plans coming soon.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="gx-section dark">
+  <div class="container">
+    <div class="gx-eyebrow">Our Trainers</div>
+    <h2>Meet the team</h2>
+    <div class="gx-grid gx-grid-4">
+      {% for t in trainers %}
+      <div style="text-align:center;">
+        <div style="width:100%;aspect-ratio:1;border-radius:16px;background:linear-gradient(135deg,#2a2a30,#1a1a20);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:14px;">
+          {% if t.profile_image %}<img src="{{ t.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}<i class="fa-solid fa-person-running" style="font-size:36px;color:var(--gx-gold);"></i>{% endif %}
+        </div>
+        <div style="font-weight:700;">{{ t.get_full_name }}</div>
+        <div style="font-size:12.5px;color:var(--gx-muted);">{{ t.specialization|default:"Fitness Coach" }}</div>
+      </div>
+      {% empty %}<p style="color:var(--gx-muted);">Trainer profiles coming soon.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="gx-section">
+  <div class="container">
+    <div class="gx-eyebrow">Testimonials</div>
+    <h2>What our members say</h2>
+    <div class="gx-grid gx-grid-3">
+      {% for te in testimonials %}
+      <div class="gx-card">
+        <div style="color:var(--gx-gold);font-size:13px;margin-bottom:10px;">{% for i in "12345" %}{% if forloop.counter <= te.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p style="font-size:13.5px;color:var(--gx-charcoal);font-style:italic;">"{{ te.quote|truncatechars:140 }}"</p>
+        <div style="margin-top:16px;font-weight:700;font-size:13.5px;">{{ te.name }}</div>
+        <div style="font-size:11.5px;color:var(--gx-muted);">{{ te.role }}</div>
+      </div>
+      {% empty %}<p style="color:var(--gx-muted);">Be the first to share your story.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="gx-section cream" style="text-align:center;">
+  <div class="container">
+    <h2>Ready to transform yourself?</h2>
+    <p class="lead" style="margin:0 auto 32px;">Join hundreds of members already crushing their goals at GymX.</p>
+    <a href="{% url 'website:plans' %}" class="btn-gold">Get Started Today <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'website/base_public.html' %}
+{% block title %}Classes — GymX{% endblock %}
+{% block content %}
+<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Group Fitness</div><h1 style="font-size:40px;">Our Classes</h1></div></section>
+<section class="gx-section">
+  <div class="container">
+    <div class="gx-grid gx-grid-3">
+      {% for c in class_list %}
+      <div class="gx-card">
+        <div style="width:44px;height:44px;border-radius:12px;background:{{ c.color|default:'#C9A24B' }}20;display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa-solid {{ c.icon|default:'fa-dumbbell' }}" style="color:{{ c.color|default:'#C9A24B' }};"></i></div>
+        <h3 style="font-size:17px;">{{ c.name }}</h3>
+        <p style="font-size:13px;color:var(--gx-muted);">{{ c.description|default:"A great way to build strength and endurance."|truncatechars:100 }}</p>
+        <span class="gx-badge dark-on-light">{{ c.get_difficulty_display }}</span>
+      </div>
+      {% empty %}<p style="color:var(--gx-muted);">Classes coming soon.</p>{% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:36px;"><a href="{% url 'website:timetable' %}" class="btn-outline-dark">View Full Timetable</a></div>
+  </div>
+</section>
+{% endblock %}

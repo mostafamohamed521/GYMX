@@ -1,0 +1,18 @@
+{% extends 'website/base_public.html' %}
+{% block title %}Careers — GymX{% endblock %}
+{% block content %}
+<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Join The Team</div><h1 style="font-size:40px;">Careers at GymX</h1></div></section>
+<section class="gx-section">
+  <div class="container">
+    {% for j in jobs %}
+    <div class="gx-card" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h3 style="font-size:16px;margin:0 0 6px;">{{ j.title }}</h3>
+        <div style="font-size:12.5px;color:var(--gx-muted);"><i class="fa-solid fa-location-dot"></i> {{ j.location }} · {{ j.get_job_type_display }} {% if j.department %}· {{ j.department }}{% endif %}</div>
+      </div>
+      <a href="{% url 'website:job_apply' j.pk %}" class="btn-outline-dark">Apply Now</a>
+    </div>
+    {% empty %}<p style="color:var(--gx-muted);">No open positions right now. Check back soon!</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

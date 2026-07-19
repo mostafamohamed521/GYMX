@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'apps.finance',
     'apps.settings',
     'apps.portal',
+    'apps.website',
 ]
 
 MIDDLEWARE = [
@@ -66,10 +67,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'gymx.db',
+    }
+}
 
 # PostgreSQL (uncomment when ready):
 DATABASES = {
-     'default': {
+         'default': {
          'ENGINE': 'django.db.backends.postgresql',
          'NAME': config('DB_NAME'),
          'USER': config('DB_USER'),

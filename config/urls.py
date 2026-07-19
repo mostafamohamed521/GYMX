@@ -32,6 +32,7 @@ urlpatterns = [
     path('finance/',       include('apps.finance.urls',       namespace='finance')),
     path('settings/',      include('apps.settings.urls',      namespace='gymsettings')),
     path('portal/',        include('apps.portal.urls',        namespace='portal')),
+    path('site/',          include('apps.website.urls',       namespace='website')),
 ]
 
 if settings.DEBUG:
