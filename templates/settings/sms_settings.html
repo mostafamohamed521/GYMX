@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}SMS Settings — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / SMS{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">SMS Settings</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;margin-bottom:14px;"><span style="font-size:13.5px;font-weight:600;">Enable SMS Notifications</span><input type="checkbox" name="sms_enabled" {% if settings_obj.sms_enabled %}checked{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" /></label>
+      <div class="mb-3"><label class="form-label">Provider</label><input type="text" name="sms_provider" class="form-control" value="{{ settings_obj.sms_provider }}" /></div>
+      <div class="mb-3"><label class="form-label">API Key</label><input type="text" name="sms_api_key" class="form-control" value="{{ settings_obj.sms_api_key }}" /></div>
+      <div class="mb-4"><label class="form-label">Sender ID</label><input type="text" name="sms_sender_id" class="form-control" value="{{ settings_obj.sms_sender_id }}" placeholder="GymX" /></div>
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
