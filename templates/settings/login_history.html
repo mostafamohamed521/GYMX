@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login History — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Login History{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Login History</h1><p class="page-subtitle">{{ stats.total }} total · {{ stats.failed }} failed</p></div>
+  <a href="{% url 'gymsettings:security' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>User</th><th>Status</th><th>Browser</th><th>OS</th><th>IP Address</th><th>Date</th></tr></thead>
+  <tbody>
+    {% for l in logins %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ l.user.get_full_name|default:"Unknown" }}</td>
+      <td><span class="badge-gymx {% if l.status == 'success' %}green{% elif l.status == 'failed' %}red{% else %}gray{% endif %}" style="font-size:10px;">{{ l.get_status_display }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ l.browser }}</td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ l.os }}</td>
+      <td style="font-size:12px;color:var(--text-muted);font-family:monospace;">{{ l.ip_address|default:"—" }}</td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ l.created_at|date:"M d, Y H:i" }}</td>
+    </tr>
+    {% empty %}<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text-muted);">No login history yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}
