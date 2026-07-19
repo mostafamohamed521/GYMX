@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Email Settings — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Email{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Email Settings (SMTP)</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;margin-bottom:14px;"><span style="font-size:13.5px;font-weight:600;">Enable Email Notifications</span><input type="checkbox" name="email_enabled" {% if settings_obj.email_enabled %}checked{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" /></label>
+      <div class="row g-3">
+        <div class="col-md-8"><label class="form-label">SMTP Host</label><input type="text" name="smtp_host" class="form-control" value="{{ settings_obj.smtp_host }}" placeholder="smtp.gmail.com" /></div>
+        <div class="col-md-4"><label class="form-label">Port</label><input type="number" name="smtp_port" class="form-control" value="{{ settings_obj.smtp_port }}" /></div>
+        <div class="col-12"><label class="form-label">SMTP Username</label><input type="text" name="smtp_username" class="form-control" value="{{ settings_obj.smtp_username }}" /></div>
+        <div class="col-12"><label class="form-label">From Email</label><input type="email" name="smtp_from_email" class="form-control" value="{{ settings_obj.smtp_from_email }}" /></div>
+      </div>
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;margin-top:16px;"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
