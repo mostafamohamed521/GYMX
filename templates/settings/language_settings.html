@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Language Settings — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Language{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Language Settings</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-4"><label class="form-label">Default Language</label>
+        <select name="default_language" class="form-select">
+          <option value="en" {% if settings_obj.default_language == 'en' %}selected{% endif %}>English</option>
+          <option value="ar" {% if settings_obj.default_language == 'ar' %}selected{% endif %}>Arabic (العربية)</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save Language</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
