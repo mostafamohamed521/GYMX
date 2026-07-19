@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}System Status — GymX{% endblock %}
+{% block page_breadcrumb %}System / Status{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">System Status</h1><p class="page-subtitle">Last checked: {{ checked_at|date:"M d, Y H:i" }}</p></div>
+  <a href="{% url 'coresystem:maintenance' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance Mode</a>
+</div>
+<div style="background:{% if overall == 'operational' %}#ECFDF5{% elif overall == 'degraded' %}#FFFBEB{% else %}#FEF2F2{% endif %};border-radius:var(--radius-2xl);padding:28px;text-align:center;margin-bottom:28px;">
+  <i class="fa-solid {% if overall == 'operational' %}fa-circle-check{% elif overall == 'degraded' %}fa-triangle-exclamation{% else %}fa-circle-xmark{% endif %}" style="font-size:36px;color:{% if overall == 'operational' %}var(--success){% elif overall == 'degraded' %}var(--warning){% else %}var(--danger){% endif %};"></i>
+  <div style="font-size:20px;font-weight:800;margin-top:10px;color:{% if overall == 'operational' %}var(--success){% elif overall == 'degraded' %}var(--warning){% else %}var(--danger){% endif %};">
+    {% if overall == 'operational' %}All Systems Operational{% elif overall == 'degraded' %}Degraded Performance{% else %}System Down{% endif %}
+  </div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead>
+  <tbody>
+    {% for c in checks %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ c.name }}</td>
+      <td><span class="badge-gymx {% if c.status == 'operational' %}green{% elif c.status == 'degraded' or c.status == 'maintenance' %}orange{% else %}red{% endif %}" style="font-size:11px;text-transform:capitalize;">{{ c.status }}</span></td>
+      <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.detail }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}

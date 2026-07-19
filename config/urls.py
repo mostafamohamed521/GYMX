@@ -34,8 +34,14 @@ urlpatterns = [
     path('portal/',        include('apps.portal.urls',        namespace='portal')),
     path('site/',          include('apps.website.urls',       namespace='website')),
     path('ai/',            include('apps.aifeatures.urls',    namespace='aifeatures')),
+    path('system/',        include('apps.system.urls',        namespace='coresystem')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Custom error page handlers (only take effect when DEBUG=False)
+handler403 = 'apps.system.views.custom_403'
+handler404 = 'apps.system.views.custom_404'
+handler500 = 'apps.system.views.custom_500'

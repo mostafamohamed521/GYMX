@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'apps.portal',
     'apps.website',
     'apps.aifeatures',
+    'apps.system',
 ]
 
 MIDDLEWARE = [
@@ -46,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.system.middleware.maintenance.MaintenanceModeMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 — Page Not Found | GymX</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  body{margin:0;font-family:'Segoe UI',sans-serif;background:#0A0A0B;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;}
+  .wrap{max-width:480px;padding:24px;}
+  .code{font-size:110px;font-weight:900;background:linear-gradient(135deg,#3B82F6,#8B5CF6);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;}
+  h1{font-size:22px;margin:10px 0 12px;}
+  p{color:rgba(255,255,255,0.6);font-size:14px;line-height:1.6;margin-bottom:28px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:#3B82F6;color:white;font-weight:700;padding:12px 26px;border-radius:999px;text-decoration:none;font-size:14px;}
+  i.icon{font-size:40px;color:#3B82F6;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  {% if is_preview %}<div style="font-size:11px;color:#3B82F6;margin-bottom:16px;letter-spacing:1px;">PREVIEW MODE</div>{% endif %}
+  <i class="fa-solid fa-compass icon"></i>
+  <div class="code">404</div>
+  <h1>Page Not Found</h1>
+  <p>The page you're looking for doesn't exist or may have been moved. Let's get you back on track.</p>
+  <a href="/dashboard/" class="btn"><i class="fa-solid fa-gauge"></i> Back to Dashboard</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Version History — GymX{% endblock %}
+{% block page_breadcrumb %}System / Version History{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Version History</h1></div>
+  <a href="{% url 'coresystem:release_notes' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Release Notes</a>
+</div>
+<div class="card-gymx">
+  <div style="padding:8px 0;">
+    {% for r in releases %}
+    <div style="display:flex;align-items:center;gap:16px;padding:16px 24px;border-bottom:1px solid var(--border);position:relative;">
+      <div style="width:10px;height:10px;border-radius:50%;background:{% if r.release_type == 'major' %}var(--danger){% elif r.release_type == 'minor' %}var(--primary){% else %}var(--success){% endif %};flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div style="font-size:13.5px;font-weight:700;">v{{ r.version }} <span style="color:var(--text-muted);font-weight:400;">— {{ r.title }}</span></div>
+        <div style="font-size:11.5px;color:var(--text-muted);">{{ r.released_at|date:"M d, Y" }}</div>
+      </div>
+      <span class="badge-gymx {{ r.get_type_color }}" style="font-size:10px;">{{ r.get_release_type_display }}</span>
+    </div>
+    {% empty %}
+    <div style="text-align:center;padding:64px;color:var(--text-muted);">No version history recorded yet.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

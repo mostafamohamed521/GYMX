@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>403 — Forbidden | GymX</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  body{margin:0;font-family:'Segoe UI',sans-serif;background:#0A0A0B;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;}
+  .wrap{max-width:480px;padding:24px;}
+  .code{font-size:110px;font-weight:900;background:linear-gradient(135deg,#EF4444,#DC2626);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;}
+  h1{font-size:22px;margin:10px 0 12px;}
+  p{color:rgba(255,255,255,0.6);font-size:14px;line-height:1.6;margin-bottom:28px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:#EF4444;color:white;font-weight:700;padding:12px 26px;border-radius:999px;text-decoration:none;font-size:14px;}
+  i.icon{font-size:40px;color:#EF4444;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  {% if is_preview %}<div style="font-size:11px;color:#EF4444;margin-bottom:16px;letter-spacing:1px;">PREVIEW MODE</div>{% endif %}
+  <i class="fa-solid fa-ban icon"></i>
+  <div class="code">403</div>
+  <h1>Access Forbidden</h1>
+  <p>You don't have permission to view this page. If you think this is a mistake, contact your gym administrator.</p>
+  <a href="/dashboard/" class="btn"><i class="fa-solid fa-gauge"></i> Back to Dashboard</a>
+</div>
+</body>
+</html>

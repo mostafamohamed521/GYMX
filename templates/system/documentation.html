@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Documentation — GymX{% endblock %}
+{% block page_breadcrumb %}System / Documentation{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Documentation</h1><p class="page-subtitle">Technical reference for the GymX platform</p></div>
+</div>
+<div class="row g-4">
+  {% for section, pages in grouped.items %}
+  <div class="col-lg-6">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title">{{ section|title }}</span></div>
+      <div class="card-body" style="padding:0;">
+        {% for p in pages %}
+        <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+          <div style="font-weight:700;font-size:13.5px;margin-bottom:6px;">{{ p.title }}</div>
+          <div style="font-size:12.5px;color:var(--text-secondary);white-space:pre-line;">{{ p.content }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12" style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No documentation pages yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}

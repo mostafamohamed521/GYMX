@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Maintenance Mode — GymX{% endblock %}
+{% block page_breadcrumb %}System / Maintenance Mode{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Maintenance Mode</h1></div>
+  <a href="{% url 'coresystem:status' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> System Status</a>
+</div>
+{% if settings_obj.is_enabled %}
+<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> Maintenance mode is currently <strong>ACTIVE</strong>. Only Admins and Managers can access the system.</div>
+{% endif %}
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;margin-bottom:16px;">
+        <span style="font-size:14px;font-weight:700;">Enable Maintenance Mode</span>
+        <input type="checkbox" name="is_enabled" {% if settings_obj.is_enabled %}checked{% endif %} style="width:20px;height:20px;accent-color:var(--danger);" />
+      </label>
+      <div class="mb-3"><label class="form-label">Message shown to visitors</label><textarea name="message" class="form-control" rows="3">{{ settings_obj.message }}</textarea></div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6"><label class="form-label">Starts At</label><input type="datetime-local" name="starts_at" class="form-control" /></div>
+        <div class="col-md-6"><label class="form-label">Expected End</label><input type="datetime-local" name="ends_at" class="form-control" /></div>
+      </div>
+      <button type="submit" class="btn-gymx {% if settings_obj.is_enabled %}outline{% else %}danger{% endif %}" style="width:100%;justify-content:center;"><i class="fa-solid fa-screwdriver-wrench"></i> Save Settings</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>401 — Unauthorized | GymX</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  body{margin:0;font-family:'Segoe UI',sans-serif;background:#0A0A0B;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;}
+  .wrap{max-width:480px;padding:24px;}
+  .code{font-size:110px;font-weight:900;background:linear-gradient(135deg,#F59E0B,#EF4444);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;}
+  h1{font-size:22px;margin:10px 0 12px;}
+  p{color:rgba(255,255,255,0.6);font-size:14px;line-height:1.6;margin-bottom:28px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:#F59E0B;color:#0A0A0B;font-weight:700;padding:12px 26px;border-radius:999px;text-decoration:none;font-size:14px;}
+  i.icon{font-size:40px;color:#F59E0B;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  {% if is_preview %}<div style="font-size:11px;color:#F59E0B;margin-bottom:16px;letter-spacing:1px;">PREVIEW MODE</div>{% endif %}
+  <i class="fa-solid fa-lock icon"></i>
+  <div class="code">401</div>
+  <h1>Unauthorized Access</h1>
+  <p>You need to sign in to view this page. Your session may have expired or you haven't logged in yet.</p>
+  <a href="/accounts/login/" class="btn"><i class="fa-solid fa-right-to-bracket"></i> Go to Login</a>
+</div>
+</body>
+</html>

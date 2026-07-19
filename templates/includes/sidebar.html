@@ -66,7 +66,13 @@
     <a href="{% url 'gymsettings:general' %}" class="nav-item {% if request.resolver_match.app_name == 'gymsettings' %}active{% endif %}">
       <i class="fa-solid fa-gear"></i><span>Settings</span>
     </a>
+    <a href="{% url 'coresystem:status' %}" class="nav-item {% if request.resolver_match.app_name == 'coresystem' %}active{% endif %}">
+      <i class="fa-solid fa-server"></i><span>System Status</span>
+    </a>
     {% endif %}
+    <a href="{% url 'coresystem:help' %}" class="nav-item">
+      <i class="fa-solid fa-circle-question"></i><span>Help Center</span>
+    </a>
 
     {% if is_coach_role %}
     <div class="nav-section-label">My Coaching</div>
@@ -108,7 +114,13 @@
     <a href="{% url 'gymsettings:general' %}" class="nav-item {% if request.resolver_match.app_name == 'gymsettings' %}active{% endif %}">
       <i class="fa-solid fa-gear"></i><span>Settings</span>
     </a>
+    <a href="{% url 'coresystem:status' %}" class="nav-item {% if request.resolver_match.app_name == 'coresystem' %}active{% endif %}">
+      <i class="fa-solid fa-server"></i><span>System Status</span>
+    </a>
     {% endif %}
+    <a href="{% url 'coresystem:help' %}" class="nav-item">
+      <i class="fa-solid fa-circle-question"></i><span>Help Center</span>
+    </a>
 
     {% if is_front_desk_role or is_coach_role %}
     <a href="{% url 'workouts:plans' %}" class="nav-item {% if request.resolver_match.app_name == 'workouts' %}active{% endif %}">
