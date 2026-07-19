@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Payment Gateway — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Payment Gateway{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Payment Gateway</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">Provider</label><input type="text" name="payment_provider" class="form-control" value="{{ settings_obj.payment_provider }}" /></div>
+      <div class="mb-3"><label class="form-label">Public Key</label><input type="text" name="payment_public_key" class="form-control" value="{{ settings_obj.payment_public_key }}" style="font-family:monospace;font-size:12px;" /></div>
+      <label style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;margin-bottom:16px;"><span style="font-size:13.5px;font-weight:600;">Test Mode</span><input type="checkbox" name="payment_test_mode" {% if settings_obj.payment_test_mode %}checked{% endif %} style="width:18px;height:18px;accent-color:var(--primary);" /></label>
+      <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}
