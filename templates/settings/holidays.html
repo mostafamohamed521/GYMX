@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Holidays — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / Holidays{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Holidays</h1></div>
+  <a href="{% url 'gymsettings:general' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-plus"></i> Add Holiday</span></div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-3"><label class="form-label">Name</label><input type="text" name="name" class="form-control" placeholder="e.g. Eid Al-Fitr" /></div>
+          <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control" /></div>
+          <div class="mb-3"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;"><input type="checkbox" name="is_recurring" style="width:16px;height:16px;accent-color:var(--primary);" /> Recurring annually</label></div>
+          <div class="mb-3"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;"><input type="checkbox" name="is_closed" checked style="width:16px;height:16px;accent-color:var(--primary);" /> Gym closed</label></div>
+          <div class="mb-3"><label class="form-label">Notes</label><input type="text" name="notes" class="form-control" /></div>
+          <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-umbrella-beach"></i> Add Holiday</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+      <thead><tr><th>Holiday</th><th>Date</th><th>Recurring</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for h in holiday_list %}
+        <tr>
+          <td style="font-size:13px;font-weight:600;">{{ h.name }}</td>
+          <td style="font-size:12.5px;color:var(--text-secondary);">{{ h.date|date:"M d, Y" }}</td>
+          <td>{% if h.is_recurring %}<span class="badge-gymx blue" style="font-size:10px;">Yearly</span>{% else %}<span style="color:var(--text-muted);font-size:11px;">One-time</span>{% endif %}</td>
+          <td><span class="badge-gymx {% if h.is_closed %}red{% else %}green{% endif %}" style="font-size:11px;">{% if h.is_closed %}Closed{% else %}Open{% endif %}</span></td>
+          <td><form method="post" action="{% url 'gymsettings:holiday_delete' h.pk %}"><button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 8px;color:var(--danger);"><i class="fa-solid fa-trash"></i></button></form></td>
+        </tr>
+        {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No holidays configured</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+  </div>
+</div>
+{% endblock %}
