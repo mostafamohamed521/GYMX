@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}General Settings — GymX{% endblock %}
+{% block page_breadcrumb %}Settings / General{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">General Settings</h1></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+  <a href="{% url 'gymsettings:gym_info' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-building"></i> Gym Info</a>
+  <a href="{% url 'gymsettings:business_hours' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-clock"></i> Business Hours</a>
+  <a href="{% url 'gymsettings:holidays' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-umbrella-beach"></i> Holidays</a>
+  <a href="{% url 'branches:list' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-code-branch"></i> Branch Settings</a>
+  <a href="{% url 'hr:roles' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-user-tag"></i> Roles</a>
+  <a href="{% url 'hr:permissions' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-key"></i> Permissions</a>
+  <a href="{% url 'gymsettings:security' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-shield-halved"></i> Security Center</a>
+  <a href="{% url 'gymsettings:password_policy' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-lock"></i> Password Policy</a>
+  <a href="{% url 'gymsettings:login_history' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-right-to-bracket"></i> Login History</a>
+  <a href="{% url 'gymsettings:audit_logs' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-clipboard-list"></i> Audit Logs</a>
+  <a href="{% url 'gymsettings:api' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-code"></i> API</a>
+  <a href="{% url 'gymsettings:email' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-envelope"></i> Email</a>
+  <a href="{% url 'gymsettings:sms' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-comment-sms"></i> SMS</a>
+  <a href="{% url 'gymsettings:payment_gateway' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-credit-card"></i> Payment Gateway</a>
+  <a href="{% url 'gymsettings:backup' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-database"></i> Backup</a>
+  <a href="{% url 'gymsettings:restore' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-rotate-left"></i> Restore</a>
+  <a href="{% url 'gymsettings:theme' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-palette"></i> Theme</a>
+  <a href="{% url 'gymsettings:language' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-language"></i> Language</a>
+  <a href="{% url 'gymsettings:currency' %}" class="btn-gymx outline" style="text-decoration:none;font-size:12.5px;padding:7px 14px;"><i class="fa-solid fa-coins"></i> Currency</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-gear"></i> Regional Settings</span></div>
+    <div class="card-body">
+      <form method="post">{% csrf_token %}
+        <div class="mb-3"><label class="form-label">Timezone</label><input type="text" name="timezone" class="form-control" value="{{ settings_obj.timezone }}" /></div>
+        <div class="mb-4"><label class="form-label">Date Format</label>
+          <select name="date_format" class="form-select">
+            <option value="DD/MM/YYYY" {% if settings_obj.date_format == 'DD/MM/YYYY' %}selected{% endif %}>DD/MM/YYYY</option>
+            <option value="MM/DD/YYYY" {% if settings_obj.date_format == 'MM/DD/YYYY' %}selected{% endif %}>MM/DD/YYYY</option>
+            <option value="YYYY-MM-DD" {% if settings_obj.date_format == 'YYYY-MM-DD' %}selected{% endif %}>YYYY-MM-DD</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+      </form>
+    </div>
+  </div>
+</div></div>
+{% endblock %}
