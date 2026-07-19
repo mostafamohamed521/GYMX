@@ -31,6 +31,7 @@ urlpatterns = [
     path('notifications/', include('apps.notifications.urls', namespace='notifications')),
     path('finance/',       include('apps.finance.urls',       namespace='finance')),
     path('settings/',      include('apps.settings.urls',      namespace='gymsettings')),
+    path('portal/',        include('apps.portal.urls',        namespace='portal')),
 ]
 
 if settings.DEBUG:
