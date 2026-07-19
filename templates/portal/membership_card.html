@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Membership Card — GymX{% endblock %}
+{% block page_breadcrumb %}Portal / Membership Card{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">Membership Card</h1></div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="window.print()" class="btn-gymx primary"><i class="fa-solid fa-download"></i> Print / Save as PDF</button>
+    <a href="{% url 'portal:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="row justify-content-center"><div class="col-lg-5" id="cardArea">
+  <div style="background:linear-gradient(135deg,#0F172A,#1E3A8A);border-radius:var(--radius-2xl);padding:24px;color:white;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div style="font-size:18px;font-weight:900;">🏋️ GymX</div>
+        <div style="font-size:11px;opacity:0.7;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Membership Card</div>
+      </div>
+      {% if member.qr_code %}<img src="{{ member.qr_code.url }}" style="width:56px;height:56px;background:white;border-radius:var(--radius-sm);padding:4px;" />{% endif %}
+    </div>
+    <div style="margin-top:28px;">
+      <div style="font-size:20px;font-weight:800;">{{ member.get_full_name }}</div>
+      <div style="font-size:12px;opacity:0.75;font-family:monospace;margin-top:2px;">{{ member.member_id }}</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:20px;">
+      <div><div style="font-size:10px;opacity:0.6;">Plan</div><div style="font-size:13px;font-weight:600;">{{ active_sub.plan.name|default:"—" }}</div></div>
+      <div><div style="font-size:10px;opacity:0.6;">Valid Until</div><div style="font-size:13px;font-weight:600;">{{ active_sub.end_date|date:"M d, Y"|default:"—" }}</div></div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}
+{% block extra_css %}
+<style>@media print { .sidebar,.navbar,.app-footer,.page-header{display:none!important;} .main-content{margin-left:0!important;} }</style>
+{% endblock %}

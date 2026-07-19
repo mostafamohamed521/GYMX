@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ ticket.subject }} — GymX{% endblock %}
+{% block page_breadcrumb %}Portal / Support / #{{ ticket.pk }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">{{ ticket.subject }}</h1><span class="badge-gymx {{ ticket.get_status_color }}">{{ ticket.get_status_display }}</span></div>
+  <a href="{% url 'portal:support' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+  <div class="card-gymx mb-4"><div class="card-body">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">{{ ticket.created_at|date:"M d, Y H:i" }} · {{ ticket.get_category_display }}</div>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">{{ ticket.description }}</p>
+    {% if ticket.resolution %}<div style="margin-top:16px;padding:14px;background:#ECFDF5;border-radius:var(--radius-lg);"><div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:4px;">Resolution</div><div style="font-size:13px;color:var(--text-secondary);">{{ ticket.resolution }}</div></div>{% endif %}
+  </div></div>
+
+  <div class="card-gymx mb-4"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-comments"></i> Conversation</span></div>
+    <div class="card-body" style="padding:0;">
+      {% for r in replies %}
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);{% if r.is_staff_reply %}background:#EFF6FF;{% endif %}">
+        <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">{{ r.author.get_full_name|default:"You" }}{% if r.is_staff_reply %} <span style="color:var(--primary);">(Staff)</span>{% endif %}</div>
+        <div style="font-size:13px;color:var(--text-secondary);">{{ r.message }}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">{{ r.created_at|date:"M d, Y H:i" }}</div>
+      </div>
+      {% empty %}<div style="padding:24px;text-align:center;color:var(--text-muted);">No replies yet</div>{% endfor %}
+    </div>
+  </div>
+
+  {% if ticket.status != 'closed' %}
+  <div class="card-gymx"><div class="card-body">
+    <form method="post">{% csrf_token %}
+      <textarea name="message" class="form-control" rows="3" placeholder="Add a reply..."></textarea>
+      <button type="submit" class="btn-gymx primary" style="margin-top:10px;"><i class="fa-solid fa-paper-plane"></i> Send Reply</button>
+    </form>
+  </div></div>
+  {% endif %}
+</div></div>
+{% endblock %}

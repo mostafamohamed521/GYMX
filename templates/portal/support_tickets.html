@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Support Tickets — GymX{% endblock %}
+{% block page_breadcrumb %}Portal / Support{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">Support Tickets</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'portal:support_new' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-plus"></i> New Ticket</a>
+    <a href="{% url 'portal:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+<div class="card-gymx"><div style="overflow-x:auto;"><table class="table-gymx">
+  <thead><tr><th>Subject</th><th>Category</th><th>Status</th><th>Date</th><th></th></tr></thead>
+  <tbody>
+    {% for t in tickets %}
+    <tr>
+      <td style="font-size:13px;font-weight:600;">{{ t.subject }}</td>
+      <td><span class="badge-gymx blue" style="font-size:10px;">{{ t.get_category_display }}</span></td>
+      <td><span class="badge-gymx {{ t.get_status_color }}" style="font-size:11px;">{{ t.get_status_display }}</span></td>
+      <td style="font-size:12px;color:var(--text-muted);">{{ t.created_at|date:"M d, Y" }}</td>
+      <td><a href="{% url 'portal:support_detail' t.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+    </tr>
+    {% empty %}<tr><td colspan="5" style="text-align:center;padding:48px;color:var(--text-muted);">No support tickets yet</td></tr>{% endfor %}
+  </tbody>
+</table></div></div>
+{% endblock %}

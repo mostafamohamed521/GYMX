@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Classes — GymX{% endblock %}
+{% block page_breadcrumb %}Portal / My Classes{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <div><h1 class="page-title">My Classes</h1></div>
+  <a href="{% url 'portal:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+<div class="card-gymx mb-4"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-days"></i> Upcoming Bookings</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Class</th><th>Date</th><th>Time</th></tr></thead>
+    <tbody>
+      {% for b in upcoming %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ b.session.gym_class.name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ b.session.date|date:"M d, Y" }}</td>
+        <td style="font-size:12.5px;color:var(--text-muted);">{{ b.session.start_time|time:"H:i" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted);">No upcoming bookings</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+<div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Booking History</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Class</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ b.session.gym_class.name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ b.session.date|date:"M d, Y" }}</td>
+        <td><span class="badge-gymx {% if b.status == 'confirmed' %}green{% elif b.status == 'waitlist' %}orange{% else %}gray{% endif %}" style="font-size:11px;">{{ b.get_status_display }}</span></td>
+      </tr>
+      {% empty %}<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted);">No booking history</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}

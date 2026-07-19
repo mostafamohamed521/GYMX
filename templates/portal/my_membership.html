@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Membership — GymX{% endblock %}
+{% block page_breadcrumb %}Portal / My Membership{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title">My Membership</h1></div>
+  <div style="display:flex;gap:8px;">
+    <a href="{% url 'portal:renew' %}" class="btn-gymx primary" style="text-decoration:none;"><i class="fa-solid fa-rotate"></i> Renew</a>
+    <a href="{% url 'portal:freeze' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-snowflake"></i> Freeze</a>
+    <a href="{% url 'portal:dashboard' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+{% if active_sub %}
+<div style="background:linear-gradient(135deg,#059669,#0284C7);border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;box-shadow:var(--shadow-md);">
+  <div style="font-size:13px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;">Active Plan</div>
+  <div style="font-size:24px;font-weight:800;margin-top:4px;">{{ active_sub.plan.name }}</div>
+  <div style="display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;">
+    <div><div style="font-size:11px;opacity:0.7;">Start Date</div><div style="font-size:14px;font-weight:600;">{{ active_sub.start_date|date:"M d, Y" }}</div></div>
+    <div><div style="font-size:11px;opacity:0.7;">End Date</div><div style="font-size:14px;font-weight:600;">{{ active_sub.end_date|date:"M d, Y" }}</div></div>
+    <div><div style="font-size:11px;opacity:0.7;">Price Paid</div><div style="font-size:14px;font-weight:600;">{{ active_sub.final_price|floatformat:0 }} EGP</div></div>
+  </div>
+</div>
+{% else %}
+<div class="alert-gymx warning mb-4"><i class="fa-solid fa-triangle-exclamation"></i> You don't have an active membership plan. Please visit the front desk or renew.</div>
+{% endif %}
+<div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-clock-rotate-left"></i> Subscription History</span></div>
+  <div style="overflow-x:auto;"><table class="table-gymx">
+    <thead><tr><th>Plan</th><th>Start</th><th>End</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for s in subscriptions %}
+      <tr>
+        <td style="font-size:13px;font-weight:600;">{{ s.plan.name }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.start_date|date:"M d, Y" }}</td>
+        <td style="font-size:12.5px;color:var(--text-secondary);">{{ s.end_date|date:"M d, Y" }}</td>
+        <td><span class="badge-gymx {% if s.status == 'active' %}green{% elif s.status == 'expired' %}gray{% else %}orange{% endif %}" style="font-size:11px;">{{ s.get_status_display }}</span></td>
+      </tr>
+      {% empty %}<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);">No subscription history</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endblock %}
