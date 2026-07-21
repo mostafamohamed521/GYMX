@@ -1,22 +1,22 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Pricing — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Transparent Pricing</div><h1 style="font-size:40px;">No hidden fees. Ever.</h1></div></section>
+<section class="gx-hero" style="padding:64px 0 56px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-tags"></i> Transparent Pricing</div><h1 style="font-size:36px;">No hidden fees. Ever.</h1></div></section>
 <section class="gx-section">
   <div class="container">
     <div class="gx-grid gx-grid-3">
       {% for p in plans %}
       <div class="gx-card">
-        <h3 style="font-size:19px;">{{ p.name }}</h3>
-        <div style="font-size:32px;font-weight:800;margin:10px 0;">{{ p.price|floatformat:0 }} EGP<span style="font-size:13px;font-weight:500;color:var(--gx-muted);"> / {{ p.duration_days }} days</span></div>
-        <ul style="list-style:none;padding:0;font-size:13px;color:var(--gx-muted);line-height:2;">
-          <li><i class="fa-solid fa-check" style="color:var(--gx-gold);margin-right:8px;"></i>Full gym access</li>
-          <li><i class="fa-solid fa-check" style="color:var(--gx-gold);margin-right:8px;"></i>Group classes included</li>
-          <li><i class="fa-solid fa-check" style="color:var(--gx-gold);margin-right:8px;"></i>Locker room access</li>
+        <h3 style="font-size:18px;">{{ p.name }}</h3>
+        <div style="font-size:30px;font-weight:800;margin:10px 0;">{{ p.price|floatformat:0 }} EGP<span style="font-size:12.5px;font-weight:500;color:var(--text-muted);"> / {{ p.duration_days }} days</span></div>
+        <ul style="list-style:none;padding:0;font-size:13px;color:var(--text-secondary);line-height:2;">
+          <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Full gym access</li>
+          <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Group classes included</li>
+          <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Locker room access</li>
         </ul>
-        <a href="{% url 'website:contact' %}" class="btn-outline-dark" style="width:100%;justify-content:center;margin-top:10px;">Get Started</a>
+        <a href="{% url 'website:contact' %}" class="btn-outline" style="width:100%;justify-content:center;margin-top:10px;">Get Started</a>
       </div>
-      {% empty %}<p style="color:var(--gx-muted);">Pricing coming soon.</p>{% endfor %}
+      {% empty %}<p style="color:var(--text-muted);">Pricing coming soon.</p>{% endfor %}
     </div>
   </div>
 </section>

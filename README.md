@@ -42,8 +42,7 @@ confirming what breaks and what doesn't.
 
 ```bash
 # 1. Install dependencies
-pip install django pillow python-dateutil python-decouple qrcode python-barcode twilio --break-system-packages
-
+pip install -r requirements.txt
 # 2. Set up the database
 python manage.py migrate
 
@@ -70,8 +69,6 @@ python manage.py seed_portal
 python manage.py seed_website
 python manage.py seed_aifeatures
 python manage.py seed_system
-
-# 4. Link the demo Coach/Member accounts to real profiles (do this last)
 python manage.py link_demo_accounts
 
 # 5. Run it

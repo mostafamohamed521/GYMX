@@ -1,26 +1,28 @@
 {% extends 'website/base_public.html' %}
 {% block title %}{{ post.title }} — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:60px 0 40px;">
+<section class="gx-hero" style="padding:56px 0 36px;">
   <div class="container">
-    <div class="gx-hero-eyebrow">{{ post.published_at|date:"M d, Y" }}</div>
-    <h1 style="font-size:36px;">{{ post.title }}</h1>
+    <div class="gx-eyebrow">{{ post.published_at|date:"M d, Y" }}</div>
+    <h1 style="font-size:32px;">{{ post.title }}</h1>
   </div>
 </section>
 <section class="gx-section">
   <div class="container" style="max-width:760px;">
-    {% if post.cover_image %}<img src="{{ post.cover_image.url }}" style="width:100%;border-radius:16px;margin-bottom:32px;" />{% endif %}
-    <div style="font-size:15px;line-height:1.9;color:var(--gx-charcoal);white-space:pre-line;">{{ post.content }}</div>
+    <div class="gx-photo-card" style="aspect-ratio:16/9;margin-bottom:32px;">
+      <img src="{% if post.cover_image %}{{ post.cover_image.url }}{% else %}https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1200&auto=format&fit=crop{% endif %}" alt="{{ post.title }}" />
+    </div>
+    <div style="font-size:15px;line-height:1.9;color:var(--text-secondary);white-space:pre-line;">{{ post.content }}</div>
   </div>
 </section>
 {% if related %}
-<section class="gx-section cream">
+<section class="gx-section muted">
   <div class="container">
-    <h2 style="font-size:22px;">More from the blog</h2>
+    <h2 style="font-size:20px;">More from the blog</h2>
     <div class="gx-grid gx-grid-3">
       {% for r in related %}
       <a href="{% url 'website:blog_detail' r.slug %}" style="text-decoration:none;color:inherit;">
-        <div class="gx-card"><h3 style="font-size:15px;">{{ r.title }}</h3><p style="font-size:12.5px;color:var(--gx-muted);">{{ r.excerpt|truncatechars:70 }}</p></div>
+        <div class="gx-card"><h3 style="font-size:14.5px;">{{ r.title }}</h3><p style="font-size:12.5px;color:var(--text-muted);">{{ r.excerpt|truncatechars:70 }}</p></div>
       </a>
       {% endfor %}
     </div>

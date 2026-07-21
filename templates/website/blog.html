@@ -1,24 +1,24 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Blog — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Insights & Tips</div><h1 style="font-size:40px;">GymX Blog</h1></div></section>
+<section class="gx-hero" style="padding:64px 0 56px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-pen-nib"></i> Insights & Tips</div><h1 style="font-size:36px;">GymX Blog</h1></div></section>
 <section class="gx-section">
   <div class="container">
     <div class="gx-grid gx-grid-3">
       {% for p in posts %}
       <a href="{% url 'website:blog_detail' p.slug %}" style="text-decoration:none;color:inherit;">
         <div class="gx-card" style="padding:0;overflow:hidden;">
-          <div style="width:100%;aspect-ratio:16/10;background:var(--gx-cream);overflow:hidden;">
-            {% if p.cover_image %}<img src="{{ p.cover_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% endif %}
+          <div style="width:100%;aspect-ratio:16/10;background:var(--bg-muted);overflow:hidden;">
+            <img src="{% if p.cover_image %}{{ p.cover_image.url }}{% else %}https://images.unsplash.com/photo-1646492169621-d8da8016354a?fm=jpg&q=80&w=800&auto=format&fit=crop{% endif %}" style="width:100%;height:100%;object-fit:cover;" alt="{{ p.title }}" />
           </div>
           <div style="padding:20px;">
-            <div style="font-size:11px;color:var(--gx-muted);margin-bottom:8px;">{{ p.published_at|date:"M d, Y" }}</div>
-            <h3 style="font-size:16px;margin:0 0 8px;">{{ p.title }}</h3>
-            <p style="font-size:13px;color:var(--gx-muted);">{{ p.excerpt|truncatechars:90 }}</p>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">{{ p.published_at|date:"M d, Y" }}</div>
+            <h3 style="font-size:15.5px;margin:0 0 8px;">{{ p.title }}</h3>
+            <p style="font-size:13px;color:var(--text-secondary);">{{ p.excerpt|truncatechars:90 }}</p>
           </div>
         </div>
       </a>
-      {% empty %}<p style="color:var(--gx-muted);">No blog posts yet.</p>{% endfor %}
+      {% empty %}<p style="color:var(--text-muted);">No blog posts yet.</p>{% endfor %}
     </div>
   </div>
 </section>

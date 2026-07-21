@@ -1,24 +1,30 @@
 {% extends 'website/base_public.html' %}
 {% block title %}About Us — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:70px 0 60px;">
-  <div class="container"><div class="gx-hero-eyebrow">Our Story</div><h1 style="font-size:40px;">Built for people who refuse<br>to settle.</h1></div>
+<section class="gx-hero" style="padding:64px 0 56px;">
+  <div class="container">
+    <div class="gx-eyebrow"><i class="fa-solid fa-heart"></i> Our Story</div>
+    <h1 style="font-size:36px;">Built for people who refuse<br>to settle.</h1>
+  </div>
 </section>
 <section class="gx-section">
   <div class="container">
     <div class="gx-grid gx-grid-2" style="align-items:center;">
       <div>
-        <div class="gx-eyebrow">About GymX</div>
-        <h2>More than a gym — a community</h2>
-        <p style="color:var(--gx-muted);font-size:14.5px;line-height:1.8;">Founded in Mansoura, GymX was built on a simple belief: everyone deserves access to premium fitness facilities and real expertise. We combine modern equipment, certified trainers, and a supportive community to help every member — beginner or advanced — reach their goals.</p>
-        <p style="color:var(--gx-muted);font-size:14.5px;line-height:1.8;">Today we're proud to serve hundreds of members across multiple branches, with a team of {{ trainers_count }}+ dedicated coaches guiding the way.</p>
+        <div class="gx-badge">About GymX</div>
+        <h2 style="margin-top:10px;">More than a gym — a community</h2>
+        <p style="color:var(--text-secondary);font-size:14.5px;line-height:1.8;">Founded in Mansoura, GymX was built on a simple belief: everyone deserves access to premium fitness facilities and real expertise. We combine modern equipment, certified trainers, and a supportive community to help every member — beginner or advanced — reach their goals.</p>
+        <p style="color:var(--text-secondary);font-size:14.5px;line-height:1.8;">Today we're proud to serve hundreds of members across multiple branches, with a team of {{ trainers_count }}+ dedicated coaches guiding the way.</p>
       </div>
-      <div class="gx-grid gx-grid-2">
-        <div class="gx-card" style="text-align:center;"><div style="font-size:30px;font-weight:800;color:var(--gx-gold);">{{ trainers_count }}+</div><div style="font-size:12.5px;color:var(--gx-muted);">Expert Trainers</div></div>
-        <div class="gx-card" style="text-align:center;"><div style="font-size:30px;font-weight:800;color:var(--gx-gold);">500+</div><div style="font-size:12.5px;color:var(--gx-muted);">Active Members</div></div>
-        <div class="gx-card" style="text-align:center;"><div style="font-size:30px;font-weight:800;color:var(--gx-gold);">10+</div><div style="font-size:12.5px;color:var(--gx-muted);">Class Types</div></div>
-        <div class="gx-card" style="text-align:center;"><div style="font-size:30px;font-weight:800;color:var(--gx-gold);">3</div><div style="font-size:12.5px;color:var(--gx-muted);">Branches</div></div>
+      <div class="gx-photo-card" style="aspect-ratio:4/3;">
+        <img src="https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Inside GymX facility" />
       </div>
+    </div>
+    <div class="gx-grid gx-grid-4" style="margin-top:40px;">
+      <div class="gx-card" style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--primary);">{{ trainers_count }}+</div><div style="font-size:12px;color:var(--text-muted);">Expert Trainers</div></div>
+      <div class="gx-card" style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--primary);">500+</div><div style="font-size:12px;color:var(--text-muted);">Active Members</div></div>
+      <div class="gx-card" style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--primary);">10+</div><div style="font-size:12px;color:var(--text-muted);">Class Types</div></div>
+      <div class="gx-card" style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--primary);">3</div><div style="font-size:12px;color:var(--text-muted);">Branches</div></div>
     </div>
   </div>
 </section>

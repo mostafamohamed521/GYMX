@@ -1,20 +1,31 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Classes — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:70px 0 60px;"><div class="container"><div class="gx-hero-eyebrow">Group Fitness</div><h1 style="font-size:40px;">Our Classes</h1></div></section>
+<section class="gx-hero" style="padding:64px 0 40px;">
+  <div class="container gx-hero-grid">
+    <div>
+      <div class="gx-eyebrow"><i class="fa-solid fa-chalkboard-user"></i> Group Fitness</div>
+      <h1 style="font-size:36px;">Our Classes</h1>
+      <p>Find your rhythm in a class built for every energy level — from calm and controlled to all-out intensity.</p>
+    </div>
+    <div class="gx-hero-photo">
+      <img src="https://images.unsplash.com/photo-1761035190790-aa1a3472f7fc?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Group class in session at GymX" />
+    </div>
+  </div>
+</section>
 <section class="gx-section">
   <div class="container">
     <div class="gx-grid gx-grid-3">
       {% for c in class_list %}
       <div class="gx-card">
-        <div style="width:44px;height:44px;border-radius:12px;background:{{ c.color|default:'#C9A24B' }}20;display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa-solid {{ c.icon|default:'fa-dumbbell' }}" style="color:{{ c.color|default:'#C9A24B' }};"></i></div>
-        <h3 style="font-size:17px;">{{ c.name }}</h3>
-        <p style="font-size:13px;color:var(--gx-muted);">{{ c.description|default:"A great way to build strength and endurance."|truncatechars:100 }}</p>
-        <span class="gx-badge dark-on-light">{{ c.get_difficulty_display }}</span>
+        <div class="gx-icon-box" style="background:{{ c.color|default:'#3B82F6' }}1A;color:{{ c.color|default:'#3B82F6' }};"><i class="fa-solid {{ c.icon|default:'fa-dumbbell' }}"></i></div>
+        <h3 style="font-size:16px;margin:0 0 6px;">{{ c.name }}</h3>
+        <p style="font-size:13px;color:var(--text-secondary);">{{ c.description|default:"A great way to build strength and endurance."|truncatechars:100 }}</p>
+        <span class="gx-badge">{{ c.get_difficulty_display }}</span>
       </div>
-      {% empty %}<p style="color:var(--gx-muted);">Classes coming soon.</p>{% endfor %}
+      {% empty %}<p style="color:var(--text-muted);">Classes coming soon.</p>{% endfor %}
     </div>
-    <div style="text-align:center;margin-top:36px;"><a href="{% url 'website:timetable' %}" class="btn-outline-dark">View Full Timetable</a></div>
+    <div style="text-align:center;margin-top:36px;"><a href="{% url 'website:timetable' %}" class="btn-outline">View Full Timetable</a></div>
   </div>
 </section>
 {% endblock %}
