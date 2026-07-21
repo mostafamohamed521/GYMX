@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.core.files.base import ContentFile
 from apps.accounts.models import User
+from apps.accounts.validators import validate_document_file
 
 
 # ── Member ─────────────────────────────────────────────────
@@ -347,7 +348,7 @@ class MemberDocument(models.Model):
     title       = models.CharField(max_length=200)
     doc_type    = models.CharField(max_length=10, choices=DocType.choices,
                                    default=DocType.OTHER)
-    file        = models.FileField(upload_to='members/documents/')
+    file        = models.FileField(upload_to='members/documents/', validators=[validate_document_file])
     notes       = models.TextField(blank=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at  = models.DateTimeField(auto_now_add=True)

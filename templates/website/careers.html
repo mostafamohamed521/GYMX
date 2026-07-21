@@ -1,7 +1,18 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Careers — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:64px 0 56px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-briefcase"></i> Join The Team</div><h1 style="font-size:36px;">Careers at GymX</h1></div></section>
+<section class="gx-hero" style="padding:64px 0 40px;">
+  <div class="container gx-hero-grid">
+    <div>
+      <div class="gx-eyebrow"><i class="fa-solid fa-briefcase"></i> Join The Team</div>
+      <h1 style="font-size:36px;">Careers at GymX</h1>
+      <p>Work alongside coaches and staff who genuinely care about member results.</p>
+    </div>
+    <div class="gx-hero-photo">
+      <img src="https://images.unsplash.com/photo-1758875568671-9fa1829fe1e3?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="GymX coaching team at work" />
+    </div>
+  </div>
+</section>
 <section class="gx-section">
   <div class="container">
     {% for j in jobs %}

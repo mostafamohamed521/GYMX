@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 
 from .models import (
     BlogPost, Testimonial, FAQItem, JobOpening, JobApplication,
     ContactMessage, GalleryImage, Event,
 )
+from apps.accounts.validators import validate_document_file
 from apps.memberships.models import MembershipPlan
 from apps.coaches.models import Coach
 from apps.classes.models import GymClass, ClassSchedule
@@ -147,10 +149,18 @@ def careers(request):
 def job_apply(request, pk):
     job = get_object_or_404(JobOpening, pk=pk, is_active=True)
     if request.method == 'POST':
+        resume_file = request.FILES.get('resume')
+        if resume_file:
+            try:
+                validate_document_file(resume_file)
+            except ValidationError as e:
+                messages.error(request, e.messages[0])
+                return render(request, 'website/job_apply.html', {'job': job})
+
         JobApplication.objects.create(
             job=job, full_name=request.POST.get('full_name'), email=request.POST.get('email'),
             phone=request.POST.get('phone', ''), cover_letter=request.POST.get('cover_letter', ''),
-            resume=request.FILES.get('resume'),
+            resume=resume_file,
         )
         messages.success(request, f'Application submitted for {job.title}! We will contact you soon.')
         return redirect('website:careers')

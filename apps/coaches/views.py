@@ -4,6 +4,8 @@ from calendar import monthcalendar, monthrange
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from apps.accounts.permissions import role_required, STAFF_ROLES
+from apps.accounts.validators import validate_document_file
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db.models import Q, Count, Avg, Sum
 from django.utils import timezone
@@ -465,6 +467,11 @@ def coach_certificates(request, pk):
             expiry_date= request.POST.get('expiry_date') or None,
         )
         if 'document' in request.FILES:
+            try:
+                validate_document_file(request.FILES['document'])
+            except ValidationError as e:
+                messages.error(request, e.messages[0])
+                return redirect('coaches:certificates', pk=pk)
             cert.document = request.FILES['document']
         cert.save()
         messages.success(request, 'Certificate added.')

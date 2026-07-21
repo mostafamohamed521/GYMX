@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from apps.accounts.models import User
+from apps.accounts.validators import validate_document_file
 
 
 class Department(models.Model):
@@ -353,7 +354,8 @@ class Contract(models.Model):
     salary      = models.DecimalField(max_digits=10, decimal_places=2)
     status      = models.CharField(max_length=12, choices=Status.choices,
                                    default=Status.ACTIVE)
-    document    = models.FileField(upload_to='contracts/', null=True, blank=True)
+    document    = models.FileField(upload_to='contracts/', null=True, blank=True,
+                                   validators=[validate_document_file])
     notes       = models.TextField(blank=True)
     created_at  = models.DateTimeField(auto_now_add=True)
 

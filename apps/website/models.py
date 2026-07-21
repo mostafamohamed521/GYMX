@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from apps.accounts.models import User
+from apps.accounts.validators import validate_document_file
 
 
 class BlogPost(models.Model):
@@ -91,7 +92,8 @@ class JobApplication(models.Model):
     full_name   = models.CharField(max_length=150)
     email       = models.EmailField()
     phone       = models.CharField(max_length=20, blank=True)
-    resume      = models.FileField(upload_to='applications/', null=True, blank=True)
+    resume      = models.FileField(upload_to='applications/', null=True, blank=True,
+                                   validators=[validate_document_file])
     cover_letter= models.TextField(blank=True)
     submitted_at= models.DateTimeField(auto_now_add=True)
 

@@ -2,6 +2,8 @@ from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from apps.accounts.permissions import role_required, ADMIN_ROLES
+from apps.accounts.validators import validate_document_file
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.db.models import Q, Count, Sum, Avg
 from django.utils import timezone
@@ -453,6 +455,11 @@ def contract_new(request):
             notes=request.POST.get('notes',''),
         )
         if 'document' in request.FILES:
+            try:
+                validate_document_file(request.FILES['document'])
+            except ValidationError as e:
+                messages.error(request, e.messages[0])
+                return redirect('hr:contracts')
             c.document = request.FILES['document']
         c.save()
         messages.success(request, f'Contract created for {emp.get_full_name()}.')

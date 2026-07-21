@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from apps.accounts.validators import validate_document_file
 from apps.accounts.models import User
 from apps.members.models import Member
 
@@ -125,7 +126,8 @@ class CoachCertificate(models.Model):
     issued_by   = models.CharField(max_length=200)
     issue_date  = models.DateField()
     expiry_date = models.DateField(null=True, blank=True)
-    document    = models.FileField(upload_to='coach_certs/', null=True, blank=True)
+    document    = models.FileField(upload_to='coach_certs/', null=True, blank=True,
+                                   validators=[validate_document_file])
     created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:
