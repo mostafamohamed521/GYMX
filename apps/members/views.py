@@ -4,7 +4,7 @@ from apps.accounts.permissions import role_required, FRONT_DESK_ROLES
 from django.contrib import messages
 from django.db.models import Q, Count
 from django.utils import timezone
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, Http404
 from django.views.decorators.http import require_POST
 
 from .models import (
@@ -466,6 +466,17 @@ def member_documents(request, pk):
     return render(request, 'members/member_documents.html', {
         'member': member, 'documents': documents, 'form': form,
     })
+
+
+@role_required(*FRONT_DESK_ROLES)
+def member_document_download(request, doc_pk):
+    """Serves a member document only to authorized staff — never a raw public media URL.
+    Member documents can include ID copies and medical certificates, so this must never
+    be reachable without a login + role check."""
+    doc = get_object_or_404(MemberDocument, pk=doc_pk)
+    if not doc.file:
+        raise Http404
+    return FileResponse(doc.file.open('rb'), as_attachment=True, filename=doc.file.name.split('/')[-1])
 
 
 @role_required(*FRONT_DESK_ROLES)

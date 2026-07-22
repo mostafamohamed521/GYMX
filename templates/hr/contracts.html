@@ -24,7 +24,7 @@
           <td style="font-size:12.5px;color:{% if c.is_expiring_soon %}var(--warning){% else %}var(--text-muted){% endif %};font-weight:{% if c.is_expiring_soon %}700{% else %}400{% endif %};">{{ c.end_date|date:"M d, Y"|default:"Ongoing" }}</td>
           <td style="font-size:13px;font-weight:600;">{{ c.salary|floatformat:0 }} EGP</td>
           <td><span class="badge-gymx {{ c.get_status_color }}" style="font-size:11px;">{{ c.get_status_display }}</span>{% if c.is_expiring_soon %} <span class="badge-gymx orange" style="font-size:10px;">Expiring</span>{% endif %}</td>
-          <td>{% if c.document %}<a href="{{ c.document.url }}" target="_blank" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-download" style="font-size:11px;"></i></a>{% endif %}</td>
+          <td>{% if c.document %}<a href="{% url 'hr:contract_download' c.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-download" style="font-size:11px;"></i></a>{% endif %}</td>
         </tr>
         {% empty %}
         <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text-muted);">No contracts yet</td></tr>

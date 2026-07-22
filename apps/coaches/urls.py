@@ -17,6 +17,7 @@ urlpatterns = [
     path('<int:pk>/commissions/',        views.coach_commissions,  name='commissions'),
     path('<int:pk>/performance/',        views.coach_performance,  name='performance'),
     path('<int:pk>/certificates/',       views.coach_certificates, name='certificates'),
+    path('certificates/<int:cert_pk>/download/', views.certificate_document_download, name='certificate_download'),
     path('<int:pk>/notes/',              views.coach_notes,        name='notes'),
     path('<int:pk>/availability/',       views.coach_availability, name='availability'),
 ]

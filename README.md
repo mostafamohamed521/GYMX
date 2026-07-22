@@ -42,7 +42,7 @@ confirming what breaks and what doesn't.
 
 ```bash
 # 1. Install dependencies
-pip install -r requirements.txt
+pip install -r requirements.txt 
 # 2. Set up the database
 python manage.py migrate
 

@@ -27,7 +27,7 @@
             </div>
           </div>
           <div style="display:flex;gap:6px;">
-            <a href="{{ doc.file.url }}" target="_blank" class="navbar-btn" title="Download" style="width:30px;height:30px;border-radius:var(--radius-md);text-decoration:none;">
+            <a href="{% url 'members:document_download' doc.pk %}" class="navbar-btn" title="Download" style="width:30px;height:30px;border-radius:var(--radius-md);text-decoration:none;">
               <i class="fa-solid fa-download" style="font-size:12px;"></i>
             </a>
             <a href="{% url 'members:document_delete' member.pk doc.pk %}" onclick="return confirm('Delete this document?')" class="navbar-btn" title="Delete" style="width:30px;height:30px;border-radius:var(--radius-md);color:var(--danger);text-decoration:none;">

@@ -2,6 +2,7 @@ from datetime import date, timedelta
 from calendar import monthcalendar, monthrange
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import FileResponse, Http404
 from django.contrib.auth.decorators import login_required
 from apps.accounts.permissions import role_required, STAFF_ROLES
 from apps.accounts.validators import validate_document_file
@@ -481,6 +482,14 @@ def coach_certificates(request, pk):
     return render(request, 'coaches/coach_certificates.html', {
         'coach': coach, 'certs': certs, 'today': timezone.now().date(),
     })
+
+
+@role_required(*STAFF_ROLES)
+def certificate_document_download(request, cert_pk):
+    cert = get_object_or_404(CoachCertificate, pk=cert_pk)
+    if not cert.document:
+        raise Http404
+    return FileResponse(cert.document.open('rb'), as_attachment=True, filename=cert.document.name.split('/')[-1])
 
 
 # ── 14. Coach Notes ────────────────────────────────────────

@@ -50,7 +50,7 @@
             {% if cert.is_expired %}<span class="badge-gymx red" style="font-size:11px;"><i class="fa-solid fa-triangle-exclamation"></i> Expired</span>
             {% elif cert.is_expiring_soon %}<span class="badge-gymx orange" style="font-size:11px;"><i class="fa-solid fa-clock"></i> Expiring Soon</span>
             {% else %}<span class="badge-gymx green" style="font-size:11px;"><i class="fa-solid fa-circle-check"></i> Valid</span>{% endif %}
-            {% if cert.document %}<a href="{{ cert.document.url }}" target="_blank" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;text-decoration:none;"><i class="fa-solid fa-download"></i> Document</a>{% endif %}
+            {% if cert.document %}<a href="{% url 'coaches:certificate_download' cert.pk %}" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;text-decoration:none;"><i class="fa-solid fa-download"></i> Document</a>{% endif %}
           </div>
         </div>
       </div>

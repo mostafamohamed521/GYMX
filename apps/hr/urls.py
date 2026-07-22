@@ -38,5 +38,6 @@ urlpatterns = [
 
     # Contracts
     path('contracts/',                    views.contracts,             name='contracts'),
+    path('contracts/<int:pk>/download/',  views.contract_document_download, name='contract_download'),
     path('contracts/new/',                views.contract_new,          name='contract_new'),
 ]

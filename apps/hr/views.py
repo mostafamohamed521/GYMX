@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import FileResponse, Http404
 from django.contrib.auth.decorators import login_required
 from apps.accounts.permissions import role_required, ADMIN_ROLES
 from apps.accounts.validators import validate_document_file
@@ -440,6 +441,15 @@ def contracts(request):
         'expiring':   sum(1 for c in Contract.objects.filter(status='active') if c.is_expiring_soon),
     }
     return render(request, 'hr/contracts.html', {'contract_list': contract_list, 'stats': stats})
+
+
+@role_required(*ADMIN_ROLES)
+def contract_document_download(request, pk):
+    """Contracts contain salary and personal terms — never expose via a raw media URL."""
+    contract = get_object_or_404(Contract, pk=pk)
+    if not contract.document:
+        raise Http404
+    return FileResponse(contract.document.open('rb'), as_attachment=True, filename=contract.document.name.split('/')[-1])
 
 
 @role_required(*ADMIN_ROLES)
