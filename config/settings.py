@@ -71,6 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+
 # PostgreSQL (uncomment when ready):
 DATABASES = {
      'default': {
