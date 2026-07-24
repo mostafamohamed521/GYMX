@@ -61,14 +61,24 @@
       <div class="card-gymx mb-4">
         <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-toggle-on"></i> Visibility</span></div>
         <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
-          {% for field in form.is_active, form.is_featured, form.is_public %}
           <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
             <div>
-              <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);">{{ field.label }}</div>
+              <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);">{{ form.is_active.label }}</div>
             </div>
-            {{ field }}
+            {{ form.is_active }}
           </div>
-          {% endfor %}
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);">{{ form.is_featured.label }}</div>
+            </div>
+            {{ form.is_featured }}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;color:var(--text-primary);">{{ form.is_public.label }}</div>
+            </div>
+            {{ form.is_public }}
+          </div>
         </div>
       </div>
 

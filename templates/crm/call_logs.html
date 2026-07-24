@@ -31,7 +31,7 @@
       <tbody>
         {% for c in calls %}
         <tr>
-          <td style="font-size:13px;font-weight:600;">{{ c.lead.get_full_name|default:c.member.get_full_name|default:"Unknown" }}</td>
+          <td style="font-size:13px;font-weight:600;">{% if c.lead %}{{ c.lead.get_full_name }}{% elif c.member %}{{ c.member.get_full_name }}{% else %}Unknown{% endif %}</td>
           <td><i class="fa-solid {% if c.direction == 'inbound' %}fa-phone-arrow-down-left{% else %}fa-phone-arrow-up-right{% endif %}" style="color:var(--text-muted);font-size:12px;"></i> <span style="font-size:12px;">{{ c.get_direction_display }}</span></td>
           <td><span class="badge-gymx {{ c.get_outcome_color }}" style="font-size:11px;">{{ c.get_outcome_display }}</span></td>
           <td style="font-size:12.5px;color:var(--text-secondary);">{{ c.duration_min }} min</td>

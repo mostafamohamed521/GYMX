@@ -334,13 +334,14 @@ def coach_attendance(request, pk):
         return redirect('coaches:attendance', pk=pk)
 
     month_ago  = today - timedelta(days=30)
-    records    = CoachAttendance.objects.filter(coach=coach).order_by('-date')[:60]
+    all_records = CoachAttendance.objects.filter(coach=coach)
     stats = {
-        'present':  records.filter(status='present').count(),
-        'absent':   records.filter(status='absent').count(),
-        'late':     records.filter(status='late').count(),
-        'leave':    records.filter(status='leave').count(),
+        'present':  all_records.filter(status='present').count(),
+        'absent':   all_records.filter(status='absent').count(),
+        'late':     all_records.filter(status='late').count(),
+        'leave':    all_records.filter(status='leave').count(),
     }
+    records = all_records.order_by('-date')[:60]
 
     return render(request, 'coaches/coach_attendance.html', {
         'coach': coach, 'records': records, 'stats': stats,
