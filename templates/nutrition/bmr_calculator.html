@@ -40,9 +40,7 @@
     <div class="card-gymx">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dumbbell"></i> Calories by Activity Level</span></div>
       <div class="card-body">
-        {% for label, value in "Sedentary,sedentary|Light Activity,light|Moderate,moderate|Active,active|Very Active,very_active"|split:"|" %}{% endfor %}
         <div style="display:flex;flex-direction:column;gap:10px;">
-          {% for label, key, cal in "Sedentary (desk job),sedentary,sedentary|Light (1-3 days/wk),light,light|Moderate (3-5 days/wk),moderate,moderate|Active (6-7 days/wk),active,active|Very Active,very_active,very_active"|split:"|" %}{% endfor %}
           <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg-muted);border-radius:var(--radius-xl);">
             <span style="flex:1;font-size:13px;color:var(--text-secondary);">Sedentary</span>
             <span style="font-size:15px;font-weight:800;color:var(--primary);">{{ result.sedentary }}</span>

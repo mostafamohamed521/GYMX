@@ -4,7 +4,7 @@ from calendar import monthcalendar, monthrange
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import FileResponse, Http404
 from django.contrib.auth.decorators import login_required
-from apps.accounts.permissions import role_required, STAFF_ROLES
+from apps.accounts.permissions import role_required, STAFF_ROLES, FRONT_DESK_ROLES, ADMIN_ROLES, owner_or_role_required
 from apps.accounts.validators import validate_document_file
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -22,6 +22,14 @@ from apps.accounts.models import User
 
 def _coach_context(pk):
     return get_object_or_404(Coach, pk=pk)
+
+
+def _coach_owner_user_id(request, pk, **kwargs):
+    """Used with owner_or_role_required: returns the User.id linked to this Coach record,
+    so a coach can view their own schedule/members/performance/certs/notes but not another
+    coach's — while front-desk/admin staff can still view any coach's page."""
+    coach = Coach.objects.filter(pk=pk).only('user_id').first()
+    return coach.user_id if coach else None
 
 
 # ── 1. Coach List ──────────────────────────────────────────
@@ -106,7 +114,7 @@ def coach_add(request):
 
 
 # ── 3. Coach Detail ────────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_detail(request, pk):
     coach   = _coach_context(pk)
     today   = timezone.now().date()
@@ -152,7 +160,7 @@ def coach_detail(request, pk):
 
 
 # ── 4. Edit Coach ──────────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@role_required(*ADMIN_ROLES)
 def coach_edit(request, pk):
     coach = _coach_context(pk)
     if request.method == 'POST':
@@ -201,7 +209,7 @@ def coach_edit(request, pk):
 
 
 # ── 5. Coach Schedule ──────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_schedule(request, pk):
     coach = _coach_context(pk)
     today = timezone.now().date()
@@ -239,7 +247,7 @@ def coach_schedule(request, pk):
 
 
 # ── 6. Coach Calendar ─────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_calendar(request, pk):
     coach = _coach_context(pk)
     today = timezone.now().date()
@@ -276,7 +284,7 @@ def coach_calendar(request, pk):
 
 
 # ── 7. Assigned Members ────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def assigned_members(request, pk):
     coach   = _coach_context(pk)
     members = Member.objects.filter(assigned_coach=coach.user).select_related('assigned_coach') if coach.user else Member.objects.none()
@@ -289,7 +297,7 @@ def assigned_members(request, pk):
 
 
 # ── 8. Assigned Classes ────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def assigned_classes(request, pk):
     coach   = _coach_context(pk)
     today   = timezone.now().date()
@@ -307,7 +315,7 @@ def assigned_classes(request, pk):
 
 
 # ── 9. Coach Attendance ────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_attendance(request, pk):
     coach = _coach_context(pk)
     today = timezone.now().date()
@@ -341,7 +349,7 @@ def coach_attendance(request, pk):
 
 
 # ── 10. Coach Salary ───────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_salary(request, pk):
     coach = _coach_context(pk)
 
@@ -383,7 +391,7 @@ def coach_salary(request, pk):
 
 
 # ── 11. Coach Commissions ──────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_commissions(request, pk):
     coach = _coach_context(pk)
 
@@ -417,7 +425,7 @@ def coach_commissions(request, pk):
 
 
 # ── 12. Coach Performance ──────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_performance(request, pk):
     coach     = _coach_context(pk)
     today     = timezone.now().date()
@@ -455,7 +463,7 @@ def coach_performance(request, pk):
 
 
 # ── 13. Coach Certificates ────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_certificates(request, pk):
     coach = _coach_context(pk)
 
@@ -484,7 +492,12 @@ def coach_certificates(request, pk):
     })
 
 
-@role_required(*STAFF_ROLES)
+def _certificate_owner_user_id(request, cert_pk, **kwargs):
+    cert = CoachCertificate.objects.select_related('coach').filter(pk=cert_pk).first()
+    return cert.coach.user_id if cert and cert.coach else None
+
+
+@owner_or_role_required(_certificate_owner_user_id, *FRONT_DESK_ROLES)
 def certificate_document_download(request, cert_pk):
     cert = get_object_or_404(CoachCertificate, pk=cert_pk)
     if not cert.document:
@@ -493,7 +506,7 @@ def certificate_document_download(request, cert_pk):
 
 
 # ── 14. Coach Notes ────────────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_notes(request, pk):
     coach = _coach_context(pk)
 
@@ -522,7 +535,7 @@ def coach_notes(request, pk):
 
 
 # ── 15. Coach Availability ────────────────────────────────
-@role_required(*STAFF_ROLES)
+@owner_or_role_required(_coach_owner_user_id, *FRONT_DESK_ROLES)
 def coach_availability(request, pk):
     coach = _coach_context(pk)
 

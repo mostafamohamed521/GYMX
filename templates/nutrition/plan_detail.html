@@ -42,7 +42,6 @@
     <div class="card-gymx mb-4">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-calendar-week"></i> Weekly Meal Plan</span></div>
       <div class="card-body" style="padding:0;">
-        {% for day_idx, day_name in "0,Monday|1,Tuesday|2,Wednesday|3,Thursday|4,Friday|5,Saturday|6,Sunday"|split:"|" %}{% endfor %}
         {% for i in "0123456" %}
         {% with day_entries=days|default_if_none:'' %}
         {% endwith %}
