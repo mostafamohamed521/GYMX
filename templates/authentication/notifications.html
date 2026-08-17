@@ -49,9 +49,9 @@
           {% if notif.type == 'success' or notif.type == 'payment' %}background:#ECFDF5;color:var(--success);
           {% elif notif.type == 'warning' %}background:#FFFBEB;color:var(--warning);
           {% elif notif.type == 'danger' %}background:#FEF2F2;color:var(--danger);
-          {% elif notif.type == 'member' %}background:#EFF6FF;color:var(--primary);
+          {% elif notif.type == 'member' %}background:#FBE5EA;color:var(--primary);
           {% elif notif.type == 'system' %}background:var(--bg-muted);color:var(--text-muted);
-          {% else %}background:#EFF6FF;color:var(--primary);{% endif %}">
+          {% else %}background:#FBE5EA;color:var(--primary);{% endif %}">
           <i class="fa-solid {{ notif.get_icon }}"></i>
         </div>
 

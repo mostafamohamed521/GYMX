@@ -21,7 +21,7 @@
 </div>
 
 <!-- Current session callout -->
-<div style="background:linear-gradient(135deg,#EFF6FF,#F0F9FF);border:1px solid #BFDBFE;border-radius:var(--radius-2xl);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
+<div style="background:linear-gradient(135deg,#FBE5EA,#EAEDF6);border:1px solid #F3B8C4;border-radius:var(--radius-2xl);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
   <i class="fa-solid fa-circle-check" style="color:var(--success);font-size:18px;"></i>
   <div>
     <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">You are currently signed in on this device</div>
@@ -33,12 +33,12 @@
   {% for session in sessions %}
   <div class="col-lg-6">
     <div class="card-gymx {% if session.session_key == current_key %}active-session{% endif %}"
-         style="{% if session.session_key == current_key %}border-color:#BFDBFE;{% endif %}">
+         style="{% if session.session_key == current_key %}border-color:#F3B8C4;{% endif %}">
       <div class="card-body" style="padding:20px;">
         <div style="display:flex;align-items:flex-start;gap:16px;">
 
           <!-- Device icon -->
-          <div style="width:46px;height:46px;border-radius:var(--radius-lg);background:{% if session.session_key == current_key %}#EFF6FF{% else %}var(--bg-muted){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:46px;height:46px;border-radius:var(--radius-lg);background:{% if session.session_key == current_key %}#FBE5EA{% else %}var(--bg-muted){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fa-solid {{ session.device_icon }}"
                style="font-size:20px;color:{% if session.session_key == current_key %}var(--primary){% else %}var(--text-muted){% endif %};"></i>
           </div>
