@@ -32,7 +32,7 @@
     <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#EC4899;">{{ plan.daily_protein }}g</div><div style="font-size:10px;color:var(--text-muted);">protein</div></div>
     <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#F59E0B;">{{ plan.daily_carbs }}g</div><div style="font-size:10px;color:var(--text-muted);">carbs</div></div>
     <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#10B981;">{{ plan.daily_fat }}g</div><div style="font-size:10px;color:var(--text-muted);">fat</div></div>
-    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#3B82F6;">{{ plan.daily_water_ml }}</div><div style="font-size:10px;color:var(--text-muted);">ml water</div></div>
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#C80036;">{{ plan.daily_water_ml }}</div><div style="font-size:10px;color:var(--text-muted);">ml water</div></div>
   </div>
 </div>
 
@@ -53,7 +53,7 @@
           </div>
           <div style="flex:1;padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap;">
             {% for entry in day_meals %}
-            <span style="background:{% if entry.meal.meal_type == 'breakfast' %}#FEF9C3{% elif entry.meal.meal_type == 'lunch' %}#DBEAFE{% elif entry.meal.meal_type == 'dinner' %}#F3E8FF{% elif entry.meal.meal_type == 'snack' %}#DCFCE7{% else %}#FFE4E6{% endif %};padding:5px 10px;border-radius:var(--radius-full);font-size:12px;font-weight:500;color:var(--text-primary);">
+            <span style="background:{% if entry.meal.meal_type == 'breakfast' %}#FEF9C3{% elif entry.meal.meal_type == 'lunch' %}#FBE5EA{% elif entry.meal.meal_type == 'dinner' %}#F3E8FF{% elif entry.meal.meal_type == 'snack' %}#DCFCE7{% else %}#FFE4E6{% endif %};padding:5px 10px;border-radius:var(--radius-full);font-size:12px;font-weight:500;color:var(--text-primary);">
               {{ entry.meal.name }} <span style="font-size:10px;opacity:0.7;">({{ entry.meal.total_calories|floatformat:0 }} kcal)</span>
             </span>
             {% empty %}

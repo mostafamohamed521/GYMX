@@ -12,7 +12,7 @@
   <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-list"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.entries }}</div><div class="stat-label">Log Entries</div></div></div>
   <div class="col-md-4 col-12"><div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Progress toward 2500ml</div>
-    <div class="progress-gymx" style="height:16px;border-radius:999px;"><div class="fill" style="height:16px;border-radius:999px;width:{% widthratio stats.total_today 2500 100 %}%;background:{% if stats.total_today >= 2500 %}var(--success){% else %}#3B82F6{% endif %};"></div></div>
+    <div class="progress-gymx" style="height:16px;border-radius:999px;"><div class="fill" style="height:16px;border-radius:999px;width:{% widthratio stats.total_today 2500 100 %}%;background:{% if stats.total_today >= 2500 %}var(--success){% else %}#C80036{% endif %};"></div></div>
     <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ stats.total_today|floatformat:0 }} / 2500 ml</div>
   </div></div>
 </div>
@@ -57,7 +57,7 @@
             {% for log in logs %}
             <tr>
               <td><a href="{% url 'members:detail' log.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ log.member.get_full_name }}</a></td>
-              <td style="font-size:14px;font-weight:700;color:#3B82F6;">{{ log.amount_ml }} ml</td>
+              <td style="font-size:14px;font-weight:700;color:#C80036;">{{ log.amount_ml }} ml</td>
               <td style="font-size:12.5px;color:var(--text-muted);">{{ log.logged_at|date:"H:i" }}</td>
               <td style="font-size:12.5px;color:var(--text-secondary);">{{ log.notes|default:"—" }}</td>
             </tr>
@@ -76,8 +76,8 @@
 function setAmount(v) { document.getElementById('amountInput').value = v; }
 new Chart(document.getElementById('wChart').getContext('2d'), {
   type:'bar',
-  data:{ labels:[{% for d in weekly %}"{{ d.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for d in weekly %}{{ d.amount }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(59,130,246,0.7)', borderColor:'#3B82F6', borderWidth:1, borderRadius:6 }] },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', font:{ size:11 }, callback: v=>(v/1000).toFixed(1)+'L' }, beginAtZero:true } } }
+  data:{ labels:[{% for d in weekly %}"{{ d.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for d in weekly %}{{ d.amount }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(200,0,54,0.7)', borderColor:'#C80036', borderWidth:1, borderRadius:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#9AA0AC', font:{ size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', font:{ size:11 }, callback: v=>(v/1000).toFixed(1)+'L' }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}
