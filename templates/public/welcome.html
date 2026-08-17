@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome — GymX</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Teko:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -14,7 +14,7 @@
 
     /* Hero */
     .welcome-hero {
-      background: linear-gradient(150deg, #1E3A8A 0%, #1D4ED8 50%, #0369A1 100%);
+      background: linear-gradient(150deg, #0C1844 0%, #93002A 50%, #0C1844 100%);
       min-height: 100vh;
       position: relative;
       overflow: hidden;
@@ -65,9 +65,9 @@
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.1); color: white; }
     .btn-white {
-      background: white; color: #1D4ED8;
+      background: white; color: #93002A;
     }
-    .btn-white:hover { background: #F1F5F9; color: #1E3A8A; }
+    .btn-white:hover { background: #FBEFDD; color: #0C1844; }
 
     /* Hero content */
     .hero-content {
@@ -94,16 +94,18 @@
     .hero-badge i { color: #34D399; }
 
     .hero-h1 {
-      font-size: clamp(38px, 5vw, 64px);
-      font-weight: 800;
+      font-family: 'Teko', sans-serif;
+      font-size: clamp(46px, 6vw, 78px);
+      font-weight: 600;
+      text-transform: uppercase;
       color: white;
-      line-height: 1.1;
-      letter-spacing: -1.5px;
+      line-height: 1.05;
+      letter-spacing: 0.2px;
       max-width: 800px;
       margin-bottom: 20px;
     }
     .hero-h1 span {
-      background: linear-gradient(135deg, #93C5FD, #67E8F9);
+      background: linear-gradient(135deg, #FF6B8A, #FFD37A);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -123,7 +125,7 @@
     .cta-primary {
       padding: 14px 32px;
       background: white;
-      color: #1D4ED8;
+      color: #93002A;
       border-radius: 999px;
       font-size: 15px; font-weight: 700;
       text-decoration: none;
@@ -131,7 +133,7 @@
       display: flex; align-items: center; gap: 8px;
       box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     }
-    .cta-primary:hover { background: #F1F5F9; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); color: #1E3A8A; }
+    .cta-primary:hover { background: #FBEFDD; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); color: #0C1844; }
     .cta-secondary {
       padding: 14px 32px;
       background: rgba(255,255,255,0.12);
@@ -172,17 +174,17 @@
 
     .feature-card {
       background: white;
-      border: 1px solid rgba(148,163,184,0.2);
+      border: 1px solid rgba(154,160,172,0.2);
       border-radius: 20px;
       padding: 28px 24px;
       height: 100%;
       transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+      box-shadow: 0 2px 8px rgba(12,24,68,0.06);
     }
     .feature-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(15,23,42,0.12);
-      border-color: rgba(59,130,246,0.3);
+      box-shadow: 0 12px 40px rgba(12,24,68,0.12);
+      border-color: rgba(200,0,54,0.3);
     }
     .feature-icon {
       width: 48px; height: 48px;
@@ -191,57 +193,57 @@
       font-size: 22px;
       margin-bottom: 16px;
     }
-    .fi-blue   { background: #EFF6FF; color: #3B82F6; }
+    .fi-blue   { background: #FBE5EA; color: #C80036; }
     .fi-green  { background: #ECFDF5; color: #10B981; }
     .fi-orange { background: #FFFBEB; color: #F59E0B; }
-    .fi-purple { background: #F5F3FF; color: #8B5CF6; }
+    .fi-purple { background: #F5EEDD; color: #A9791F; }
     .fi-red    { background: #FEF2F2; color: #EF4444; }
-    .fi-cyan   { background: #F0F9FF; color: #0EA5E9; }
+    .fi-cyan   { background: #EAEDF6; color: #0C1844; }
 
     .feature-title {
       font-size: 16px; font-weight: 700;
-      color: #0F172A; margin-bottom: 8px;
+      color: #0C1844; margin-bottom: 8px;
     }
     .feature-desc {
-      font-size: 13.5px; color: #64748B; line-height: 1.6;
+      font-size: 13.5px; color: #5B5F6E; line-height: 1.6;
     }
 
     /* Roles section */
     .roles-section {
       background: white;
       padding: 80px 0;
-      border-top: 1px solid rgba(148,163,184,0.15);
-      border-bottom: 1px solid rgba(148,163,184,0.15);
+      border-top: 1px solid rgba(154,160,172,0.15);
+      border-bottom: 1px solid rgba(154,160,172,0.15);
     }
     .role-card {
       background: var(--bg-base);
-      border: 1px solid rgba(148,163,184,0.2);
+      border: 1px solid rgba(154,160,172,0.2);
       border-radius: 16px;
       padding: 22px 20px;
       transition: all 0.2s;
     }
     .role-card:hover {
-      border-color: #3B82F6;
-      background: #EFF6FF;
+      border-color: #C80036;
+      background: #FBE5EA;
     }
-    .role-name { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 8px; }
-    .role-perm { font-size: 12px; color: #64748B; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .role-name { font-size: 14px; font-weight: 700; color: #0C1844; margin-bottom: 8px; }
+    .role-perm { font-size: 12px; color: #5B5F6E; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
     .role-perm i { color: #10B981; font-size: 11px; }
 
     /* Bottom CTA */
     .bottom-cta {
-      background: linear-gradient(135deg, #1D4ED8, #0369A1);
+      background: linear-gradient(135deg, #93002A, #0C1844);
       padding: 80px 0;
       text-align: center;
     }
 
     /* Footer */
     .welcome-footer {
-      background: #0F172A;
+      background: #0C1844;
       padding: 24px 0;
       text-align: center;
       font-size: 12px;
-      color: #475569;
+      color: #5B5F6E;
     }
   </style>
 </head>
@@ -314,9 +316,9 @@
 <section class="features-section">
   <div class="container">
     <div class="text-center mb-5">
-      <div style="font-size:12px;font-weight:600;color:#3B82F6;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Everything You Need</div>
-      <h2 style="font-size:32px;font-weight:800;color:#0F172A;letter-spacing:-0.5px;">Built for Serious Gyms</h2>
-      <p style="color:#64748B;font-size:15px;margin-top:10px;">All the tools your team needs in one clean, powerful platform.</p>
+      <div style="font-size:12px;font-weight:600;color:#C80036;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Everything You Need</div>
+      <h2 style="font-family:'Teko',sans-serif;font-size:38px;font-weight:600;text-transform:uppercase;color:#0C1844;letter-spacing:.2px;">Built for Serious Gyms</h2>
+      <p style="color:#5B5F6E;font-size:15px;margin-top:10px;">All the tools your team needs in one clean, powerful platform.</p>
     </div>
     <div class="row g-4">
       <div class="col-md-4">
@@ -369,9 +371,9 @@
 <section class="roles-section">
   <div class="container">
     <div class="text-center mb-5">
-      <div style="font-size:12px;font-weight:600;color:#3B82F6;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Access Control</div>
-      <h2 style="font-size:32px;font-weight:800;color:#0F172A;letter-spacing:-0.5px;">5 User Roles</h2>
-      <p style="color:#64748B;font-size:15px;margin-top:10px;">Every team member gets the right access — no more, no less.</p>
+      <div style="font-size:12px;font-weight:600;color:#C80036;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Access Control</div>
+      <h2 style="font-family:'Teko',sans-serif;font-size:38px;font-weight:600;text-transform:uppercase;color:#0C1844;letter-spacing:.2px;">5 User Roles</h2>
+      <p style="color:#5B5F6E;font-size:15px;margin-top:10px;">Every team member gets the right access — no more, no less.</p>
     </div>
     <div class="row g-3">
       <div class="col-md col-6">
@@ -387,8 +389,8 @@
       </div>
       <div class="col-md col-6">
         <div class="role-card">
-          <div style="width:36px;height:36px;background:#EFF6FF;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-building" style="color:#3B82F6;font-size:14px;"></i>
+          <div style="width:36px;height:36px;background:#FBE5EA;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fa-solid fa-building" style="color:#C80036;font-size:14px;"></i>
           </div>
           <div class="role-name">Gym Manager</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> Manage members</div>
@@ -421,7 +423,7 @@
       <div class="col-md col-6">
         <div class="role-card">
           <div style="width:36px;height:36px;background:#F5F3FF;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-user" style="color:#8B5CF6;font-size:14px;"></i>
+            <i class="fa-solid fa-user" style="color:#A9791F;font-size:14px;"></i>
           </div>
           <div class="role-name">Member</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> View profile</div>
@@ -436,7 +438,7 @@
 <!-- ═══ BOTTOM CTA ═════════════════════════════════════════ -->
 <section class="bottom-cta">
   <div class="container">
-    <h2 style="font-size:36px;font-weight:800;color:white;letter-spacing:-0.5px;margin-bottom:14px;">Ready to get started?</h2>
+    <h2 style="font-family:'Teko',sans-serif;font-size:42px;font-weight:600;text-transform:uppercase;color:white;letter-spacing:.2px;margin-bottom:14px;">Ready to get started?</h2>
     <p style="color:rgba(255,255,255,0.65);font-size:16px;margin-bottom:36px;">Join today and take control of your gym operations.</p>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
       <a href="{% url 'accounts:register_member' %}" class="cta-primary">
