@@ -76,8 +76,8 @@
 
     <!-- Freeze info -->
     {% if sub.status == 'frozen' %}
-    <div class="card-gymx" style="border-color:#BFDBFE;">
-      <div class="card-body" style="background:#EFF6FF;border-radius:var(--radius-2xl);">
+    <div class="card-gymx" style="border-color:#F3B8C4;">
+      <div class="card-body" style="background:#FBE5EA;border-radius:var(--radius-2xl);">
         <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;"><i class="fa-solid fa-snowflake"></i> Account Frozen</div>
         <div style="font-size:12.5px;color:var(--text-secondary);">From: {{ sub.freeze_start|date:"M d, Y" }}</div>
         <div style="font-size:12.5px;color:var(--text-secondary);">Until: {{ sub.freeze_end|date:"M d, Y" }}</div>

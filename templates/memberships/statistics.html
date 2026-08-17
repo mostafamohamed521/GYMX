@@ -182,8 +182,8 @@ const revs    = [{% for m in monthly_data %}{{ m.revenue }}{% if not forloop.las
 // Trend chart
 const tCtx = document.getElementById('trendChart').getContext('2d');
 const tGrad = tCtx.createLinearGradient(0,0,0,240);
-tGrad.addColorStop(0,'rgba(59,130,246,0.15)');
-tGrad.addColorStop(1,'rgba(59,130,246,0)');
+tGrad.addColorStop(0,'rgba(200,0,54,0.15)');
+tGrad.addColorStop(1,'rgba(200,0,54,0)');
 
 new Chart(tCtx, {
   type: 'line',
@@ -193,11 +193,11 @@ new Chart(tCtx, {
       {
         label: 'New Subscriptions',
         data: counts,
-        borderColor: '#3B82F6',
+        borderColor: '#C80036',
         backgroundColor: tGrad,
         borderWidth: 2,
         pointBackgroundColor: 'white',
-        pointBorderColor: '#3B82F6',
+        pointBorderColor: '#C80036',
         pointBorderWidth: 2,
         pointRadius: 4,
         tension: 0.4,
@@ -223,11 +223,11 @@ new Chart(tCtx, {
     responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 12 } } },
-      tooltip: { backgroundColor: 'white', borderColor: '#E2E8F0', borderWidth: 1, titleColor: '#0F172A', bodyColor: '#64748B', padding: 10, cornerRadius: 12 }
+      tooltip: { backgroundColor: 'white', borderColor: '#E2E8F0', borderWidth: 1, titleColor: '#0C1844', bodyColor: '#5B5F6E', padding: 10, cornerRadius: 12 }
     },
     scales: {
-      x: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } } },
-      y: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 11 } }, beginAtZero: true },
+      x: { grid: { color: '#FBEFDD' }, ticks: { color: '#9AA0AC', font: { family: 'Inter', size: 11 } } },
+      y: { grid: { color: '#FBEFDD' }, ticks: { color: '#9AA0AC', font: { family: 'Inter', size: 11 } }, beginAtZero: true },
       y1: { position: 'right', grid: { display: false }, ticks: { color: '#10B981', font: { family: 'Inter', size: 11 }, callback: v => v.toLocaleString() } }
     }
   }
@@ -240,7 +240,7 @@ new Chart(document.getElementById('statusChart'), {
     labels: ['Active', 'Expired', 'Frozen', 'Cancelled'],
     datasets: [{
       data: [{{ stats.total_active }}, {{ stats.total_expired }}, {{ stats.total_frozen }}, {{ stats.total_cancelled }}],
-      backgroundColor: ['#10B981', '#EF4444', '#0EA5E9', '#94A3B8'],
+      backgroundColor: ['#10B981', '#EF4444', '#0C1844', '#9AA0AC'],
       borderColor: 'white',
       borderWidth: 3,
       hoverOffset: 6,
@@ -251,7 +251,7 @@ new Chart(document.getElementById('statusChart'), {
     cutout: '70%',
     plugins: {
       legend: { display: false },
-      tooltip: { backgroundColor: 'white', borderColor: '#E2E8F0', borderWidth: 1, titleColor: '#0F172A', bodyColor: '#64748B', padding: 10, cornerRadius: 12 }
+      tooltip: { backgroundColor: 'white', borderColor: '#E2E8F0', borderWidth: 1, titleColor: '#0C1844', bodyColor: '#5B5F6E', padding: 10, cornerRadius: 12 }
     }
   }
 });

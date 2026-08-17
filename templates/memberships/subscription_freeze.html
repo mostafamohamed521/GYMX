@@ -7,7 +7,7 @@
   <div><h1 class="page-title">Freeze Membership</h1><p class="page-subtitle">{{ sub.member.get_full_name }} — {{ sub.plan.name }}</p></div>
   <a href="{% url 'memberships:subscription_detail' sub.pk %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
 </div>
-<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:24px;">
+<div style="background:#FBE5EA;border:1px solid #F3B8C4;border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:24px;">
   <div style="font-size:13px;color:var(--primary);">Max freeze allowed: <strong>{{ sub.plan.max_freeze_days }}</strong> days &nbsp;&middot;&nbsp; Already used: <strong>{{ sub.freeze_days_used }}</strong> days &nbsp;&middot;&nbsp; Remaining: <strong>{{ sub.plan.max_freeze_days|add:"-0" }}</strong> days</div>
 </div>
 <div class="row justify-content-center">
