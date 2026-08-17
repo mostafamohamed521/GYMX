@@ -38,7 +38,7 @@
            onmouseenter="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'"
            onmouseleave="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='var(--shadow-xs)'">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:{% if ex.category %}{{ ex.category.color }}20{% else %}#EFF6FF{% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:{% if ex.category %}{{ ex.category.color }}20{% else %}#FBE5EA{% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fa-solid {{ ex.get_muscle_icon }}" style="font-size:18px;color:{% if ex.category %}{{ ex.category.color }}{% else %}var(--primary){% endif %};"></i>
           </div>
           <div style="flex:1;min-width:0;">

@@ -68,7 +68,7 @@
       <div class="card-body" style="padding:0;">
         {% for r in related %}
         <a href="{% url 'workouts:exercise_detail' r.pk %}" style="display:flex;align-items:center;gap:12px;padding:12px 16px;text-decoration:none;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
-          <div style="width:36px;height:36px;border-radius:var(--radius-md);background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:36px;height:36px;border-radius:var(--radius-md);background:#FBE5EA;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fa-solid {{ r.get_muscle_icon }}" style="color:var(--primary);font-size:14px;"></i>
           </div>
           <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ r.name }}</div><div style="font-size:11px;color:var(--text-muted);">{{ r.get_equipment_display }}</div></div>
