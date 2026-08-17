@@ -1,11 +1,11 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Classes — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:64px 0 40px;">
+<section class="gx-hero" style="padding:48px 0 32px;">
   <div class="container gx-hero-grid">
     <div>
       <div class="gx-eyebrow"><i class="fa-solid fa-chalkboard-user"></i> Group Fitness</div>
-      <h1 style="font-size:36px;">Our Classes</h1>
+      <h1 style="font-size:30px;">Our Classes</h1>
       <p>Find your rhythm in a class built for every energy level — from calm and controlled to all-out intensity.</p>
     </div>
     <div class="gx-hero-photo">
@@ -18,9 +18,9 @@
     <div class="gx-grid gx-grid-3">
       {% for c in class_list %}
       <div class="gx-card">
-        <div class="gx-icon-box" style="background:{{ c.color|default:'#3B82F6' }}1A;color:{{ c.color|default:'#3B82F6' }};"><i class="fa-solid {{ c.icon|default:'fa-dumbbell' }}"></i></div>
-        <h3 style="font-size:16px;margin:0 0 6px;">{{ c.name }}</h3>
-        <p style="font-size:13px;color:var(--text-secondary);">{{ c.description|default:"A great way to build strength and endurance."|truncatechars:100 }}</p>
+        <div class="gx-icon-box" style="background:{{ c.color|default:'#C80036' }}1A;color:{{ c.color|default:'#C80036' }};"><i class="fa-solid {{ c.icon|default:'fa-dumbbell' }}"></i></div>
+        <h3 style="font-size:14.5px;margin:0 0 6px;">{{ c.name }}</h3>
+        <p style="font-size:12.5px;color:var(--text-secondary);">{{ c.description|default:"A great way to build strength and endurance."|truncatechars:100 }}</p>
         <span class="gx-badge">{{ c.get_difficulty_display }}</span>
       </div>
       {% empty %}<p style="color:var(--text-muted);">Classes coming soon.</p>{% endfor %}

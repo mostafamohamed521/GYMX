@@ -1,16 +1,16 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Membership Plans — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:64px 0 56px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-id-card"></i> Join GymX</div><h1 style="font-size:36px;">Membership Plans</h1></div></section>
+<section class="gx-hero" style="padding:48px 0 40px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-id-card"></i> Join GymX</div><h1 style="font-size:30px;">Membership Plans</h1></div></section>
 <section class="gx-section">
   <div class="container">
     <div class="gx-grid gx-grid-3">
       {% for p in plans %}
       <div class="gx-card" style="text-align:center;">
         <div class="gx-badge">{{ p.duration_days }} days</div>
-        <h3 style="font-size:20px;margin:16px 0 6px;">{{ p.name }}</h3>
-        <div style="font-size:34px;font-weight:800;">{{ p.price|floatformat:0 }} <span style="font-size:13px;font-weight:500;color:var(--text-muted);">EGP</span></div>
-        <p style="font-size:13px;color:var(--text-secondary);margin:14px 0;">{{ p.description|default:"Full access to all gym facilities and equipment." }}</p>
+        <h3 style="font-size:18px;margin:16px 0 6px;">{{ p.name }}</h3>
+        <div style="font-size:29px;font-weight:800;">{{ p.price|floatformat:0 }} <span style="font-size:12.5px;font-weight:500;color:var(--text-muted);">EGP</span></div>
+        <p style="font-size:12.5px;color:var(--text-secondary);margin:14px 0;">{{ p.description|default:"Full access to all gym facilities and equipment." }}</p>
         <a href="{% url 'website:contact' %}" class="btn-primary" style="width:100%;justify-content:center;">Join Now</a>
       </div>
       {% empty %}<p style="color:var(--text-muted);">Plans coming soon. Contact us for details.</p>{% endfor %}

@@ -1,11 +1,11 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Testimonials — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:64px 0 40px;">
+<section class="gx-hero" style="padding:48px 0 32px;">
   <div class="container gx-hero-grid">
     <div>
       <div class="gx-eyebrow"><i class="fa-solid fa-quote-left"></i> Real Results</div>
-      <h1 style="font-size:36px;">Member Testimonials</h1>
+      <h1 style="font-size:30px;">Member Testimonials</h1>
       <p>Real stories from real members who trained, showed up, and transformed.</p>
     </div>
     <div class="gx-hero-photo">
@@ -18,10 +18,10 @@
     <div class="gx-grid gx-grid-3">
       {% for t in testimonial_list %}
       <div class="gx-card">
-        <div style="color:var(--warning);font-size:14px;margin-bottom:10px;">{% for i in "12345" %}{% if forloop.counter <= t.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
-        <p style="font-size:13.5px;font-style:italic;color:var(--text-secondary);">"{{ t.quote }}"</p>
-        <div style="margin-top:16px;font-weight:700;font-size:13.5px;">{{ t.name }}</div>
-        <div style="font-size:11.5px;color:var(--text-muted);">{{ t.role }}</div>
+        <div style="color:var(--warning);font-size:13px;margin-bottom:10px;">{% for i in "12345" %}{% if forloop.counter <= t.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p style="font-size:13px;font-style:italic;color:var(--text-secondary);">"{{ t.quote }}"</p>
+        <div style="margin-top:16px;font-weight:700;font-size:13px;">{{ t.name }}</div>
+        <div style="font-size:11px;color:var(--text-muted);">{{ t.role }}</div>
       </div>
       {% empty %}<p style="color:var(--text-muted);">No testimonials yet.</p>{% endfor %}
     </div>

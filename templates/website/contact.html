@@ -1,11 +1,11 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Contact Us — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:64px 0 40px;">
+<section class="gx-hero" style="padding:48px 0 32px;">
   <div class="container gx-hero-grid">
     <div>
       <div class="gx-eyebrow"><i class="fa-solid fa-comments"></i> Get In Touch</div>
-      <h1 style="font-size:36px;">Contact Us</h1>
+      <h1 style="font-size:30px;">Contact Us</h1>
       <p>Questions about membership, classes, or anything else? We'd love to hear from you.</p>
     </div>
     <div class="gx-hero-photo">
@@ -17,14 +17,14 @@
   <div class="container">
     <div class="gx-grid gx-grid-2">
       <div class="gx-card">
-        <h3 style="font-size:16px;margin-bottom:16px;">Send us a message</h3>
+        <h3 style="font-size:14.5px;margin-bottom:16px;">Send us a message</h3>
         <form method="post">
           {% csrf_token %}
-          <div style="margin-bottom:14px;"><input type="text" name="name" placeholder="Your Name" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13.5px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:14px;"><input type="email" name="email" placeholder="Your Email" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13.5px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:14px;"><input type="text" name="phone" placeholder="Phone (optional)" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13.5px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:14px;"><input type="text" name="subject" placeholder="Subject" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13.5px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:18px;"><textarea name="message" placeholder="Your Message" rows="4" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13.5px;background:var(--bg-muted);"></textarea></div>
+          <div style="margin-bottom:14px;"><input type="text" name="name" placeholder="Your Name" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
+          <div style="margin-bottom:14px;"><input type="email" name="email" placeholder="Your Email" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
+          <div style="margin-bottom:14px;"><input type="text" name="phone" placeholder="Phone (optional)" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
+          <div style="margin-bottom:14px;"><input type="text" name="subject" placeholder="Subject" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
+          <div style="margin-bottom:18px;"><textarea name="message" placeholder="Your Message" rows="4" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);"></textarea></div>
           <button type="submit" class="btn-primary" style="width:100%;justify-content:center;border:none;">Send Message</button>
         </form>
       </div>

@@ -1,11 +1,11 @@
 {% extends 'website/base_public.html' %}
 {% block title %}Pricing — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:64px 0 40px;">
+<section class="gx-hero" style="padding:48px 0 32px;">
   <div class="container gx-hero-grid">
     <div>
       <div class="gx-eyebrow"><i class="fa-solid fa-tags"></i> Transparent Pricing</div>
-      <h1 style="font-size:36px;">No hidden fees. Ever.</h1>
+      <h1 style="font-size:30px;">No hidden fees. Ever.</h1>
       <p>Straightforward plans that give you full access to everything GymX offers.</p>
     </div>
     <div class="gx-hero-photo">
@@ -18,9 +18,9 @@
     <div class="gx-grid gx-grid-3">
       {% for p in plans %}
       <div class="gx-card">
-        <h3 style="font-size:18px;">{{ p.name }}</h3>
-        <div style="font-size:30px;font-weight:800;margin:10px 0;">{{ p.price|floatformat:0 }} EGP<span style="font-size:12.5px;font-weight:500;color:var(--text-muted);"> / {{ p.duration_days }} days</span></div>
-        <ul style="list-style:none;padding:0;font-size:13px;color:var(--text-secondary);line-height:2;">
+        <h3 style="font-size:16px;">{{ p.name }}</h3>
+        <div style="font-size:26px;font-weight:800;margin:10px 0;">{{ p.price|floatformat:0 }} EGP<span style="font-size:12px;font-weight:500;color:var(--text-muted);"> / {{ p.duration_days }} days</span></div>
+        <ul style="list-style:none;padding:0;font-size:12.5px;color:var(--text-secondary);line-height:2;">
           <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Full gym access</li>
           <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Group classes included</li>
           <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Locker room access</li>
