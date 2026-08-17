@@ -4,7 +4,7 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-gymx-secret-key-2024')
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
@@ -112,16 +112,24 @@ LOGOUT_REDIRECT_URL = '/auth/login/'
 SESSION_COOKIE_AGE = 86400
 SESSION_SAVE_EVERY_REQUEST = True
 
-# ── Production Security Settings (uncomment when deploying) ──
-# SECURE_HSTS_SECONDS = 31536000
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_BROWSER_XSS_FILTER = True
-# SECURE_CONTENT_TYPE_NOSNIFF = True
-# X_FRAME_OPTIONS = 'DENY'
+# ── Security Settings ──────────────────────────────────────
+# These security headers/cookie flags are only safe to force on once the site is
+# served over HTTPS. Locally (DEBUG=True, plain http://localhost) they would break
+# the dev server, so they're tied to DEBUG being off — i.e. they turn themselves on
+# automatically the moment you deploy with DEBUG=False.
+SECURE_BROWSER_XSS_FILTER   = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS             = 'DENY'
+SECURE_REFERRER_POLICY      = 'same-origin'
+CSRF_COOKIE_HTTPONLY        = True
+
+if not DEBUG:
+    SECURE_HSTS_SECONDS            = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD            = True
+    SECURE_SSL_REDIRECT             = True
+    SESSION_COOKIE_SECURE           = True
+    CSRF_COOKIE_SECURE              = True
 
 # ── Email Configuration ───────────────────────────────────
 EMAIL_BACKEND     = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
