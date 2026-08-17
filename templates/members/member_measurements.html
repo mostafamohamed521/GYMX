@@ -81,12 +81,12 @@ const labels = [{% for m in measurements reversed %}"{{ m.date|date:'M d' }}"{% 
 const data   = [{% for m in measurements reversed %}{{ m.weight_kg|default:"null" }}{% if not forloop.last %},{% endif %}{% endfor %}];
 const ctx = document.getElementById('weightChart').getContext('2d');
 const grad = ctx.createLinearGradient(0,0,0,200);
-grad.addColorStop(0,'rgba(59,130,246,0.15)');
-grad.addColorStop(1,'rgba(59,130,246,0)');
+grad.addColorStop(0,'rgba(200,0,54,0.15)');
+grad.addColorStop(1,'rgba(200,0,54,0)');
 new Chart(ctx, {
   type:'line',
-  data:{ labels, datasets:[{ data, borderColor:'#3B82F6', backgroundColor:grad, borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#3B82F6', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0F172A', bodyColor:'#64748B', callbacks:{ label: c => c.parsed.y + ' kg' } } }, scales:{ x:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', font:{ family:'Inter', size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#94A3B8', font:{ family:'Inter', size:11 }, callback: v => v+' kg' } } } }
+  data:{ labels, datasets:[{ data, borderColor:'#C80036', backgroundColor:grad, borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#C80036', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0C1844', bodyColor:'#5B5F6E', callbacks:{ label: c => c.parsed.y + ' kg' } } }, scales:{ x:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', font:{ family:'Inter', size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', font:{ family:'Inter', size:11 }, callback: v => v+' kg' } } } }
 });
 </script>
 {% endif %}

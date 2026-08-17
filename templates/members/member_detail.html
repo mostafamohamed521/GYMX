@@ -6,7 +6,7 @@
 {% block content %}
 
 <!-- Member Header -->
-<div style="background:linear-gradient(135deg,#1D4ED8,#0369A1);border-radius:var(--radius-2xl);padding:24px 28px;margin-bottom:24px;position:relative;overflow:hidden;">
+<div style="background:linear-gradient(135deg,#93002A,#0C1844);border-radius:var(--radius-2xl);padding:24px 28px;margin-bottom:24px;position:relative;overflow:hidden;">
   <div style="position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
   <div style="position:absolute;right:60px;bottom:-60px;width:140px;height:140px;background:rgba(255,255,255,0.04);border-radius:50%;"></div>
   <div style="position:relative;z-index:1;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
@@ -33,7 +33,7 @@
       <a href="{% url 'members:edit' member.pk %}" class="btn-gymx outline" style="text-decoration:none;background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);color:white;font-size:13px;">
         <i class="fa-solid fa-pen"></i> Edit
       </a>
-      <a href="{% url 'members:card' member.pk %}" class="btn-gymx primary" style="text-decoration:none;background:white;color:#1D4ED8;font-size:13px;">
+      <a href="{% url 'members:card' member.pk %}" class="btn-gymx primary" style="text-decoration:none;background:white;color:#93002A;font-size:13px;">
         <i class="fa-solid fa-id-card"></i> Member Card
       </a>
     </div>
