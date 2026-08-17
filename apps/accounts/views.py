@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+import logging
 from django.contrib.auth import (
     login, logout, update_session_auth_hash, get_user_model
 )
@@ -8,6 +9,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 
 from .models import LoginHistory, Notification, ActivityLog, UserSession
+
+logger = logging.getLogger(__name__)
 from .forms import (
     LoginForm, MemberRegisterForm, StaffRegisterForm,
     CompleteRegistrationForm, OTPVerifyForm,
@@ -152,10 +155,11 @@ def register_member_view(request):
                     f'{"your phone" if not result.get("email") and result.get("sms") else ""}.'
                 )
             else:
+                logger.warning('OTP delivery failed at registration for user_id=%s; code=%s', user.pk, otp)
                 messages.warning(
                     request,
-                    f'Account created but we could not send the code. '
-                    f'Your OTP is: {otp}'  # fallback for dev
+                    'Account created but we could not send the verification code. '
+                    'Please use "Resend Code" or contact support.'
                 )
 
             return redirect('accounts:email_verification')
@@ -259,7 +263,11 @@ def resend_otp_view(request):
         if result.get('email') or result.get('sms'):
             messages.success(request, 'New verification code sent.')
         else:
-            messages.warning(request, f'Could not send code. OTP: {otp}')
+            # Never expose the OTP in the response body/flash message — it would
+            # leak into browser history, screen-share, or any logging middleware
+            # that captures rendered pages. Log it server-side instead.
+            logger.warning('OTP delivery failed for user_id=%s; code=%s', user.pk, otp)
+            messages.warning(request, 'Could not send the code. Please contact support or try again shortly.')
     return redirect('accounts:email_verification')
 
 
@@ -284,7 +292,8 @@ def phone_otp_view(request):
         otp = user.generate_otp()
         result = send_otp_sms(user, otp)
         if not result:
-            messages.warning(request, f'Could not send SMS. Dev OTP: {otp}')
+            logger.warning('SMS OTP delivery failed for user_id=%s; code=%s', user.pk, otp)
+            messages.warning(request, 'Could not send the SMS code. Please try again or contact support.')
         form = OTPVerifyForm()
 
     return render(request, 'authentication/phone_otp.html', {

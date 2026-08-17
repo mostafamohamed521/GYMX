@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
@@ -74,6 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email_otp         = models.CharField(max_length=6, blank=True)
     phone_otp         = models.CharField(max_length=6, blank=True)
     otp_created_at    = models.DateTimeField(null=True, blank=True)
+    otp_attempts      = models.PositiveSmallIntegerField(default=0)
 
     # ── 2FA ───────────────────────────────────────────────
     two_fa_enabled = models.BooleanField(default=False)
@@ -163,27 +164,37 @@ class User(AbstractBaseUser, PermissionsMixin):
         }.get(self.role, 'gray')
 
     def generate_otp(self):
-        otp = ''.join(random.choices(string.digits, k=6))
-        self.email_otp    = otp
-        self.phone_otp    = otp
+        otp = ''.join(secrets.choice(string.digits) for _ in range(6))
+        self.email_otp      = otp
+        self.phone_otp      = otp
         self.otp_created_at = timezone.now()
-        self.save(update_fields=['email_otp', 'phone_otp', 'otp_created_at'])
+        self.otp_attempts   = 0
+        self.save(update_fields=['email_otp', 'phone_otp', 'otp_created_at', 'otp_attempts'])
         return otp
 
     def is_otp_valid(self, otp, field='email'):
+        """Validates the OTP with a hard cap of 5 guesses per code, so a 6-digit
+        code (1 in 1,000,000) can't be brute-forced within its 10-minute window."""
         if not self.otp_created_at:
             return False
         expired = (timezone.now() - self.otp_created_at).total_seconds() > 600  # 10 min
         if expired:
             return False
+        if self.otp_attempts >= 5:
+            return False
         stored = self.email_otp if field == 'email' else self.phone_otp
-        return stored == otp
+        if stored == otp:
+            return True
+        self.otp_attempts += 1
+        self.save(update_fields=['otp_attempts'])
+        return False
 
     def clear_otp(self):
-        self.email_otp = ''
-        self.phone_otp = ''
+        self.email_otp    = ''
+        self.phone_otp    = ''
         self.otp_created_at = None
-        self.save(update_fields=['email_otp', 'phone_otp', 'otp_created_at'])
+        self.otp_attempts   = 0
+        self.save(update_fields=['email_otp', 'phone_otp', 'otp_created_at', 'otp_attempts'])
 
 
 class LoginHistory(models.Model):
