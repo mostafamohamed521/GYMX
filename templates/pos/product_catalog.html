@@ -16,7 +16,7 @@
   {% for p in products %}
   <div class="col-md-4 col-lg-3">
     <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;box-shadow:var(--shadow-xs);">
-      <div style="width:100%;height:70px;background:{% if p.category %}{{ p.category.color }}15{% else %}#F1F5F9{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+      <div style="width:100%;height:70px;background:{% if p.category %}{{ p.category.color }}15{% else %}#FBEFDD{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
         <i class="fa-solid {% if p.category %}{{ p.category.icon }}{% else %}fa-box{% endif %}" style="font-size:24px;color:{% if p.category %}{{ p.category.color }}{% else %}var(--text-muted){% endif %};"></i>
       </div>
       <div style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ p.name }}</div>
