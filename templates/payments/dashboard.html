@@ -167,11 +167,11 @@ new Chart(ctx, {
   type:'line',
   data:{ labels, datasets:[
     { label:'Revenue (EGP)', data:revenues, borderColor:'#10B981', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#10B981', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true, yAxisID:'y' },
-    { label:'Payments', data:counts, borderColor:'#3B82F6', borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#3B82F6', pointBorderWidth:2, pointRadius:3, tension:0.4, fill:false, yAxisID:'y1', borderDash:[4,4] }
+    { label:'Payments', data:counts, borderColor:'#C80036', borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#C80036', pointBorderWidth:2, pointRadius:3, tension:0.4, fill:false, yAxisID:'y1', borderDash:[4,4] }
   ]},
   options:{ responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8, font:{ family:'Inter', size:12 } } }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0F172A', bodyColor:'#64748B', padding:10, cornerRadius:12 } },
-    scales:{ x:{ grid:{ display:false }, ticks:{ color:'#94A3B8', font:{ size:11 } } }, y:{ grid:{ color:'#F1F5F9' }, ticks:{ color:'#10B981', font:{ size:11 }, callback: v => v.toLocaleString() }, beginAtZero:true }, y1:{ position:'right', grid:{ display:false }, ticks:{ color:'#3B82F6', font:{ size:11 } }, beginAtZero:true } }
+    plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8, font:{ family:'Inter', size:12 } } }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0C1844', bodyColor:'#5B5F6E', padding:10, cornerRadius:12 } },
+    scales:{ x:{ grid:{ display:false }, ticks:{ color:'#9AA0AC', font:{ size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#10B981', font:{ size:11 }, callback: v => v.toLocaleString() }, beginAtZero:true }, y1:{ position:'right', grid:{ display:false }, ticks:{ color:'#C80036', font:{ size:11 } }, beginAtZero:true } }
   }
 });
 </script>

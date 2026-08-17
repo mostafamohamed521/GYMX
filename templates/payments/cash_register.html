@@ -14,7 +14,7 @@
 </div>
 
 <!-- Register status -->
-<div style="background:{% if register.status == 'open' %}linear-gradient(135deg,#059669,#0284C7){% else %}linear-gradient(135deg,#475569,#334155){% endif %};border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-md);">
+<div style="background:{% if register.status == 'open' %}linear-gradient(135deg,#059669,#0C1844){% else %}linear-gradient(135deg,#475569,#334155){% endif %};border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-md);">
   <div>
     <div style="font-size:13px;opacity:0.7;text-transform:uppercase;letter-spacing:1px;">Register Status</div>
     <div style="font-size:22px;font-weight:800;margin-top:4px;">{% if register.status == 'open' %}🟢 Open{% else %}🔒 Closed{% endif %}</div>
