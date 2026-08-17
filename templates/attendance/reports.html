@@ -30,7 +30,7 @@
       <div class="card-body" style="padding:0;">
         {% for m in top_members %}
         <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
-          <div style="width:22px;text-align:center;font-size:12px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#94A3B8{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
+          <div style="width:22px;text-align:center;font-size:12px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#9AA0AC{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
           <a href="{% url 'attendance:member' m.member__pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.member__first_name }} {{ m.member__last_name }}</a>
           <div style="display:flex;align-items:center;gap:8px;">
             <div class="progress-gymx" style="width:70px;"><div class="fill" style="width:{% if top_members.0.visits > 0 %}{% widthratio m.visits top_members.0.visits 100 %}{% else %}0{% endif %}%;"></div></div>

@@ -113,7 +113,7 @@ inp.addEventListener('input', function() {
   dd.innerHTML = f.map(m =>
     `<div onclick="document.getElementById('memberSearch').value='${m.id}';document.getElementById('memberDropdown').style.display='none';"
           style="padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;"
-          onmouseenter="this.style.background='#EFF6FF'" onmouseleave="this.style.background='white'">
+          onmouseenter="this.style.background='#FBE5EA'" onmouseleave="this.style.background='white'">
       <strong>${m.name}</strong> <span style="color:var(--text-muted);font-size:11px;font-family:monospace;">${m.id}</span>
     </div>`
   ).join('');
