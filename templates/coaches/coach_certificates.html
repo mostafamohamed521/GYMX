@@ -32,7 +32,7 @@
       <div class="col-md-6">
         <div style="background:white;border:1px solid {% if cert.is_expired %}var(--danger){% elif cert.is_expiring_soon %}var(--warning){% else %}var(--border){% endif %};border-radius:var(--radius-xl);padding:18px;box-shadow:var(--shadow-xs);">
           <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
-            <div style="width:40px;height:40px;background:{% if cert.is_expired %}#FEF2F2{% elif cert.is_expiring_soon %}#FFFBEB{% else %}#EFF6FF{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:40px;height:40px;background:{% if cert.is_expired %}#FEF2F2{% elif cert.is_expiring_soon %}#FFFBEB{% else %}#FBE5EA{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               <i class="fa-solid fa-certificate" style="color:{% if cert.is_expired %}var(--danger){% elif cert.is_expiring_soon %}var(--warning){% else %}var(--primary){% endif %};font-size:18px;"></i>
             </div>
             <div style="flex:1;">
