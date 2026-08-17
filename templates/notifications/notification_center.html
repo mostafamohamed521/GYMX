@@ -19,7 +19,7 @@
 </div>
 <div class="card-gymx"><div style="padding:0;">
   {% for n in notifications %}
-  <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);{% if not n.is_read %}background:#EFF6FF;{% endif %}">
+  <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);{% if not n.is_read %}background:#FBE5EA;{% endif %}">
     <div style="width:34px;height:34px;border-radius:50%;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-bell" style="color:var(--primary);font-size:13px;"></i></div>
     <div style="flex:1;">
       <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);">{{ n.title }}</div>
