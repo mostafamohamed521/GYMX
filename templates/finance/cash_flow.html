@@ -23,7 +23,7 @@ new Chart(document.getElementById('cfChart').getContext('2d'), {
       { label:'Income', data:[{% for m in monthly %}{{ m.income }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(16,185,129,0.75)', borderRadius:6 },
       { label:'Expense', data:[{% for m in monthly %}{{ m.expense }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(239,68,68,0.75)', borderRadius:6 }
     ]},
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#F1F5F9' }, beginAtZero:true } } }
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#FBEFDD' }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}
