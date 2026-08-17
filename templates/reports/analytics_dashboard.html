@@ -47,9 +47,9 @@ new Chart(ctx, {
   data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}],
     datasets:[
       { label:'Revenue', data:[{% for m in monthly %}{{ m.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'#10B981', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#10B981', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true, yAxisID:'y' },
-      { label:'New Members', data:[{% for m in monthly %}{{ m.members }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'#3B82F6', borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#3B82F6', pointBorderWidth:2, pointRadius:3, tension:0.4, fill:false, yAxisID:'y1', borderDash:[4,4] }
+      { label:'New Members', data:[{% for m in monthly %}{{ m.members }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'#C80036', borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#C80036', pointBorderWidth:2, pointRadius:3, tension:0.4, fill:false, yAxisID:'y1', borderDash:[4,4] }
     ]},
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8 } } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#F1F5F9' }, beginAtZero:true }, y1:{ position:'right', grid:{ display:false }, beginAtZero:true } } }
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, boxWidth:8 } } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#FBEFDD' }, beginAtZero:true }, y1:{ position:'right', grid:{ display:false }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}
