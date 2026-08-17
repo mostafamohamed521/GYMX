@@ -10,7 +10,7 @@
 /* Left brand panel */
 .auth-brand-panel {
   flex: 1;
-  background: linear-gradient(150deg, #1E3A8A 0%, #1D4ED8 40%, #0369A1 100%);
+  background: linear-gradient(150deg, #0C1844 0%, #5A1030 55%, #93002A 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,19 +66,23 @@
 }
 
 .auth-logo-text {
-  font-size: 30px;
-  font-weight: 800;
+  font-family: var(--font-display), 'Inter', sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
   color: white;
-  letter-spacing: -0.5px;
 }
 
 .auth-brand-headline {
-  font-size: 34px;
-  font-weight: 700;
+  font-family: var(--font-display), 'Inter', sans-serif;
+  font-size: 40px;
+  font-weight: 600;
+  text-transform: uppercase;
   color: white;
-  line-height: 1.15;
+  line-height: 1.1;
   margin-bottom: 14px;
-  letter-spacing: -0.3px;
+  letter-spacing: 0.2px;
 }
 
 .auth-brand-headline span {
@@ -229,7 +233,7 @@
 .auth-submit-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(59,130,246,0.35);
+  box-shadow: 0 8px 24px rgba(200,0,54,0.35);
 }
 
 .remember-row {
@@ -271,4 +275,20 @@
 @media (max-width: 900px) {
   .auth-brand-panel { display: none; }
   .auth-form-panel { width: 100%; padding: 40px 28px; }
+}
+
+/* ── Page-entrance animation ──────────────────────────────── */
+@keyframes gxFadeUp{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes gxFadeLeft{
+  from{opacity:0;transform:translateX(-14px);}
+  to{opacity:1;transform:translateX(0);}
+}
+.auth-brand-content{animation:gxFadeLeft .5s cubic-bezier(.22,.61,.36,1) both;}
+.auth-form-panel{animation:gxFadeUp .5s cubic-bezier(.22,.61,.36,1) .1s both;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;}
 }

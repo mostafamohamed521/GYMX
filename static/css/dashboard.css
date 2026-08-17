@@ -2,7 +2,7 @@
 
 /* Welcome banner */
 .welcome-banner {
-  background: linear-gradient(135deg, #1D4ED8 0%, #0369A1 100%);
+  background: linear-gradient(135deg, #0C1844 0%, #93002A 100%);
   border-radius: var(--radius-2xl);
   padding: 24px 28px;
   margin-bottom: 24px;
