@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /site/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /members/
+Disallow: /memberships/
+Disallow: /attendance/
+Disallow: /payments/
+Disallow: /coaches/
+Disallow: /workouts/
+Disallow: /nutrition/
+Disallow: /classes/
+Disallow: /hr/
+Disallow: /inventory/
+Disallow: /pos/
+Disallow: /branches/
+Disallow: /crm/
+Disallow: /reports/
+Disallow: /notifications/
+Disallow: /finance/
+Disallow: /settings/
+Disallow: /portal/
+Disallow: /ai/
+Disallow: /system/
+
+Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml
