@@ -1,0 +1,34 @@
+{% extends 'website/base_public.html' %}
+{% load static %}
+{% block title %}Offers & Promotions — GymX{% endblock %}
+{% block content %}
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Offers & Promotions" %}
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-3">
+      {% for o in offers %}
+      <div class="card glow" style="padding:0;overflow:hidden;">
+        {% if o.banner_image %}<div class="photo-card" style="aspect-ratio:16/10;border-radius:0;border:none;"><img src="{{ o.banner_image.url }}" alt="{{ o.name }}"></div>{% endif %}
+        <div style="padding:22px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+            <span class="badge accent">{{ o.get_offer_type_display }}</span>
+            {% if o.is_featured %}<span class="badge">Featured</span>{% endif %}
+            {% if o.days_remaining <= 3 %}<span class="badge" style="color:var(--danger);border-color:var(--danger);">Ends in {{ o.days_remaining }}d</span>{% endif %}
+          </div>
+          <h3 style="font-size:19px;">{{ o.name }}</h3>
+          <p style="font-size:13px;margin-bottom:14px;">{{ o.description }}</p>
+          {% if o.discount %}<div style="font-family:var(--font-display);font-size:28px;color:var(--accent);font-weight:700;margin-bottom:10px;">{% if o.discount.discount_type == 'percentage' %}{{ o.discount.value|floatformat:0 }}% OFF{% else %}{{ o.discount.value|floatformat:0 }} EGP OFF{% endif %}</div>{% endif %}
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;"><i class="fa-solid fa-calendar" style="margin-right:6px;"></i>Valid until {{ o.valid_until|date:"M d, Y" }}</p>
+          <a href="{% url 'website:contact' %}" class="btn-primary btn-sm">Claim This Offer</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>No active offers right now — check back soon, or <a href="{% url 'website:contact' %}" class="text-accent">contact us</a> for our standard plans.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
