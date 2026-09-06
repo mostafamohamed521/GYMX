@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ corp.company_name }} — GymX{% endblock %}
+{% block page_breadcrumb %}Memberships / Corporate / {{ corp.company_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title"><i class="fa-solid fa-building" style="color:var(--primary);font-size:.8em;margin-right:8px;"></i>{{ corp.company_name }}</h1>
+    <p class="page-subtitle">{{ corp.plan.name }} · {{ corp.discount_pct }}% employee discount</p></div>
+  <a href="{% url 'memberships:corporate_list' %}" class="btn-gymx outline" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> All Companies</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6"><div class="stat-card blue"><div class="stat-icon blue"><i class="fa-solid fa-users"></i></div><div class="stat-value">{{ employees|length }} / {{ corp.max_employees }}</div><div class="stat-label">Employees Enrolled</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-percent"></i></div><div class="stat-value">{{ corp.discount_pct }}%</div><div class="stat-label">Discount Rate</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-calendar"></i></div><div class="stat-value">{{ corp.days_remaining }}d</div><div class="stat-label">Contract Days Left</div></div></div>
+  <div class="col-md-3 col-6"><div class="stat-card"><div class="stat-icon">{% if corp.is_active %}<i class="fa-solid fa-circle-check" style="color:var(--success);"></i>{% else %}<i class="fa-solid fa-circle-xmark" style="color:var(--text-muted);"></i>{% endif %}</div><div class="stat-value">{% if corp.is_active %}Active{% else %}Inactive{% endif %}</div><div class="stat-label">Contract Status</div></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card-gymx mb-3">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-address-card"></i> Company Info</span></div>
+      <div class="card-body" style="font-size:13px;">
+        <div class="mb-2"><span style="color:var(--text-muted);">Contact Person</span><div style="font-weight:600;">{{ corp.contact_person }}</div></div>
+        <div class="mb-2"><span style="color:var(--text-muted);">Email</span><div style="font-weight:600;">{{ corp.company_email }}</div></div>
+        {% if corp.company_phone %}<div class="mb-2"><span style="color:var(--text-muted);">Phone</span><div style="font-weight:600;">{{ corp.company_phone }}</div></div>{% endif %}
+        {% if corp.company_address %}<div class="mb-2"><span style="color:var(--text-muted);">Address</span><div style="font-weight:600;">{{ corp.company_address }}</div></div>{% endif %}
+        <div class="mb-2"><span style="color:var(--text-muted);">Contract</span><div style="font-weight:600;">{{ corp.contract_start|date:"M d, Y" }} → {{ corp.contract_end|date:"M d, Y" }}</div></div>
+        {% if corp.notes %}<div class="mb-0"><span style="color:var(--text-muted);">Notes</span><div>{{ corp.notes }}</div></div>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card-gymx">
+      <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-users"></i> Enrolled Employees ({{ employees|length }})</span></div>
+      <div style="overflow-x:auto;"><table class="table-gymx">
+        <thead><tr><th>Employee</th><th>ID</th><th>Department</th><th>Subscription</th><th>Enrolled</th></tr></thead>
+        <tbody>
+          {% for emp in employees %}
+          <tr>
+            <td style="font-size:13px;font-weight:600;"><a href="{% url 'members:detail' emp.member.pk %}" style="color:var(--text-primary);text-decoration:none;">{{ emp.member.get_full_name }}</a></td>
+            <td style="font-size:12.5px;color:var(--text-muted);font-family:monospace;">{{ emp.employee_id|default:"—" }}</td>
+            <td style="font-size:13px;color:var(--text-secondary);">{{ emp.department|default:"—" }}</td>
+            <td>{% if emp.subscription %}<span class="badge-gymx green" style="font-size:11px;">Active</span>{% else %}<span class="badge-gymx gray" style="font-size:11px;">None</span>{% endif %}</td>
+            <td style="font-size:12.5px;color:var(--text-muted);">{{ emp.enrolled_at|date:"M d, Y" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">No employees enrolled yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
