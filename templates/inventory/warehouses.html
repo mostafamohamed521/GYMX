@@ -23,13 +23,13 @@
     <div class="row g-3">
       {% for w in wh_list %}
       <div class="col-md-6">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
-          <div style="width:44px;height:44px;background:#FBE5EA;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-warehouse" style="color:var(--primary);font-size:18px;"></i></div>
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
+          <div style="width:44px;height:44px;background:var(--primary-light);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-warehouse" style="color:var(--primary);font-size:18px;"></i></div>
           <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ w.name }}</div><div style="font-size:12px;color:var(--text-muted);">{{ w.location|default:"—" }}</div></div>
           <span style="font-size:16px;font-weight:800;color:var(--primary);">{{ w.stock_count }}</span>
         </div>
       </div>
-      {% empty %}<div class="col-12" style="text-align:center;padding:48px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No warehouses yet</div>{% endfor %}
+      {% empty %}<div class="col-12" style="text-align:center;padding:48px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No warehouses yet</div>{% endfor %}
     </div>
   </div>
 </div>

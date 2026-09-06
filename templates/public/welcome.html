@@ -14,7 +14,7 @@
 
     /* Hero */
     .welcome-hero {
-      background: linear-gradient(150deg, #0C1844 0%, #93002A 50%, #0C1844 100%);
+      background: linear-gradient(150deg, var(--accent) 0%, var(--primary-dark) 50%, var(--accent) 100%);
       min-height: 100vh;
       position: relative;
       overflow: hidden;
@@ -65,9 +65,9 @@
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.1); color: white; }
     .btn-white {
-      background: white; color: #93002A;
+      background:var(--bg-surface); color: var(--primary-dark);
     }
-    .btn-white:hover { background: #FBEFDD; color: #0C1844; }
+    .btn-white:hover { background: var(--bg-hover); color: var(--accent); }
 
     /* Hero content */
     .hero-content {
@@ -91,7 +91,7 @@
       font-weight: 500;
       margin-bottom: 28px;
     }
-    .hero-badge i { color: #34D399; }
+    .hero-badge i { color: var(--success); }
 
     .hero-h1 {
       font-family: 'Teko', sans-serif;
@@ -105,7 +105,7 @@
       margin-bottom: 20px;
     }
     .hero-h1 span {
-      background: linear-gradient(135deg, #FF6B8A, #FFD37A);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -124,8 +124,8 @@
     }
     .cta-primary {
       padding: 14px 32px;
-      background: white;
-      color: #93002A;
+      background:var(--bg-surface);
+      color: var(--primary-dark);
       border-radius: 999px;
       font-size: 15px; font-weight: 700;
       text-decoration: none;
@@ -133,7 +133,7 @@
       display: flex; align-items: center; gap: 8px;
       box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     }
-    .cta-primary:hover { background: #FBEFDD; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); color: #0C1844; }
+    .cta-primary:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); color: var(--accent); }
     .cta-secondary {
       padding: 14px 32px;
       background: rgba(255,255,255,0.12);
@@ -173,7 +173,7 @@
     }
 
     .feature-card {
-      background: white;
+      background:var(--bg-surface);
       border: 1px solid rgba(154,160,172,0.2);
       border-radius: 20px;
       padding: 28px 24px;
@@ -193,24 +193,24 @@
       font-size: 22px;
       margin-bottom: 16px;
     }
-    .fi-blue   { background: #FBE5EA; color: #C80036; }
-    .fi-green  { background: #ECFDF5; color: #10B981; }
-    .fi-orange { background: #FFFBEB; color: #F59E0B; }
-    .fi-purple { background: #F5EEDD; color: #A9791F; }
-    .fi-red    { background: #FEF2F2; color: #EF4444; }
-    .fi-cyan   { background: #EAEDF6; color: #0C1844; }
+    .fi-blue   { background: var(--primary-light); color: var(--primary); }
+    .fi-green  { background: rgba(51,209,122,0.12); color: var(--success); }
+    .fi-orange { background: rgba(245,197,66,0.12); color: var(--warning); }
+    .fi-purple { background: rgba(185,140,255,0.14); color: var(--purple); }
+    .fi-red    { background: rgba(245,86,107,0.12); color: var(--danger); }
+    .fi-cyan   { background: var(--accent-light); color: var(--accent); }
 
     .feature-title {
       font-size: 16px; font-weight: 700;
-      color: #0C1844; margin-bottom: 8px;
+      color: var(--accent); margin-bottom: 8px;
     }
     .feature-desc {
-      font-size: 13.5px; color: #5B5F6E; line-height: 1.6;
+      font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;
     }
 
     /* Roles section */
     .roles-section {
-      background: white;
+      background:var(--bg-surface);
       padding: 80px 0;
       border-top: 1px solid rgba(154,160,172,0.15);
       border-bottom: 1px solid rgba(154,160,172,0.15);
@@ -223,27 +223,27 @@
       transition: all 0.2s;
     }
     .role-card:hover {
-      border-color: #C80036;
-      background: #FBE5EA;
+      border-color: var(--primary);
+      background: var(--primary-light);
     }
-    .role-name { font-size: 14px; font-weight: 700; color: #0C1844; margin-bottom: 8px; }
-    .role-perm { font-size: 12px; color: #5B5F6E; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-    .role-perm i { color: #10B981; font-size: 11px; }
+    .role-name { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .role-perm { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .role-perm i { color: var(--success); font-size: 11px; }
 
     /* Bottom CTA */
     .bottom-cta {
-      background: linear-gradient(135deg, #93002A, #0C1844);
+      background: linear-gradient(135deg, var(--primary-dark), var(--accent));
       padding: 80px 0;
       text-align: center;
     }
 
     /* Footer */
     .welcome-footer {
-      background: #0C1844;
+      background: var(--accent);
       padding: 24px 0;
       text-align: center;
       font-size: 12px;
-      color: #5B5F6E;
+      color: var(--text-secondary);
     }
   </style>
 </head>
@@ -316,9 +316,9 @@
 <section class="features-section">
   <div class="container">
     <div class="text-center mb-5">
-      <div style="font-size:12px;font-weight:600;color:#C80036;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Everything You Need</div>
-      <h2 style="font-family:'Teko',sans-serif;font-size:38px;font-weight:600;text-transform:uppercase;color:#0C1844;letter-spacing:.2px;">Built for Serious Gyms</h2>
-      <p style="color:#5B5F6E;font-size:15px;margin-top:10px;">All the tools your team needs in one clean, powerful platform.</p>
+      <div style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Everything You Need</div>
+      <h2 style="font-family:'Teko',sans-serif;font-size:38px;font-weight:600;text-transform:uppercase;color:var(--accent);letter-spacing:.2px;">Built for Serious Gyms</h2>
+      <p style="color:var(--text-secondary);font-size:15px;margin-top:10px;">All the tools your team needs in one clean, powerful platform.</p>
     </div>
     <div class="row g-4">
       <div class="col-md-4">
@@ -371,15 +371,15 @@
 <section class="roles-section">
   <div class="container">
     <div class="text-center mb-5">
-      <div style="font-size:12px;font-weight:600;color:#C80036;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Access Control</div>
-      <h2 style="font-family:'Teko',sans-serif;font-size:38px;font-weight:600;text-transform:uppercase;color:#0C1844;letter-spacing:.2px;">5 User Roles</h2>
-      <p style="color:#5B5F6E;font-size:15px;margin-top:10px;">Every team member gets the right access — no more, no less.</p>
+      <div style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Access Control</div>
+      <h2 style="font-family:'Teko',sans-serif;font-size:38px;font-weight:600;text-transform:uppercase;color:var(--accent);letter-spacing:.2px;">5 User Roles</h2>
+      <p style="color:var(--text-secondary);font-size:15px;margin-top:10px;">Every team member gets the right access — no more, no less.</p>
     </div>
     <div class="row g-3">
       <div class="col-md col-6">
         <div class="role-card">
-          <div style="width:36px;height:36px;background:#FEF2F2;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-user-shield" style="color:#EF4444;font-size:14px;"></i>
+          <div style="width:36px;height:36px;background:rgba(245,86,107,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fa-solid fa-user-shield" style="color:var(--danger);font-size:14px;"></i>
           </div>
           <div class="role-name">Super Admin</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> Full system access</div>
@@ -389,8 +389,8 @@
       </div>
       <div class="col-md col-6">
         <div class="role-card">
-          <div style="width:36px;height:36px;background:#FBE5EA;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-building" style="color:#C80036;font-size:14px;"></i>
+          <div style="width:36px;height:36px;background:var(--primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fa-solid fa-building" style="color:var(--primary);font-size:14px;"></i>
           </div>
           <div class="role-name">Gym Manager</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> Manage members</div>
@@ -400,8 +400,8 @@
       </div>
       <div class="col-md col-6">
         <div class="role-card">
-          <div style="width:36px;height:36px;background:#ECFDF5;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-headset" style="color:#10B981;font-size:14px;"></i>
+          <div style="width:36px;height:36px;background:rgba(51,209,122,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fa-solid fa-headset" style="color:var(--success);font-size:14px;"></i>
           </div>
           <div class="role-name">Receptionist</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> Register members</div>
@@ -411,8 +411,8 @@
       </div>
       <div class="col-md col-6">
         <div class="role-card">
-          <div style="width:36px;height:36px;background:#FFFBEB;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-person-running" style="color:#F59E0B;font-size:14px;"></i>
+          <div style="width:36px;height:36px;background:rgba(245,197,66,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fa-solid fa-person-running" style="color:var(--warning);font-size:14px;"></i>
           </div>
           <div class="role-name">Coach</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> View members</div>
@@ -422,8 +422,8 @@
       </div>
       <div class="col-md col-6">
         <div class="role-card">
-          <div style="width:36px;height:36px;background:#F5F3FF;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-            <i class="fa-solid fa-user" style="color:#A9791F;font-size:14px;"></i>
+          <div style="width:36px;height:36px;background:rgba(185,140,255,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fa-solid fa-user" style="color:var(--purple);font-size:14px;"></i>
           </div>
           <div class="role-name">Member</div>
           <div class="role-perm"><i class="fa-solid fa-check"></i> View profile</div>

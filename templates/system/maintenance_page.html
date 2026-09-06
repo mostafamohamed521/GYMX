@@ -10,7 +10,7 @@
 <style>
   body{margin:0;font-family:'Inter',sans-serif;background:#0A0A0B;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;}
   .wrap{max-width:500px;padding:24px;}
-  i.icon{font-size:48px;color:#A9791F;margin-bottom:16px;}
+  i.icon{font-size:48px;color:var(--purple);margin-bottom:16px;}
   h1{font-family:'Teko',sans-serif;font-size:34px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 14px;}
   p{color:rgba(255,255,255,0.65);font-size:14.5px;line-height:1.7;}
 </style>
@@ -20,7 +20,7 @@
   <i class="fa-solid fa-screwdriver-wrench icon"></i>
   <h1>We'll be right back!</h1>
   <p>{{ settings_obj.message }}</p>
-  {% if settings_obj.ends_at %}<p style="margin-top:10px;font-size:13px;color:#A9791F;">Expected back: {{ settings_obj.ends_at|date:"M d, Y H:i" }}</p>{% endif %}
+  {% if settings_obj.ends_at %}<p style="margin-top:10px;font-size:13px;color:var(--purple);">Expected back: {{ settings_obj.ends_at|date:"M d, Y H:i" }}</p>{% endif %}
 </div>
 </body>
 </html>

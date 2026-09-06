@@ -11,14 +11,14 @@
   </div>
 </div>
 <div class="row justify-content-center"><div class="col-lg-5" id="cardArea">
-  <div style="background:linear-gradient(135deg,#0C1844,#0C1844);border-radius:var(--radius-2xl);padding:24px;color:white;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;">
+  <div style="background:linear-gradient(135deg,var(--accent),var(--accent));border-radius:var(--radius-2xl);padding:24px;color:white;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;">
     <div style="position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
         <div style="font-size:18px;font-weight:900;">🏋️ GymX</div>
         <div style="font-size:11px;opacity:0.7;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Membership Card</div>
       </div>
-      {% if member.qr_code %}<img src="{{ member.qr_code.url }}" style="width:56px;height:56px;background:white;border-radius:var(--radius-sm);padding:4px;" />{% endif %}
+      {% if member.qr_code %}<img src="{{ member.qr_code.url }}" style="width:56px;height:56px;background:var(--bg-surface);border-radius:var(--radius-sm);padding:4px;" />{% endif %}
     </div>
     <div style="margin-top:28px;">
       <div style="font-size:20px;font-weight:800;">{{ member.get_full_name }}</div>

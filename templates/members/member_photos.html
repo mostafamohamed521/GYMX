@@ -22,7 +22,7 @@
               <div style="position:absolute;top:8px;left:8px;">
                 <span class="badge-gymx blue" style="font-size:10px;">{{ photo.get_view_display }}</span>
               </div>
-              <div style="padding:10px 12px;background:white;">
+              <div style="padding:10px 12px;background:var(--bg-surface);">
                 <div style="font-size:12px;font-weight:600;color:var(--text-primary);">{{ photo.date|date:"M d, Y" }}</div>
                 {% if photo.weight_kg %}<div style="font-size:11px;color:var(--text-muted);">{{ photo.weight_kg }} kg</div>{% endif %}
               </div>

@@ -11,13 +11,13 @@
   <div class="card-gymx mb-4"><div class="card-body">
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">{{ ticket.created_at|date:"M d, Y H:i" }} · {{ ticket.get_category_display }}</div>
     <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">{{ ticket.description }}</p>
-    {% if ticket.resolution %}<div style="margin-top:16px;padding:14px;background:#ECFDF5;border-radius:var(--radius-lg);"><div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:4px;">Resolution</div><div style="font-size:13px;color:var(--text-secondary);">{{ ticket.resolution }}</div></div>{% endif %}
+    {% if ticket.resolution %}<div style="margin-top:16px;padding:14px;background:rgba(51,209,122,0.12);border-radius:var(--radius-lg);"><div style="font-size:12px;font-weight:700;color:var(--success);margin-bottom:4px;">Resolution</div><div style="font-size:13px;color:var(--text-secondary);">{{ ticket.resolution }}</div></div>{% endif %}
   </div></div>
 
   <div class="card-gymx mb-4"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-comments"></i> Conversation</span></div>
     <div class="card-body" style="padding:0;">
       {% for r in replies %}
-      <div style="padding:14px 20px;border-bottom:1px solid var(--border);{% if r.is_staff_reply %}background:#FBE5EA;{% endif %}">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);{% if r.is_staff_reply %}background:var(--primary-light);{% endif %}">
         <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">{{ r.author.get_full_name|default:"You" }}{% if r.is_staff_reply %} <span style="color:var(--primary);">(Staff)</span>{% endif %}</div>
         <div style="font-size:13px;color:var(--text-secondary);">{{ r.message }}</div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">{{ r.created_at|date:"M d, Y H:i" }}</div>

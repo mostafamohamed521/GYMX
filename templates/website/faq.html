@@ -1,18 +1,29 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}FAQ — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-circle-question"></i> Got Questions?</div><h1 style="font-size:30px;">Frequently Asked Questions</h1></div></section>
-<section class="gx-section">
-  <div class="container" style="max-width:760px;">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Frequently Asked Questions" %}
+
+<section class="section">
+  <div class="container wrap-md">
     {% for category, items in grouped.items %}
-    <h3 style="font-size:13px;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin:28px 0 14px;">{{ category }}</h3>
-    {% for f in items %}
-    <div class="gx-card" style="margin-bottom:12px;">
-      <div style="font-weight:700;font-size:13px;margin-bottom:6px;"><i class="fa-solid fa-circle-question" style="color:var(--primary);margin-right:8px;"></i>{{ f.question }}</div>
-      <div style="font-size:13px;color:var(--text-secondary);padding-left:24px;">{{ f.answer }}</div>
+    <h3 class="text-accent" style="font-size:18px;margin-bottom:16px;">{{ category|title }}</h3>
+    <div style="margin-bottom:36px;">
+      {% for item in items %}
+      <div class="card" style="margin-bottom:10px;">
+        <a href="#faq-item-{{ item.pk }}" style="display:flex;justify-content:space-between;align-items:center;color:var(--text-primary);font-weight:600;font-size:14px;cursor:pointer;" onclick="var el=document.getElementById('faq-item-{{ item.pk }}'); el.style.display = el.style.display === 'block' ? 'none' : 'block'; return false;">
+          {{ item.question }}
+          <i class="fa-solid fa-chevron-down text-accent"></i>
+        </a>
+        <div id="faq-item-{{ item.pk }}" style="display:none;margin-top:12px;font-size:13.5px;">{{ item.answer }}</div>
+      </div>
+      {% endfor %}
     </div>
+    {% empty %}
+    <p class="center">FAQs are being updated — <a href="{% url 'website:contact' %}" class="text-accent">contact us</a> with any question.</p>
     {% endfor %}
-    {% empty %}<p style="color:var(--text-muted);">No FAQs added yet.</p>{% endfor %}
   </div>
 </section>
+
 {% endblock %}

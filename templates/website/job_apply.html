@@ -1,24 +1,32 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Apply — {{ job.title }} — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-file-signature"></i> Apply Now</div><h1 style="font-size:27px;">{{ job.title }}</h1></div></section>
-<section class="gx-section">
-  <div class="container" style="max-width:640px;">
-    <div class="gx-card" style="margin-bottom:24px;">
-      <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">{{ job.description }}</p>
-      {% if job.requirements %}<h4 style="font-size:13px;margin-top:16px;">Requirements</h4><p style="font-size:12.5px;color:var(--text-secondary);white-space:pre-line;">{{ job.requirements }}</p>{% endif %}
-    </div>
-    <div class="gx-card">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Apply Now" %}
+
+<section class="section">
+  <div class="container center wrap-md">
+    <div class="card" style="padding:32px;text-align:left;">
+      <span class="badge accent" style="margin-bottom:12px;">{{ job.title }}</span>
+      <h2 style="font-size:24px;">Apply For This Role</h2>
+      <p class="lead" style="margin-bottom:8px;">{{ job.description }}</p>
+      {% if job.requirements %}<p style="font-size:13px;margin-bottom:24px;"><strong style="color:var(--text-primary);">Requirements:</strong> {{ job.requirements }}</p>{% endif %}
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div style="margin-bottom:14px;"><input type="text" name="full_name" placeholder="Full Name" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-        <div style="margin-bottom:14px;"><input type="email" name="email" placeholder="Email" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-        <div style="margin-bottom:14px;"><input type="text" name="phone" placeholder="Phone" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-        <div style="margin-bottom:14px;"><label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">Resume/CV</label><input type="file" name="resume" style="width:100%;font-size:12.5px;" /></div>
-        <div style="margin-bottom:18px;"><textarea name="cover_letter" placeholder="Cover letter (optional)" rows="4" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);"></textarea></div>
-        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;border:none;">Submit Application</button>
+        <div class="grid grid-2" style="margin-bottom:16px;">
+          <div><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" required></div>
+          <div><label class="form-label">Email</label><input type="email" name="email" class="form-control" required></div>
+        </div>
+        <div class="grid grid-2" style="margin-bottom:16px;">
+          <div><label class="form-label">Phone</label><input type="tel" name="phone" class="form-control"></div>
+          <div><label class="form-label">Resume (PDF/DOC, max 5MB)</label><input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx"></div>
+        </div>
+        <div style="margin-bottom:20px;"><label class="form-label">Cover Letter (optional)</label><textarea name="cover_letter" class="form-control"></textarea></div>
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Submit Application</button>
       </form>
     </div>
   </div>
 </section>
+
 {% endblock %}

@@ -3,6 +3,9 @@
 {% block title %}Restore Member — GymX{% endblock %}
 {% block page_breadcrumb %}Members / {{ member.get_full_name }} / Restore{% endblock %}
 {% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);font-size:.8em;margin-right:8px;"></i>Restore Member</h1><p class="page-subtitle">Bring an archived or deleted member back to active status</p></div>
+</div>
 {% include 'members/_member_header_mini.html' %}
 <div class="row justify-content-center"><div class="col-lg-5">
   <div class="card-gymx">

@@ -28,12 +28,12 @@ function scanCode(code) {
     .then(d => {
       const el = document.getElementById('scanResult');
       if (d.found) {
-        el.innerHTML = `<div style="background:#ECFDF5;border-radius:var(--radius-xl);padding:16px;">
+        el.innerHTML = `<div style="background:rgba(51,209,122,0.12);border-radius:var(--radius-xl);padding:16px;">
           <div style="font-size:15px;font-weight:700;color:var(--success);">${d.name}</div>
           <div style="font-size:20px;font-weight:800;color:var(--text-primary);margin-top:6px;">${d.price} EGP</div>
         </div>`;
       } else {
-        el.innerHTML = `<div style="background:#FEF2F2;border-radius:var(--radius-xl);padding:16px;color:var(--danger);font-size:14px;">Product not found</div>`;
+        el.innerHTML = `<div style="background:rgba(245,86,107,0.12);border-radius:var(--radius-xl);padding:16px;color:var(--danger);font-size:14px;">Product not found</div>`;
       }
       document.getElementById('scanInput').value = '';
     });

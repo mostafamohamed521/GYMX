@@ -13,7 +13,7 @@
 <div class="row g-3">
   {% for t in templates %}
   <div class="col-md-6 col-lg-4">
-    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
         <span style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ t.name }}</span>
         <span class="badge-gymx {% if t.is_active %}green{% else %}gray{% endif %}" style="font-size:10px;">{% if t.is_active %}Active{% else %}Inactive{% endif %}</span>
@@ -24,7 +24,7 @@
     </div>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No email templates yet</div>
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No email templates yet</div>
   {% endfor %}
 </div>
 {% endblock %}

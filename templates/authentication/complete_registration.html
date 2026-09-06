@@ -5,7 +5,7 @@
 
 {% block content %}
 <!-- Progress bar -->
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:20px 24px;margin-bottom:24px;box-shadow:var(--shadow-sm);">
+<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:20px 24px;margin-bottom:24px;box-shadow:var(--shadow-sm);">
   <div style="display:flex;align-items:center;gap:0;position:relative;">
     {% for step, label in step_data %}{% endfor %}
     <div style="display:flex;align-items:center;flex:1;gap:0;">

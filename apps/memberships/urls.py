@@ -38,6 +38,7 @@ urlpatterns = [
 
     # Corporate
     path('corporate/',                views.corporate_list,      name='corporate_list'),
+    path('corporate/<int:pk>/',       views.corporate_detail,    name='corporate_detail'),
     path('corporate/add/',            views.corporate_add,       name='corporate_add'),
 
     # Discounts

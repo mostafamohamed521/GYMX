@@ -68,8 +68,8 @@ grad.addColorStop(0,'rgba(200,0,54,0.2)');
 grad.addColorStop(1,'rgba(200,0,54,0)');
 new Chart(ctx, {
   type:'line',
-  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'#C80036', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#C80036', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#9AA0AC', font:{ size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', stepSize:1 }, beginAtZero:true } } }
+  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'var(--primary)', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'var(--primary)', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'var(--text-muted)', font:{ size:11 } } }, y:{ grid:{ color:'var(--bg-hover)' }, ticks:{ color:'var(--text-muted)', stepSize:1 }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}

@@ -1,31 +1,71 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}About Us — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="About Us" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-eyebrow"><i class="fa-solid fa-heart"></i> Our Story</div>
-    <h1 style="font-size:30px;">Built for people who refuse<br>to settle.</h1>
-  </div>
-</section>
-<section class="gx-section">
-  <div class="container">
-    <div class="gx-grid gx-grid-2" style="align-items:center;">
+    <div class="grid grid-2" style="align-items:center;gap:56px;">
+      <div class="photo-card" style="aspect-ratio:4/3;">
+        <img src="{% static 'fitness_template/img/about-2.png' %}" alt="About GymX">
+      </div>
       <div>
-        <div class="gx-badge">About GymX</div>
-        <h2 style="margin-top:10px;">More than a gym — a community</h2>
-        <p style="color:var(--text-secondary);font-size:13.5px;line-height:1.8;">Founded in Mansoura, GymX was built on a simple belief: everyone deserves access to premium fitness facilities and real expertise. We combine modern equipment, certified trainers, and a supportive community to help every member — beginner or advanced — reach their goals.</p>
-        <p style="color:var(--text-secondary);font-size:13.5px;line-height:1.8;">Today we're proud to serve hundreds of members across multiple branches, with a team of {{ trainers_count }}+ dedicated coaches guiding the way.</p>
+        <span class="eyebrow">Our Story</span>
+        <h2>We are the best at fulfilling your potential.</h2>
+        <p class="lead" style="margin-bottom:24px;">GymX brings together premium equipment, {{ trainers_count }}+ certified coaches, and a genuine community — everything you need to build the habit and see it through.</p>
+        <div class="grid grid-3" style="gap:14px;margin-bottom:28px;">
+          <div class="card" style="padding:16px;">
+            <i class="fa-solid fa-rocket text-accent" style="font-size:18px;margin-bottom:8px;display:block;"></i>
+            <strong style="color:var(--text-primary);font-size:13.5px;">Our Mission</strong>
+            <p style="font-size:12.5px;margin:4px 0 0;">Coaching and equipment that actually gets you to your goals.</p>
+          </div>
+          <div class="card" style="padding:16px;">
+            <i class="fa-solid fa-eye text-accent" style="font-size:18px;margin-bottom:8px;display:block;"></i>
+            <strong style="color:var(--text-primary);font-size:13.5px;">Our Vision</strong>
+            <p style="font-size:12.5px;margin:4px 0 0;">Mansoura's most trusted fitness center.</p>
+          </div>
+          <div class="card" style="padding:16px;">
+            <i class="fa-solid fa-flag text-accent" style="font-size:18px;margin-bottom:8px;display:block;"></i>
+            <strong style="color:var(--text-primary);font-size:13.5px;">Our Goal</strong>
+            <p style="font-size:12.5px;margin:4px 0 0;">Raising the bar every year on quality and standards.</p>
+          </div>
+        </div>
+        <a href="{% url 'website:contact' %}" class="btn-primary">Make an Appointment</a>
       </div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;">
-        <img src="https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Inside GymX facility" />
-      </div>
-    </div>
-    <div class="gx-grid gx-grid-4" style="margin-top:40px;">
-      <div class="gx-card" style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--primary);">{{ trainers_count }}+</div><div style="font-size:11.5px;color:var(--text-muted);">Expert Trainers</div></div>
-      <div class="gx-card" style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--primary);">500+</div><div style="font-size:11.5px;color:var(--text-muted);">Active Members</div></div>
-      <div class="gx-card" style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--primary);">10+</div><div style="font-size:11.5px;color:var(--text-muted);">Class Types</div></div>
-      <div class="gx-card" style="text-align:center;"><div style="font-size:24px;font-weight:800;color:var(--primary);">3</div><div style="font-size:11.5px;color:var(--text-muted);">Branches</div></div>
     </div>
   </div>
 </section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-head center wrap-md">
+      <span class="eyebrow">Our Trainers</span>
+      <h2>Meet The Team</h2>
+    </div>
+    <div class="grid grid-4">
+      {% for t in trainers %}
+      <a href="{% url 'website:trainer_detail' t.pk %}" style="color:inherit;">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div class="photo-card" style="aspect-ratio:3/4;border-radius:0;border:none;">
+            {% if t.profile_image %}<img src="{{ t.profile_image.url }}" alt="{{ t.get_full_name }}">{% else %}{% include 'website/includes/avatar_placeholder.html' %}{% endif %}
+            <div class="photo-overlay"><strong style="color:white;">{{ t.get_full_name }}</strong><span style="font-size:12px;color:var(--accent);">{% with spec=t.specializations.first %}{{ spec.name|default:"Coach" }}{% endwith %}</span></div>
+          </div>
+        </div>
+      </a>
+      {% empty %}
+      {% for i in "1234" %}
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="photo-card" style="aspect-ratio:3/4;border-radius:0;border:none;">
+          {% include 'website/includes/avatar_placeholder.html' %}
+          <div class="photo-overlay"><strong style="color:white;">Trainer Name</strong><span style="font-size:12px;color:var(--accent);">Coach</span></div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
 {% endblock %}

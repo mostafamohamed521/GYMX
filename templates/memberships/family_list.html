@@ -43,7 +43,7 @@
   </div>
   {% empty %}
   <div class="col-12">
-    <div style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <div style="text-align:center;padding:64px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
       <i class="fa-solid fa-users" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;"></i>
       <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">No family memberships yet</div>
       <a href="{% url 'memberships:family_add' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Create First Family Group</a>

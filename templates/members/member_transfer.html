@@ -3,6 +3,9 @@
 {% block title %}Transfer Member — GymX{% endblock %}
 {% block page_breadcrumb %}Members / {{ member.get_full_name }} / Transfer{% endblock %}
 {% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title"><i class="fa-solid fa-right-left" style="color:var(--primary);font-size:.8em;margin-right:8px;"></i>Transfer Member</h1><p class="page-subtitle">Move this member to a different branch</p></div>
+</div>
 {% include 'members/_member_header_mini.html' %}
 <div class="row justify-content-center"><div class="col-lg-5">
   <div class="card-gymx">

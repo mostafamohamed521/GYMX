@@ -12,12 +12,12 @@
 <div class="row g-3 mb-4">
   {% for m in todays_birthdays %}
   <div class="col-md-6 col-lg-4">
-    <div style="background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:var(--radius-xl);padding:16px;color:white;">
+    <div style="background:linear-gradient(135deg,#FBBF24,var(--warning));border-radius:var(--radius-xl);padding:16px;color:white;">
       <div style="font-size:24px;">🎂</div>
       <div style="font-size:14px;font-weight:700;margin-top:6px;">{{ m.get_full_name }}</div>
       <form method="post" action="{% url 'notifications:birthday_send' m.pk %}" style="margin-top:10px;">
         {% csrf_token %}
-        <button type="submit" class="btn-gymx" style="background:white;color:#F59E0B;width:100%;justify-content:center;font-size:12px;"><i class="fa-solid fa-paper-plane"></i> Send Wishes</button>
+        <button type="submit" class="btn-gymx" style="background:var(--bg-surface);color:var(--warning);width:100%;justify-content:center;font-size:12px;"><i class="fa-solid fa-paper-plane"></i> Send Wishes</button>
       </form>
     </div>
   </div>

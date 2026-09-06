@@ -9,7 +9,7 @@
 </div>
 <div class="row justify-content-center">
   <div class="col-lg-5">
-    <div style="background:#FBE5EA;border:1px solid #F3B8C4;border-radius:var(--radius-xl);padding:16px 20px;margin-bottom:24px;">
+    <div style="background:var(--primary-light);border:1px solid rgba(198,255,62,0.35);border-radius:var(--radius-xl);padding:16px 20px;margin-bottom:24px;">
       <div style="font-size:13px;color:var(--primary);"><strong>Installment #{{ inst.number }}</strong> of {{ plan.num_installments }} — Due {{ inst.due_date|date:"M d, Y" }}</div>
       {% if inst.is_overdue %}<div style="font-size:12px;color:var(--danger);margin-top:4px;"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</div>{% endif %}
     </div>
@@ -27,7 +27,7 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               {% for val, label in methods %}
               <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-full);border:1.5px solid var(--border);cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text-secondary);">
-                <input type="radio" name="method" value="{{ val }}" {% if val == 'cash' %}checked{% endif %} style="display:none;" onchange="this.parentElement.style.borderColor='var(--primary)';this.parentElement.style.color='var(--primary)';this.parentElement.style.background='#FBE5EA';document.querySelectorAll('.method-lbl').forEach(l=>{if(l!==this.parentElement){l.style.borderColor='var(--border)';l.style.color='var(--text-secondary)';l.style.background='white';}});" />
+                <input type="radio" name="method" value="{{ val }}" {% if val == 'cash' %}checked{% endif %} style="display:none;" onchange="this.parentElement.style.borderColor='var(--primary)';this.parentElement.style.color='var(--primary)';this.parentElement.style.background='var(--primary-light)';document.querySelectorAll('.method-lbl').forEach(l=>{if(l!==this.parentElement){l.style.borderColor='var(--border)';l.style.color='var(--text-secondary)';l.style.background='white';}});" />
                 <i class="fa-solid {% if val == 'cash' %}fa-money-bill-wave{% elif val == 'card' %}fa-credit-card{% elif val == 'transfer' %}fa-building-columns{% else %}fa-globe{% endif %}"></i>
                 {{ label }}
               </label>

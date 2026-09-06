@@ -34,11 +34,11 @@
   {% for ex in exercises %}
   <div class="col-md-6 col-lg-4">
     <a href="{% url 'workouts:exercise_detail' ex.pk %}" style="text-decoration:none;">
-      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;transition:all 0.15s;box-shadow:var(--shadow-xs);"
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;transition:all 0.15s;box-shadow:var(--shadow-xs);"
            onmouseenter="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'"
            onmouseleave="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='var(--shadow-xs)'">
         <div style="display:flex;align-items:flex-start;gap:12px;">
-          <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:{% if ex.category %}{{ ex.category.color }}20{% else %}#FBE5EA{% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:{% if ex.category %}{{ ex.category.color }}20{% else %}var(--primary-light){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fa-solid {{ ex.get_muscle_icon }}" style="font-size:18px;color:{% if ex.category %}{{ ex.category.color }}{% else %}var(--primary){% endif %};"></i>
           </div>
           <div style="flex:1;min-width:0;">
@@ -55,7 +55,7 @@
     </a>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
     <i class="fa-solid fa-dumbbell" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
     <div style="font-size:16px;font-weight:700;">No exercises found</div>
     <a href="{% url 'workouts:exercise_new' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Add Exercise</a>

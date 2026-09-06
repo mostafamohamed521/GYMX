@@ -21,7 +21,7 @@ class SystemSettings(models.Model):
     currency_symbol   = models.CharField(max_length=5, default='EGP')
 
     # Theme
-    primary_color   = models.CharField(max_length=7, default='#3B82F6')
+    primary_color   = models.CharField(max_length=7, default='#C80036')
     dark_mode_default = models.BooleanField(default=False)
 
     # Password Policy

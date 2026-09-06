@@ -3,13 +3,16 @@
 {% block title %}Unfreeze Member — GymX{% endblock %}
 {% block page_breadcrumb %}Members / {{ member.get_full_name }} / Unfreeze{% endblock %}
 {% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title"><i class="fa-solid fa-fire" style="color:var(--primary);font-size:.8em;margin-right:8px;"></i>Unfreeze Member</h1><p class="page-subtitle">Reactivate a temporarily suspended membership</p></div>
+</div>
 {% include 'members/_member_header_mini.html' %}
 <div class="row justify-content-center"><div class="col-lg-5">
   <div class="card-gymx">
     <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-sun"></i> Unfreeze Account</span></div>
     <div class="card-body">
       <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:20px;">This will restore <strong>{{ member.get_full_name }}</strong>'s account to active status immediately.</p>
-      {% if member.freeze_end %}<div style="background:#FBE5EA;border:1px solid #F3B8C4;border-radius:var(--radius-xl);padding:12px 16px;margin-bottom:16px;font-size:13px;color:#93002A;">Originally scheduled to unfreeze on <strong>{{ member.freeze_end|date:"M d, Y" }}</strong>.</div>{% endif %}
+      {% if member.freeze_end %}<div style="background:var(--primary-light);border:1px solid rgba(198,255,62,0.35);border-radius:var(--radius-xl);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--primary-dark);">Originally scheduled to unfreeze on <strong>{{ member.freeze_end|date:"M d, Y" }}</strong>.</div>{% endif %}
       <form method="post">
         {% csrf_token %}
         <div class="d-flex justify-content-end gap-2">

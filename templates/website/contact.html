@@ -1,40 +1,42 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Contact Us — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 32px;">
-  <div class="container gx-hero-grid">
-    <div>
-      <div class="gx-eyebrow"><i class="fa-solid fa-comments"></i> Get In Touch</div>
-      <h1 style="font-size:30px;">Contact Us</h1>
-      <p>Questions about membership, classes, or anything else? We'd love to hear from you.</p>
-    </div>
-    <div class="gx-hero-photo">
-      <img src="https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="GymX front desk and facility" />
-    </div>
-  </div>
-</section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Contact Us" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-grid gx-grid-2">
-      <div class="gx-card">
-        <h3 style="font-size:14.5px;margin-bottom:16px;">Send us a message</h3>
-        <form method="post">
+    <div class="grid grid-2" style="gap:56px;align-items:start;">
+      <div>
+        <span class="eyebrow">Get In Touch</span>
+        <h2>Contact With Our Team</h2>
+        <p class="lead" style="margin-bottom:28px;">Questions about membership, classes, or a specific coach? Send us a message and our team will get back to you.</p>
+        <div class="grid grid-2" style="gap:14px;">
+          <div class="card" style="padding:18px;"><i class="fa-solid fa-location-dot text-accent" style="font-size:16px;margin-bottom:8px;display:block;"></i><strong style="color:var(--text-primary);font-size:13px;">Address</strong><p style="font-size:12.5px;margin:2px 0 0;">Mansoura, Egypt</p></div>
+          <div class="card" style="padding:18px;"><i class="fa-solid fa-envelope text-accent" style="font-size:16px;margin-bottom:8px;display:block;"></i><strong style="color:var(--text-primary);font-size:13px;">Email</strong><p style="font-size:12.5px;margin:2px 0 0;">info@gymx.com</p></div>
+          <div class="card" style="padding:18px;"><i class="fa-solid fa-phone text-accent" style="font-size:16px;margin-bottom:8px;display:block;"></i><strong style="color:var(--text-primary);font-size:13px;">Phone</strong><p style="font-size:12.5px;margin:2px 0 0;">01000000000</p></div>
+          <div class="card" style="padding:18px;"><i class="fa-solid fa-clock text-accent" style="font-size:16px;margin-bottom:8px;display:block;"></i><strong style="color:var(--text-primary);font-size:13px;">Hours</strong><p style="font-size:12.5px;margin:2px 0 0;">Mon-Sat: 6am-11pm</p></div>
+        </div>
+      </div>
+      <div class="card" style="padding:32px;">
+        <h3 style="font-size:20px;margin-bottom:20px;">Send A Message</h3>
+        <form method="post" action="{% url 'website:contact' %}">
           {% csrf_token %}
-          <div style="margin-bottom:14px;"><input type="text" name="name" placeholder="Your Name" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:14px;"><input type="email" name="email" placeholder="Your Email" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:14px;"><input type="text" name="phone" placeholder="Phone (optional)" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:14px;"><input type="text" name="subject" placeholder="Subject" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);" /></div>
-          <div style="margin-bottom:18px;"><textarea name="message" placeholder="Your Message" rows="4" required style="width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:13px;background:var(--bg-muted);"></textarea></div>
-          <button type="submit" class="btn-primary" style="width:100%;justify-content:center;border:none;">Send Message</button>
+          <div class="grid grid-2" style="margin-bottom:16px;">
+            <div><label class="form-label">Your Name</label><input type="text" name="name" class="form-control" required></div>
+            <div><label class="form-label">Your Email</label><input type="email" name="email" class="form-control" required></div>
+          </div>
+          <div class="grid grid-2" style="margin-bottom:16px;">
+            <div><label class="form-label">Phone</label><input type="tel" name="phone" class="form-control"></div>
+            <div><label class="form-label">Subject</label><input type="text" name="subject" class="form-control"></div>
+          </div>
+          <div style="margin-bottom:20px;"><label class="form-label">Message</label><textarea name="message" class="form-control" required></textarea></div>
+          <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Send Message</button>
         </form>
       </div>
-      <div>
-        <div class="gx-card" style="margin-bottom:16px;"><i class="fa-solid fa-location-dot" style="color:var(--primary);margin-right:10px;"></i>123 El Gomhoria St, Mansoura, Egypt</div>
-        <div class="gx-card" style="margin-bottom:16px;"><i class="fa-solid fa-phone" style="color:var(--primary);margin-right:10px;"></i>01000000000</div>
-        <div class="gx-card" style="margin-bottom:16px;"><i class="fa-solid fa-envelope" style="color:var(--primary);margin-right:10px;"></i>info@gymx.com</div>
-        <div class="gx-card"><i class="fa-solid fa-clock" style="color:var(--primary);margin-right:10px;"></i>Open daily 6:00 AM – 11:00 PM</div>
-      </div>
     </div>
   </div>
 </section>
+
 {% endblock %}

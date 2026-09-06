@@ -29,7 +29,7 @@
       {% if day == 0 %}
       <div style="min-height:80px;border-radius:var(--radius-lg);background:var(--bg-muted);opacity:0.3;"></div>
       {% else %}
-      <div style="min-height:80px;border-radius:var(--radius-lg);border:1.5px solid {% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--border){% endif %};padding:6px;background:{% if day == today.day and month == today.month and year == today.year %}#FBE5EA{% else %}white{% endif %};">
+      <div style="min-height:80px;border-radius:var(--radius-lg);border:1.5px solid {% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--border){% endif %};padding:6px;background:{% if day == today.day and month == today.month and year == today.year %}var(--primary-light){% else %}var(--bg-surface){% endif %};">
         <div style="font-size:12px;font-weight:{% if day == today.day and month == today.month and year == today.year %}800{% else %}500{% endif %};color:{% if day == today.day and month == today.month and year == today.year %}var(--primary){% else %}var(--text-primary){% endif %};margin-bottom:4px;">{{ day }}</div>
         {% for d, sessions in smap.items %}{% if d == day %}
           {% for s in sessions %}

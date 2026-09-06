@@ -29,7 +29,7 @@
   <div class="col-lg-6">
     <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-shield-halved" style="color:var(--success);"></i> Active Warranties</span></div>
       <div style="overflow-x:auto;max-height:400px;overflow-y:auto;"><table class="table-gymx">
-        <thead style="position:sticky;top:0;background:white;"><tr><th>Equipment</th><th>Until</th></tr></thead>
+        <thead style="position:sticky;top:0;background:var(--bg-surface);"><tr><th>Equipment</th><th>Until</th></tr></thead>
         <tbody>
           {% for eq in active %}
           <tr><td style="font-size:13px;font-weight:500;">{{ eq.name }}</td><td style="font-size:12.5px;color:var(--success);font-weight:600;">{{ eq.warranty_until|date:"M d, Y" }}</td></tr>
@@ -41,7 +41,7 @@
   <div class="col-lg-6">
     <div class="card-gymx"><div class="card-header"><span class="card-header-title"><i class="fa-solid fa-shield-halved" style="color:var(--danger);"></i> Expired Warranties</span></div>
       <div style="overflow-x:auto;max-height:400px;overflow-y:auto;"><table class="table-gymx">
-        <thead style="position:sticky;top:0;background:white;"><tr><th>Equipment</th><th>Expired</th></tr></thead>
+        <thead style="position:sticky;top:0;background:var(--bg-surface);"><tr><th>Equipment</th><th>Expired</th></tr></thead>
         <tbody>
           {% for eq in expired %}
           <tr><td style="font-size:13px;font-weight:500;">{{ eq.name }}</td><td style="font-size:12.5px;color:var(--danger);font-weight:600;">{{ eq.warranty_until|date:"M d, Y" }}</td></tr>

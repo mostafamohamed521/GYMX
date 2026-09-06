@@ -28,7 +28,7 @@
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text-secondary);">Coach Salaries</span><span style="font-size:13px;font-weight:600;">{{ coach_salary|floatformat:0 }} EGP</span></div>
         <div style="display:flex;justify-content:space-between;padding:10px 0;"><span style="font-size:14px;font-weight:700;">Total Expenses</span><span style="font-size:16px;font-weight:800;color:var(--danger);">{{ total_expenses|floatformat:0 }} EGP</span></div>
 
-        <div style="margin-top:20px;padding:20px;background:{% if net_profit >= 0 %}#ECFDF5{% else %}#FEF2F2{% endif %};border-radius:var(--radius-xl);text-align:center;">
+        <div style="margin-top:20px;padding:20px;background:{% if net_profit >= 0 %}rgba(51,209,122,0.12){% else %}rgba(245,86,107,0.12){% endif %};border-radius:var(--radius-xl);text-align:center;">
           <div style="font-size:13px;color:var(--text-muted);">Net {% if net_profit >= 0 %}Profit{% else %}Loss{% endif %}</div>
           <div style="font-size:32px;font-weight:900;color:{% if net_profit >= 0 %}var(--success){% else %}var(--danger){% endif %};">{{ net_profit|floatformat:0 }} EGP</div>
         </div>

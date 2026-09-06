@@ -17,7 +17,7 @@
 <div class="row g-3">
   {% for sup in sups %}
   <div class="col-md-6 col-lg-4">
-    <div style="background:white;border:1px solid {% if sup.is_active %}var(--border){% else %}#E2E8F0{% endif %};border-radius:var(--radius-xl);padding:16px;opacity:{% if sup.is_active %}1{% else %}0.6{% endif %};box-shadow:var(--shadow-xs);">
+    <div style="background:var(--bg-surface);border:1px solid {% if sup.is_active %}var(--border){% else %}var(--border){% endif %};border-radius:var(--radius-xl);padding:16px;opacity:{% if sup.is_active %}1{% else %}0.6{% endif %};box-shadow:var(--shadow-xs);">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
         <div>
           <div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ sup.name }}</div>
@@ -34,7 +34,7 @@
     </div>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
     <i class="fa-solid fa-pills" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
     <div style="font-size:16px;font-weight:700;">No supplements tracked</div>
     <a href="{% url 'nutrition:supplement_new' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:12px;">Add First Supplement</a>

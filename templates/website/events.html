@@ -1,31 +1,40 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Events — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 32px;">
-  <div class="container gx-hero-grid">
-    <div>
-      <div class="gx-eyebrow"><i class="fa-solid fa-calendar-days"></i> What's Happening</div>
-      <h1 style="font-size:30px;">Events</h1>
-      <p>Challenges, workshops, and community sessions happening at GymX.</p>
-    </div>
-    <div class="gx-hero-photo">
-      <img src="https://images.unsplash.com/photo-1761035190790-aa1a3472f7fc?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Community class event at GymX" />
-    </div>
-  </div>
-</section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Upcoming Events" %}
+
+<section class="section">
   <div class="container">
-    <h2 style="font-size:18px;margin-bottom:24px;">Upcoming Events</h2>
-    <div class="gx-grid gx-grid-3">
+    <div class="grid grid-3">
       {% for e in upcoming %}
-      <div class="gx-card">
-        <div class="gx-badge">{{ e.date|date:"M d, Y" }}</div>
-        <h3 style="font-size:14px;margin:14px 0 6px;">{{ e.title }}</h3>
-        <p style="font-size:12.5px;color:var(--text-secondary);">{{ e.description|truncatechars:100 }}</p>
-        <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px;"><i class="fa-solid fa-clock"></i> {{ e.start_time|time:"H:i" }} {% if e.location %}· <i class="fa-solid fa-location-dot"></i> {{ e.location }}{% endif %}</div>
+      <div class="card glow">
+        <div style="display:flex;gap:14px;margin-bottom:14px;">
+          <div class="icon-box" style="margin-bottom:0;flex-shrink:0;"><i class="fa-solid fa-calendar-day"></i></div>
+          <div><div style="font-weight:600;color:var(--text-primary);font-size:14px;">{{ e.date|date:"d M Y" }}</div><div style="font-size:12px;color:var(--text-muted);">{{ e.start_time|time:"g:i A" }}</div></div>
+        </div>
+        <h3 style="font-size:18px;">{{ e.title }}</h3>
+        <p style="font-size:13px;margin-bottom:10px;">{{ e.description|truncatewords:16 }}</p>
+        {% if e.location %}<p style="font-size:12px;color:var(--text-muted);"><i class="fa-solid fa-location-dot" style="margin-right:6px;"></i>{{ e.location }}</p>{% endif %}
       </div>
-      {% empty %}<p style="color:var(--text-muted);">No upcoming events right now.</p>{% endfor %}
+      {% empty %}
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>No upcoming events right now — check back soon.</p></div>
+      {% endfor %}
     </div>
+
+    {% if past %}
+    <h2 style="font-size:26px;margin:56px 0 24px;">Past Events</h2>
+    <div class="grid grid-3">
+      {% for e in past %}
+      <div class="card" style="opacity:.6;">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;"><i class="fa-solid fa-calendar" style="margin-right:6px;"></i>{{ e.date|date:"d M Y" }}</div>
+        <strong style="color:var(--text-primary);font-size:14px;">{{ e.title }}</strong>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 </section>
+
 {% endblock %}

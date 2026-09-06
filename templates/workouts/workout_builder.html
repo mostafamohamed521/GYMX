@@ -36,8 +36,8 @@
           <div id="exerciseList" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;">
             {% for ex in exercises %}
             <div class="ex-item" data-name="{{ ex.name|lower }}" data-muscle="{{ ex.muscle_group }}"
-                 style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-lg);cursor:pointer;background:white;border:1px solid var(--border);transition:all 0.15s;"
-                 onmouseenter="this.style.borderColor='var(--primary)';this.style.background='#FBE5EA'"
+                 style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-lg);cursor:pointer;background:var(--bg-surface);border:1px solid var(--border);transition:all 0.15s;"
+                 onmouseenter="this.style.borderColor='var(--primary)';this.style.background='var(--primary-light)'"
                  onmouseleave="this.style.borderColor='var(--border)';this.style.background='white'"
                  onclick="addToWorkout({{ ex.pk }},'{{ ex.name|escapejs }}','{{ ex.get_muscle_group_display }}')">
               <i class="fa-solid {{ ex.get_muscle_icon }}" style="color:var(--primary);font-size:13px;width:16px;"></i>
@@ -104,7 +104,7 @@ function renderWorkout() {
   if (empty.parentNode) empty.parentNode.removeChild(empty);
 
   list.innerHTML = exercises.map((ex, i) => `
-    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:12px 14px;margin-bottom:8px;">
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:12px 14px;margin-bottom:8px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</span>
         <input type="hidden" name="exercise_ids" value="${ex.id}" />

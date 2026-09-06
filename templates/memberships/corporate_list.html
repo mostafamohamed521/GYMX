@@ -39,7 +39,7 @@
             {% else %}<span class="badge-gymx red" style="font-size:11px;">Expired</span>{% endif %}
           </td>
           <td>{% if corp.is_active %}<span class="badge-gymx green" style="font-size:11px;">Active</span>{% else %}<span class="badge-gymx gray" style="font-size:11px;">Inactive</span>{% endif %}</td>
-          <td><a href="#" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
+          <td><a href="{% url 'memberships:corporate_detail' corp.pk %}" class="navbar-btn" style="width:28px;height:28px;border-radius:var(--radius-md);text-decoration:none;"><i class="fa-solid fa-eye" style="font-size:11px;"></i></a></td>
         </tr>
         {% empty %}
         <tr><td colspan="8" style="text-align:center;padding:48px;color:var(--text-muted);"><i class="fa-solid fa-building" style="font-size:32px;display:block;margin-bottom:10px;"></i>No corporate accounts yet</td></tr>

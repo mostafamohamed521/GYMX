@@ -28,7 +28,7 @@
       <div class="card-body" style="padding:0;">
         {% for m in top_members %}
         <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:{% if not forloop.last %}1px solid var(--border){% else %}none{% endif %};">
-          <div style="width:22px;text-align:center;font-size:13px;font-weight:700;color:{% if forloop.counter == 1 %}#F59E0B{% elif forloop.counter == 2 %}#9AA0AC{% elif forloop.counter == 3 %}#B45309{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
+          <div style="width:22px;text-align:center;font-size:13px;font-weight:700;color:{% if forloop.counter == 1 %}var(--warning){% elif forloop.counter == 2 %}var(--text-muted){% elif forloop.counter == 3 %}#FFD873{% else %}var(--text-muted){% endif %};">{{ forloop.counter }}</div>
           <a href="{% url 'members:detail' m.plan__member__pk %}" style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ m.plan__member__first_name }} {{ m.plan__member__last_name }}</a>
           <div style="display:flex;align-items:center;gap:10px;">
             <div class="progress-gymx" style="width:80px;"><div class="fill" style="width:{% if top_members.0.sessions > 0 %}{% widthratio m.sessions top_members.0.sessions 100 %}{% else %}0{% endif %}%;"></div></div>
@@ -85,8 +85,8 @@ grad.addColorStop(0,'rgba(200,0,54,0.2)');
 grad.addColorStop(1,'rgba(200,0,54,0)');
 new Chart(ctx, {
   type:'line',
-  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'#C80036', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'#C80036', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#9AA0AC', font:{ size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', stepSize:1 }, beginAtZero:true } } }
+  data:{ labels:[{% for m in monthly %}"{{ m.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for m in monthly %}{{ m.count }}{% if not forloop.last %},{% endif %}{% endfor %}], borderColor:'var(--primary)', backgroundColor:grad, borderWidth:2.5, pointBackgroundColor:'white', pointBorderColor:'var(--primary)', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'var(--text-muted)', font:{ size:11 } } }, y:{ grid:{ color:'var(--bg-hover)' }, ticks:{ color:'var(--text-muted)', stepSize:1 }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}

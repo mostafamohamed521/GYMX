@@ -13,7 +13,7 @@
 {% else %}
 
 <!-- Membership status card -->
-<div style="background:linear-gradient(135deg,{% if active_sub %}#059669,#0C1844{% else %}#9AA0AC,#5B5F6E{% endif %});border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;box-shadow:var(--shadow-md);">
+<div style="background:linear-gradient(135deg,{% if active_sub %}var(--success),var(--accent){% else %}var(--text-muted),var(--text-secondary){% endif %});border-radius:var(--radius-2xl);padding:24px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;box-shadow:var(--shadow-md);">
   <div>
     <div style="font-size:13px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;">Membership Status</div>
     <div style="font-size:24px;font-weight:800;margin-top:4px;">{{ stats.membership_status }}</div>

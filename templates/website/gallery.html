@@ -1,28 +1,28 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Gallery — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;">
-  <div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-images"></i> Take a Look</div><h1 style="font-size:30px;">Gallery</h1></div>
-</section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Gallery" %}
+
+<section class="section">
   <div class="container">
-    <div style="display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;">
-      <a href="{% url 'website:gallery' %}" class="gx-badge" style="text-decoration:none;{% if not category %}background:var(--primary);color:white;{% endif %}">All</a>
-      {% for v,l in categories %}<a href="?category={{ v }}" class="gx-badge" style="text-decoration:none;{% if category == v %}background:var(--primary);color:white;{% endif %}">{{ l }}</a>{% endfor %}
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;">
+      <a href="{% url 'website:gallery' %}" class="btn-{% if not category %}primary{% else %}ghost{% endif %} btn-sm">All</a>
+      {% for value, label in categories %}
+      <a href="?category={{ value }}" class="btn-{% if category == value %}primary{% else %}ghost{% endif %} btn-sm">{{ label }}</a>
+      {% endfor %}
     </div>
-    <div class="gx-grid gx-grid-3">
+    <div class="grid grid-3">
       {% for img in images %}
-      <div class="gx-photo-card" style="aspect-ratio:4/3;">
-        <img src="{{ img.image.url }}" alt="{{ img.title }}" />
+      <div class="photo-card" style="aspect-ratio:4/3;">
+        <img src="{{ img.image.url }}" alt="{{ img.title }}">
       </div>
       {% empty %}
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="GymX facility" /></div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1721394749382-223a18ce8bb9?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="GymX cardio zone" /></div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1761035190790-aa1a3472f7fc?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="GymX yoga studio" /></div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1758875568671-9fa1829fe1e3?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="Personal training at GymX" /></div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1646492169621-d8da8016354a?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="Free weight area at GymX" /></div>
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>No photos in this category yet.</p></div>
       {% endfor %}
     </div>
   </div>
 </section>
+
 {% endblock %}

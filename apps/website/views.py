@@ -12,6 +12,7 @@ from apps.accounts.validators import validate_document_file
 from apps.memberships.models import MembershipPlan
 from apps.coaches.models import Coach
 from apps.classes.models import GymClass, ClassSchedule
+from .rate_limit import rate_limit_post
 
 
 # ── 1. Home ─────────────────────────────────────────────────
@@ -29,8 +30,95 @@ def home(request):
 
 # ── 2. About Us ─────────────────────────────────────────────
 def about_us(request):
-    trainers_count = Coach.objects.filter(status='active').count()
-    return render(request, 'website/about.html', {'trainers_count': trainers_count})
+    trainers = Coach.objects.filter(status='active').order_by('-rating')[:4]
+    return render(request, 'website/about.html', {'trainers': trainers, 'trainers_count': trainers.count()})
+
+
+# ── 2b. Locations ───────────────────────────────────────────
+def locations(request):
+    from apps.branches.models import Branch
+    branches = Branch.objects.exclude(status='closed').order_by('-is_main_branch', 'name')
+    return render(request, 'website/locations.html', {'branches': branches})
+
+
+# ── 2c. Offers & Promotions ───────────────────────────────────
+def offers(request):
+    from django.utils import timezone
+    from apps.memberships.models import Offer
+    today = timezone.now().date()
+    live_offers = (
+        Offer.objects
+        .filter(is_active=True, valid_from__lte=today, valid_until__gte=today)
+        .select_related('discount')
+        .prefetch_related('applicable_plans')
+        .order_by('-is_featured', 'valid_until')
+    )
+    return render(request, 'website/offers.html', {'offers': live_offers})
+
+
+# ── 2d. Equipment Showcase ─────────────────────────────────────
+def equipment(request):
+    from apps.inventory.models import Equipment, ProductCategory
+    # Only "operational" gear is shown — maintenance/broken/retired status,
+    # serial numbers, purchase price, and location are internal ops data
+    # and never appear on the public page.
+    items = (
+        Equipment.objects
+        .filter(status='operational')
+        .select_related('category', 'brand')
+        .order_by('category__name', 'name')
+    )
+    categories = ProductCategory.objects.filter(equipment__status='operational').distinct()
+    return render(request, 'website/equipment.html', {'items': items, 'categories': categories})
+
+
+# ── 2e. Gift Cards ──────────────────────────────────────────────
+@rate_limit_post('gift_cards', max_attempts=5, window_seconds=3600)
+def gift_cards(request):
+    from apps.crm.models import Lead
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        email = request.POST.get('email', '').strip()
+        amount = request.POST.get('amount', '').strip()
+        if first_name and phone:
+            Lead.objects.create(
+                first_name=first_name, last_name=last_name or '-', phone=phone, email=email,
+                source=Lead.Source.WEBSITE,
+                interest=f'Gift card request — {amount} EGP' if amount else 'Gift card request',
+                notes=f'Submitted via the public Gift Cards page. Requested amount: {amount or "unspecified"} EGP.',
+            )
+            messages.success(request, "Request received! Our team will call you shortly to confirm the details.")
+        else:
+            messages.error(request, 'Please enter your name and phone number.')
+        return redirect('website:gift_cards')
+    return render(request, 'website/gift_cards.html', {})
+
+
+# ── 2f. Corporate & Family Plans ────────────────────────────────
+@rate_limit_post('group_plans', max_attempts=5, window_seconds=3600)
+def group_plans(request):
+    from apps.crm.models import Lead
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        email = request.POST.get('email', '').strip()
+        plan_type = request.POST.get('plan_type', 'Group')
+        company = request.POST.get('company', '').strip()
+        if first_name and phone:
+            Lead.objects.create(
+                first_name=first_name, last_name=last_name or '-', phone=phone, email=email,
+                source=Lead.Source.WEBSITE,
+                interest=f'{plan_type} plan inquiry' + (f' — {company}' if company else ''),
+                notes=f'Submitted via the public Group Plans page.' + (f' Company: {company}.' if company else ''),
+            )
+            messages.success(request, "Thanks! Our team will reach out to set up your plan.")
+        else:
+            messages.error(request, 'Please enter your name and phone number.')
+        return redirect('website:group_plans')
+    return render(request, 'website/group_plans.html', {})
 
 
 # ── 3. Services ─────────────────────────────────────────────
@@ -49,6 +137,19 @@ def membership_plans(request):
 def trainers(request):
     trainer_list = Coach.objects.filter(status='active').order_by('-rating')
     return render(request, 'website/trainers.html', {'trainer_list': trainer_list})
+
+
+def trainer_detail(request, pk):
+    from django.shortcuts import get_object_or_404
+    # Only ever query active coaches, and the template only ever displays
+    # public-safe fields (name/bio/photo/specializations/certs/rating) —
+    # salary, commission_rate, session_rate, national_id, address, and
+    # phone_secondary are never passed to or rendered by this page.
+    coach = get_object_or_404(
+        Coach.objects.prefetch_related('specializations', 'certificates'),
+        pk=pk, status='active'
+    )
+    return render(request, 'website/trainer_detail.html', {'coach': coach})
 
 
 # ── 6. Classes ─────────────────────────────────────────────────
@@ -128,6 +229,7 @@ def faq(request):
 
 
 # ── 15. Contact Us ──────────────────────────────────────────────
+@rate_limit_post('contact', max_attempts=8, window_seconds=3600)
 def contact_us(request):
     if request.method == 'POST':
         ContactMessage.objects.create(
@@ -146,6 +248,7 @@ def careers(request):
     return render(request, 'website/careers.html', {'jobs': jobs})
 
 
+@rate_limit_post('job_apply', max_attempts=5, window_seconds=3600)
 def job_apply(request, pk):
     job = get_object_or_404(JobOpening, pk=pk, is_active=True)
     if request.method == 'POST':

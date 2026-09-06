@@ -1,115 +1,176 @@
 {% extends 'website/base_public.html' %}
-{% block title %}GymX — Premium Fitness in Mansoura{% endblock %}
+{% load static %}
+{% block title %}GymX — Home{% endblock %}
 {% block content %}
 
-<section class="gx-hero">
-  <div class="container gx-hero-grid">
-    <div>
-      <div class="gx-eyebrow"><i class="fa-solid fa-location-dot"></i> Mansoura's Premium Fitness Club</div>
-      <h1>Train harder.<br>Live <span class="accent">stronger.</span></h1>
-      <p>State-of-the-art equipment, expert coaches, and a community that pushes you further — every single day.</p>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;">
-        <a href="{% url 'website:plans' %}" class="btn-primary">Start Your Journey <i class="fa-solid fa-arrow-right"></i></a>
-        <a href="{% url 'website:classes' %}" class="btn-outline">Explore Classes</a>
-      </div>
-    </div>
-    <div class="gx-hero-photo">
-      <img src="https://images.unsplash.com/photo-1758875568671-9fa1829fe1e3?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Coach training a member at GymX" />
-      <div class="gx-floating-stat">
-        <div style="width:38px;height:38px;border-radius:10px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-star" style="color:var(--primary);"></i></div>
-        <div><div style="font-size:14px;font-weight:800;line-height:1.1;">4.9/5</div><div style="font-size:10px;color:var(--text-muted);">Member Rating</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="gx-section">
+<section class="hero">
+  <div class="hero-glow"></div>
   <div class="container">
-    <div class="gx-badge">Why GymX</div>
-    <h2 style="margin-top:10px;">Everything you need to succeed</h2>
-    <p class="lead">From personal training to nutrition planning, we've built a complete ecosystem around your fitness goals.</p>
-    <div class="gx-grid gx-grid-4">
-      <div class="gx-card"><div class="gx-icon-box" style="background:var(--primary-light);color:var(--primary);"><i class="fa-solid fa-dumbbell"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Modern Equipment</h3><p style="font-size:12.5px;color:var(--text-secondary);">Top-tier machines and free weights, always well-maintained.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#ECFDF5;color:var(--success);"><i class="fa-solid fa-person-running"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Expert Coaches</h3><p style="font-size:12.5px;color:var(--text-secondary);">Certified trainers dedicated to your personal progress.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#F5F3FF;color:var(--purple);"><i class="fa-solid fa-chalkboard-user"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Group Classes</h3><p style="font-size:12.5px;color:var(--text-secondary);">Yoga, HIIT, spin, and more — every level welcome.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#FFFBEB;color:var(--warning);"><i class="fa-solid fa-leaf"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Nutrition Plans</h3><p style="font-size:12.5px;color:var(--text-secondary);">Personalized guidance to fuel your transformation.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="gx-section muted">
-  <div class="container">
-    <div class="gx-badge">Inside GymX</div>
-    <h2 style="margin-top:10px;">A facility built for real training</h2>
-    <p class="lead">Take a look at the space — from the free-weight floor to the studio.</p>
-    <div class="gx-grid gx-grid-3">
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="Weight training area at GymX" /></div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1721394749382-223a18ce8bb9?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="Cardio zone with treadmills at GymX" /></div>
-      <div class="gx-photo-card" style="aspect-ratio:4/3;"><img src="https://images.unsplash.com/photo-1761035190790-aa1a3472f7fc?fm=jpg&q=80&w=1000&auto=format&fit=crop" alt="Yoga class studio at GymX" /></div>
-    </div>
-  </div>
-</section>
-
-<section class="gx-section">
-  <div class="container">
-    <div class="gx-badge">Membership Plans</div>
-    <h2 style="margin-top:10px;">Simple, transparent pricing</h2>
-    <p class="lead">Choose the plan that fits your lifestyle. No hidden fees, cancel anytime.</p>
-    <div class="gx-grid gx-grid-3">
-      {% for p in plans %}
-      <div class="gx-card" style="text-align:center;">
-        <div class="gx-badge">{{ p.duration_days }} days</div>
-        <h3 style="font-size:18px;margin:16px 0 6px;">{{ p.name }}</h3>
-        <div style="font-size:27px;font-weight:800;color:var(--text-primary);">{{ p.price|floatformat:0 }} <span style="font-size:12.5px;font-weight:500;color:var(--text-muted);">EGP</span></div>
-        <a href="{% url 'website:plans' %}" class="btn-outline" style="margin-top:18px;width:100%;justify-content:center;">Choose Plan</a>
-      </div>
-      {% empty %}<p style="color:var(--text-muted);">Plans coming soon.</p>{% endfor %}
-    </div>
-  </div>
-</section>
-
-<section class="gx-section muted">
-  <div class="container">
-    <div class="gx-badge">Our Trainers</div>
-    <h2 style="margin-top:10px;">Meet the team</h2>
-    <p class="lead">Certified coaches who know how to get you results.</p>
-    <div class="gx-grid gx-grid-4">
-      {% for t in trainers %}
-      <div style="text-align:center;">
-        <div class="gx-photo-card" style="aspect-ratio:1;margin-bottom:14px;">
-          {% if t.profile_image %}<img src="{{ t.profile_image.url }}" alt="{{ t.get_full_name }}" />{% else %}<img src="https://images.unsplash.com/photo-1758875568671-9fa1829fe1e3?fm=jpg&q=80&w=600&auto=format&fit=crop" alt="{{ t.get_full_name }}" />{% endif %}
+    <div class="hero-grid">
+      <div class="hero-content">
+        <span class="eyebrow"><i class="fa-solid fa-bolt"></i> Welcome to GymX</span>
+        <h1>Train harder.<br>Live <span class="accent">stronger.</span></h1>
+        <p class="lead">Premium equipment, certified coaches, and a community that keeps you accountable — everything you need to build the habit and see it through.</p>
+        <div class="hero-actions">
+          <a href="{% url 'website:plans' %}" class="btn-primary">Get Started <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'website:classes' %}" class="btn-outline">View Classes</a>
         </div>
-        <div style="font-weight:700;font-size:13px;">{{ t.get_full_name }}</div>
-        <div style="font-size:11.5px;color:var(--text-muted);">{{ t.specialization|default:"Fitness Coach" }}</div>
       </div>
-      {% empty %}<p style="color:var(--text-muted);">Trainer profiles coming soon.</p>{% endfor %}
+      <div class="hero-photo-wrap">
+        <div class="hero-photo">
+          <img src="{% static 'fitness_template/img/header-2.jpg' %}" alt="GymX training floor">
+        </div>
+        <div class="hero-photo-badge">
+          <span class="num">{{ trainers_count|default:"12" }}+</span>
+          <span class="txt">Certified<br>Coaches</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats-bar">
+      <div class="grid">
+        <div class="hero-stat"><div class="num">500+</div><div class="label">Active Members</div></div>
+        <div class="hero-stat"><div class="num">{{ trainers_count|default:"12" }}+</div><div class="label">Coaches</div></div>
+        <div class="hero-stat"><div class="num">15+</div><div class="label">Weekly Classes</div></div>
+        <div class="hero-stat"><div class="num">6AM–11PM</div><div class="label">Open Daily</div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="gx-section">
+<section class="section">
   <div class="container">
-    <div class="gx-badge">Testimonials</div>
-    <h2 style="margin-top:10px;">What our members say</h2>
-    <div class="gx-grid gx-grid-3">
-      {% for te in testimonials %}
-      <div class="gx-card">
-        <div style="color:var(--warning);font-size:12.5px;margin-bottom:12px;">{% for i in "12345" %}{% if forloop.counter <= te.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
-        <p style="font-size:13px;color:var(--text-secondary);font-style:italic;">"{{ te.quote|truncatechars:140 }}"</p>
-        <div style="margin-top:16px;font-weight:700;font-size:13px;">{{ te.name }}</div>
-        <div style="font-size:11px;color:var(--text-muted);">{{ te.role }}</div>
+    <div class="grid grid-2" style="align-items:center;gap:56px;">
+      <div class="photo-card" style="aspect-ratio:4/3;">
+        <img src="{% static 'fitness_template/img/about-2.png' %}" alt="About GymX">
       </div>
-      {% empty %}<p style="color:var(--text-muted);">Be the first to share your story.</p>{% endfor %}
+      <div>
+        <span class="eyebrow">About GymX</span>
+        <h2>Built for people who actually show up.</h2>
+        <p class="lead" style="margin-bottom:24px;">We're not another gym with rows of unused equipment. Every member gets a plan, a coach who knows their name, and a community that notices when they're gone.</p>
+        <div class="grid" style="gap:14px;margin-bottom:28px;">
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div class="icon-box" style="margin-bottom:0;flex-shrink:0;"><i class="fa-solid fa-check"></i></div>
+            <div><strong style="color:var(--text-primary);">Full equipment floor</strong><p style="margin:2px 0 0;font-size:13.5px;">Free weights, machines, and cardio — never waiting in line.</p></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div class="icon-box" style="margin-bottom:0;flex-shrink:0;"><i class="fa-solid fa-check"></i></div>
+            <div><strong style="color:var(--text-primary);">Certified coaching</strong><p style="margin:2px 0 0;font-size:13.5px;">Every trainer is certified and actively coaching, not just supervising.</p></div>
+          </div>
+        </div>
+        <a href="{% url 'website:about' %}" class="btn-outline">Learn More <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="gx-section">
+<section class="section alt">
   <div class="container">
-    <div class="gx-cta-band">
-      <h2>Ready to transform yourself?</h2>
-      <p class="lead center" style="color:rgba(255,255,255,0.85);">Join hundreds of members already crushing their goals at GymX.</p>
-      <a href="{% url 'website:plans' %}" class="btn-outline-onblue" style="background:white;color:var(--primary-dark);border:none;">Get Started Today <i class="fa-solid fa-arrow-right"></i></a>
+    <div class="section-head center wrap-md">
+      <span class="eyebrow">Why Choose Us</span>
+      <h2>What Makes GymX Different</h2>
+      <p class="lead center">Everything that makes members stick around long after the first month.</p>
+    </div>
+    <div class="grid grid-4">
+      <div class="card glow">
+        <div class="icon-box"><i class="fa-solid fa-dumbbell"></i></div>
+        <h3 style="font-size:18px;">Real Equipment</h3>
+        <p style="font-size:13.5px;">Full weight rooms, no gimmicks — just the tools to get stronger.</p>
+      </div>
+      <div class="card glow">
+        <div class="icon-box"><i class="fa-solid fa-people-group"></i></div>
+        <h3 style="font-size:18px;">Group Classes</h3>
+        <p style="font-size:13.5px;">Energy-driven sessions led by coaches who keep you coming back.</p>
+      </div>
+      <div class="card glow">
+        <div class="icon-box"><i class="fa-solid fa-heart-pulse"></i></div>
+        <h3 style="font-size:18px;">Real Community</h3>
+        <p style="font-size:13.5px;">A gym floor that feels like people showing up for each other.</p>
+      </div>
+      <div class="card glow">
+        <div class="icon-box"><i class="fa-solid fa-tags"></i></div>
+        <h3 style="font-size:18px;">Fair Pricing</h3>
+        <p style="font-size:13.5px;">Offers that make it easy to keep your streak going.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head center wrap-md">
+      <span class="eyebrow">Our Trainers</span>
+      <h2>Meet The Team</h2>
+      <p class="lead center">Certified coaches who actually know your name.</p>
+    </div>
+    <div class="grid grid-4">
+      {% for t in trainers %}
+      <a href="{% url 'website:trainer_detail' t.pk %}" style="color:inherit;">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div class="photo-card" style="aspect-ratio:3/4;border-radius:0;border:none;">
+            {% if t.profile_image %}<img src="{{ t.profile_image.url }}" alt="{{ t.get_full_name }}">{% else %}{% include 'website/includes/avatar_placeholder.html' %}{% endif %}
+            <div class="photo-overlay">
+              <strong style="color:white;">{{ t.get_full_name }}</strong>
+              <span style="font-size:12px;color:var(--accent);">{% with spec=t.specializations.first %}{{ spec.name|default:"Coach" }}{% endwith %}</span>
+            </div>
+          </div>
+        </div>
+      </a>
+      {% empty %}
+      {% for i in "1234" %}
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="photo-card" style="aspect-ratio:3/4;border-radius:0;border:none;">
+          {% include 'website/includes/avatar_placeholder.html' %}
+          <div class="photo-overlay"><strong style="color:white;">Trainer Name</strong><span style="font-size:12px;color:var(--accent);">Coach</span></div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-head center wrap-md">
+      <span class="eyebrow">Testimonials</span>
+      <h2>What Members Are Saying</h2>
+    </div>
+    <div class="grid grid-3">
+      {% for ts in testimonials %}
+      <div class="card">
+        <i class="fa-solid fa-quote-left text-accent" style="font-size:20px;margin-bottom:14px;display:block;"></i>
+        <p style="font-size:14px;color:var(--text-primary);margin-bottom:18px;">{{ ts.quote }}</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+            {% if ts.photo %}<img src="{{ ts.photo.url }}" alt="{{ ts.name }}">{% else %}{% include 'website/includes/avatar_placeholder.html' with icon="fa-solid fa-quote-right" %}{% endif %}
+          </div>
+          <div>
+            <strong style="color:var(--text-primary);font-size:13.5px;">{{ ts.name }}</strong>
+            <div style="font-size:12px;color:var(--text-muted);">{{ ts.role }}</div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="card">
+        <i class="fa-solid fa-quote-left text-accent" style="font-size:20px;margin-bottom:14px;display:block;"></i>
+        <p style="font-size:14px;color:var(--text-primary);margin-bottom:18px;">GymX turned my routine around completely — the coaches actually pay attention.</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;">{% include 'website/includes/avatar_placeholder.html' with icon="fa-solid fa-quote-right" %}</div>
+          <div><strong style="color:var(--text-primary);font-size:13.5px;">Client Name</strong><div style="font-size:12px;color:var(--text-muted);">Member</div></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-band">
+      <span class="eyebrow">Ready?</span>
+      <h2>Your First Session Is On Us</h2>
+      <p>Come try the floor and meet a coach before you commit to anything.</p>
+      <a href="{% url 'website:plans' %}" class="btn-primary">Claim Free Session <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </div>
 </section>

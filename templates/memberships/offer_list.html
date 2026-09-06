@@ -18,7 +18,7 @@
   {% for offer in active_offers %}
   {% if offer.is_currently_valid %}
   <div class="col-md-6 col-lg-4">
-    <div style="background:{% if offer.offer_type == 'flash' %}linear-gradient(135deg,#EF4444,#F97316){% elif offer.offer_type == 'seasonal' %}linear-gradient(135deg,#93002A,#0C1844){% elif offer.offer_type == 'birthday' %}linear-gradient(135deg,#EC4899,#8B5CF6){% else %}linear-gradient(135deg,#059669,#0C1844){% endif %};border-radius:var(--radius-2xl);padding:20px;color:white;position:relative;overflow:hidden;">
+    <div style="background:{% if offer.offer_type == 'flash' %}linear-gradient(135deg,var(--danger),#F97316){% elif offer.offer_type == 'seasonal' %}linear-gradient(135deg,var(--primary-dark),var(--accent)){% elif offer.offer_type == 'birthday' %}linear-gradient(135deg,#EC4899,var(--purple)){% else %}linear-gradient(135deg,var(--success),var(--accent)){% endif %};border-radius:var(--radius-2xl);padding:20px;color:white;position:relative;overflow:hidden;">
       {% if offer.is_featured %}<div style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.2);border-radius:999px;padding:2px 10px;font-size:10px;font-weight:700;">FEATURED</div>{% endif %}
       <div style="font-size:11px;opacity:0.7;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">{{ offer.get_offer_type_display }}</div>
       <div style="font-size:18px;font-weight:800;margin-bottom:6px;">{{ offer.name }}</div>

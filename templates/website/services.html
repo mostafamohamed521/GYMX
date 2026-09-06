@@ -1,28 +1,58 @@
 {% extends 'website/base_public.html' %}
-{% block title %}Services — GymX{% endblock %}
+{% load static %}
+{% block title %}Our Services — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 32px;">
-  <div class="container gx-hero-grid">
-    <div>
-      <div class="gx-eyebrow"><i class="fa-solid fa-list-check"></i> What We Offer</div>
-      <h1 style="font-size:30px;">Our Services</h1>
-      <p>Everything from strength training to full recovery, under one roof.</p>
-    </div>
-    <div class="gx-hero-photo">
-      <img src="https://images.unsplash.com/photo-1646492169621-d8da8016354a?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Free weight training area at GymX" />
-    </div>
-  </div>
-</section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Our Services" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-grid gx-grid-3">
-      <div class="gx-card"><div class="gx-icon-box" style="background:var(--primary-light);color:var(--primary);"><i class="fa-solid fa-dumbbell"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Personal Training</h3><p style="font-size:12.5px;color:var(--text-secondary);">One-on-one sessions tailored to your specific goals and fitness level.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#F5F3FF;color:var(--purple);"><i class="fa-solid fa-chalkboard-user"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Group Classes</h3><p style="font-size:12.5px;color:var(--text-secondary);">Energizing group sessions from yoga to HIIT, led by expert instructors.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#FFFBEB;color:var(--warning);"><i class="fa-solid fa-leaf"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Nutrition Coaching</h3><p style="font-size:12.5px;color:var(--text-secondary);">Custom meal plans and ongoing guidance from our nutrition specialists.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#FEF2F2;color:var(--danger);"><i class="fa-solid fa-heart-pulse"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Fitness Assessments</h3><p style="font-size:12.5px;color:var(--text-secondary);">Comprehensive body composition and performance testing.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#ECFEFF;color:var(--accent);"><i class="fa-solid fa-spa"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Recovery & Wellness</h3><p style="font-size:12.5px;color:var(--text-secondary);">Sauna, stretching zones, and recovery equipment to keep you at your best.</p></div>
-      <div class="gx-card"><div class="gx-icon-box" style="background:#ECFDF5;color:var(--success);"><i class="fa-solid fa-users"></i></div><h3 style="font-size:14.5px;margin:0 0 6px;">Corporate Wellness</h3><p style="font-size:12.5px;color:var(--text-secondary);">Custom fitness programs for teams and organizations.</p></div>
+    <div class="grid grid-3">
+      {% for c in classes %}
+      <div class="card glow" style="padding:0;overflow:hidden;">
+        <div class="photo-card" style="aspect-ratio:16/10;border-radius:0;border:none;">
+          {% cycle 'feature-1.jpg' 'feature-2.jpg' 'feature-3.jpg' 'feature-4.jpg' as feat_img %}
+          <img src="{% static 'fitness_template/img/' %}{{ feat_img }}" alt="{{ c.name }}">
+        </div>
+        <div style="padding:22px;">
+          <h3 style="font-size:18px;">{{ c.name }}</h3>
+          <p style="font-size:13.5px;margin-bottom:16px;">{{ c.description|default:"A coach-led session built to get real results."|truncatewords:14 }}</p>
+          <a href="{% url 'website:timetable' %}" class="btn-outline btn-sm">View Schedule</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="photo-card" style="aspect-ratio:16/10;border-radius:0;border:none;"><img src="{% static 'fitness_template/img/feature-1.jpg' %}" alt=""></div>
+        <div style="padding:22px;"><h3 style="font-size:18px;">Strength & Conditioning</h3><p style="font-size:13.5px;margin-bottom:16px;">Full equipment floor, coach-led programming, real progress tracking.</p><a href="{% url 'website:contact' %}" class="btn-outline btn-sm">Contact Us</a></div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="grid grid-2" style="align-items:center;gap:56px;">
+      <div>
+        <span class="eyebrow">Personal Training</span>
+        <h2>One-On-One Coaching That Fits Your Schedule</h2>
+        <div class="grid" style="gap:14px;margin:24px 0;">
+          <div style="display:flex;gap:14px;">
+            <div class="icon-box" style="margin-bottom:0;flex-shrink:0;"><i class="fa-solid fa-clipboard-list"></i></div>
+            <div><strong style="color:var(--text-primary);">Custom Programming</strong><p style="margin:2px 0 0;font-size:13.5px;">A plan built around your goals, not a generic template.</p></div>
+          </div>
+          <div style="display:flex;gap:14px;">
+            <div class="icon-box" style="margin-bottom:0;flex-shrink:0;"><i class="fa-solid fa-apple-whole"></i></div>
+            <div><strong style="color:var(--text-primary);">Nutrition Guidance</strong><p style="margin:2px 0 0;font-size:13.5px;">Coaches who talk you through what's on your plate too.</p></div>
+          </div>
+        </div>
+        <a href="{% url 'website:pricing' %}" class="btn-primary">See Pricing</a>
+      </div>
+      <div class="photo-card" style="aspect-ratio:4/3;">
+        <img src="{% static 'fitness_template/img/fitness-goal-banner.png' %}" alt="Personal training">
+      </div>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

@@ -6,7 +6,7 @@ from apps.accounts.models import User
 class ProductCategory(models.Model):
     name        = models.CharField(max_length=100, unique=True)
     icon        = models.CharField(max_length=50, default='fa-box')
-    color       = models.CharField(max_length=7, default='#3B82F6')
+    color       = models.CharField(max_length=7, default='#C80036')
 
     class Meta:
         db_table = 'product_categories'

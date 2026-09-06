@@ -1,26 +1,30 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Timetable — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-calendar-week"></i> Weekly Schedule</div><h1 style="font-size:30px;">Class Timetable</h1></div></section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Class Timetable" %}
+
+<section class="section">
   <div class="container">
     <div style="overflow-x:auto;">
-    <div class="gx-grid" style="grid-template-columns:repeat(7,minmax(140px,1fr));gap:14px;">
-      {% for day in grid %}
-      <div>
-        <div style="background:var(--primary);color:white;padding:10px;border-radius:12px 12px 0 0;text-align:center;font-size:12px;font-weight:700;">{{ day.day_label }}</div>
-        <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;min-height:180px;padding:8px;background:white;">
-          {% for s in day.sessions %}
-          <div style="background:var(--primary-light);border-radius:10px;padding:8px 10px;margin-bottom:8px;">
-            <div style="font-size:11px;font-weight:700;color:var(--text-primary);">{{ s.gym_class.name }}</div>
-            <div style="font-size:10px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }} - {{ s.end_time|time:"H:i" }}</div>
+      <div class="grid" style="grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);min-width:900px;">
+        {% for day in grid %}
+        <div>
+          <div style="background:var(--surface-2);color:var(--text-primary);text-align:center;padding:12px;font-weight:600;font-size:13px;">{{ day.day_label }}</div>
+          <div style="background:var(--bg);padding:8px;min-height:220px;">
+            {% for s in day.sessions %}
+            <div class="card" style="padding:10px;margin-bottom:8px;border-left:3px solid var(--accent);">
+              <div style="font-size:12.5px;font-weight:600;color:var(--text-primary);">{{ s.gym_class.name }}</div>
+              <div style="font-size:11px;color:var(--text-muted);">{{ s.start_time|time:"H:i" }} - {{ s.end_time|time:"H:i" }}</div>
+            </div>
+            {% empty %}<div class="center" style="color:var(--text-muted);font-size:12px;padding:24px 0;">No classes</div>{% endfor %}
           </div>
-          {% empty %}<div style="font-size:10.5px;color:var(--text-muted);text-align:center;padding:16px 0;">No classes</div>{% endfor %}
         </div>
+        {% empty %}<p class="center">Timetable coming soon.</p>{% endfor %}
       </div>
-      {% empty %}<p style="color:var(--text-muted);">Timetable coming soon.</p>{% endfor %}
-    </div>
     </div>
   </div>
 </section>
+
 {% endblock %}

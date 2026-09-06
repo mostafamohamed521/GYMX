@@ -10,9 +10,9 @@
 <div class="row g-3 mb-4">
   <div class="col-md-4 col-6"><div class="stat-card blue" style="padding:16px;"><div class="stat-icon blue" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-droplet"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.total_today|floatformat:0 }}</div><div class="stat-label">ml Today</div></div></div>
   <div class="col-md-4 col-6"><div class="stat-card green" style="padding:16px;"><div class="stat-icon green" style="width:34px;height:34px;font-size:14px;margin-bottom:10px;"><i class="fa-solid fa-list"></i></div><div class="stat-value" style="font-size:26px;">{{ stats.entries }}</div><div class="stat-label">Log Entries</div></div></div>
-  <div class="col-md-4 col-12"><div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+  <div class="col-md-4 col-12"><div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Progress toward 2500ml</div>
-    <div class="progress-gymx" style="height:16px;border-radius:999px;"><div class="fill" style="height:16px;border-radius:999px;width:{% widthratio stats.total_today 2500 100 %}%;background:{% if stats.total_today >= 2500 %}var(--success){% else %}#C80036{% endif %};"></div></div>
+    <div class="progress-gymx" style="height:16px;border-radius:999px;"><div class="fill" style="height:16px;border-radius:999px;width:{% widthratio stats.total_today 2500 100 %}%;background:{% if stats.total_today >= 2500 %}var(--success){% else %}var(--primary){% endif %};"></div></div>
     <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">{{ stats.total_today|floatformat:0 }} / 2500 ml</div>
   </div></div>
 </div>
@@ -31,13 +31,13 @@
           <div class="mb-3"><label class="form-label">Member</label><select name="member" class="form-select"><option value="">— Select —</option>{% for m in members %}<option value="{{ m.pk }}" {% if member and member.pk == m.pk %}selected{% endif %}>{{ m.get_full_name }}</option>{% endfor %}</select></div>
           <div class="mb-3"><label class="form-label">Amount (ml)</label>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-              <button type="button" onclick="setAmount(150)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">150ml</button>
-              <button type="button" onclick="setAmount(200)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">200ml</button>
-              <button type="button" onclick="setAmount(250)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">250ml</button>
-              <button type="button" onclick="setAmount(330)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">330ml</button>
-              <button type="button" onclick="setAmount(500)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">500ml</button>
-              <button type="button" onclick="setAmount(750)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">750ml</button>
-              <button type="button" onclick="setAmount(1000)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:white;font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">1000ml</button>
+              <button type="button" onclick="setAmount(150)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">150ml</button>
+              <button type="button" onclick="setAmount(200)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">200ml</button>
+              <button type="button" onclick="setAmount(250)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">250ml</button>
+              <button type="button" onclick="setAmount(330)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">330ml</button>
+              <button type="button" onclick="setAmount(500)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">500ml</button>
+              <button type="button" onclick="setAmount(750)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">750ml</button>
+              <button type="button" onclick="setAmount(1000)" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-full);background:var(--bg-surface);font-size:12px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='inherit'">1000ml</button>
             </div>
             <input type="number" name="amount_ml" id="amountInput" class="form-control" value="250" min="1" />
           </div>
@@ -57,7 +57,7 @@
             {% for log in logs %}
             <tr>
               <td><a href="{% url 'members:detail' log.member.pk %}" style="font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;">{{ log.member.get_full_name }}</a></td>
-              <td style="font-size:14px;font-weight:700;color:#C80036;">{{ log.amount_ml }} ml</td>
+              <td style="font-size:14px;font-weight:700;color:var(--primary);">{{ log.amount_ml }} ml</td>
               <td style="font-size:12.5px;color:var(--text-muted);">{{ log.logged_at|date:"H:i" }}</td>
               <td style="font-size:12.5px;color:var(--text-secondary);">{{ log.notes|default:"—" }}</td>
             </tr>
@@ -76,8 +76,8 @@
 function setAmount(v) { document.getElementById('amountInput').value = v; }
 new Chart(document.getElementById('wChart').getContext('2d'), {
   type:'bar',
-  data:{ labels:[{% for d in weekly %}"{{ d.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for d in weekly %}{{ d.amount }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(200,0,54,0.7)', borderColor:'#C80036', borderWidth:1, borderRadius:6 }] },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#9AA0AC', font:{ size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', font:{ size:11 }, callback: v=>(v/1000).toFixed(1)+'L' }, beginAtZero:true } } }
+  data:{ labels:[{% for d in weekly %}"{{ d.label }}"{% if not forloop.last %},{% endif %}{% endfor %}], datasets:[{ data:[{% for d in weekly %}{{ d.amount }}{% if not forloop.last %},{% endif %}{% endfor %}], backgroundColor:'rgba(200,0,54,0.7)', borderColor:'var(--primary)', borderWidth:1, borderRadius:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ color:'var(--text-muted)', font:{ size:11 } } }, y:{ grid:{ color:'var(--bg-hover)' }, ticks:{ color:'var(--text-muted)', font:{ size:11 }, callback: v=>(v/1000).toFixed(1)+'L' }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}

@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'apps.accounts',
     'apps.dashboard',
     'apps.members',
@@ -72,16 +73,41 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # PostgreSQL (uncomment when ready):
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'NAME': config('DB_NAME'),
-         'USER': config('DB_USER'),
-         'PASSWORD': config('DB_PASSWORD'),
-         'HOST': config('DB_HOST', default='localhost'),
-         'PORT': config('DB_PORT', default='5432'),
-     }
- }
+# DB_ENGINE lets the same codebase target Postgres (local/other hosts) or
+# MySQL (PythonAnywhere's built-in database, since Postgres isn't offered
+# there without a separate external service) purely via .env — no code change.
+_db_engine = config('DB_ENGINE', default='postgresql')  # 'postgresql' | 'mysql' | 'sqlite3'
+
+if _db_engine == 'sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / config('DB_NAME', default='db.sqlite3'),
+        }
+    }
+elif _db_engine == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='3306'),
+            'OPTIONS': {'charset': 'utf8mb4'},
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -124,12 +150,24 @@ SECURE_REFERRER_POLICY      = 'same-origin'
 CSRF_COOKIE_HTTPONLY        = True
 
 if not DEBUG:
+    # PythonAnywhere (and most hosts) terminate HTTPS at their proxy, then
+    # forward the request to Django over plain HTTP internally. Without this,
+    # Django thinks every request is insecure, so SECURE_SSL_REDIRECT below
+    # would redirect every request right back to itself — an infinite loop
+    # that makes the whole site unreachable. Safe here because the proxy
+    # sets this header itself and it isn't something an external client can
+    # spoof through to the app.
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
     SECURE_HSTS_SECONDS            = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD            = True
     SECURE_SSL_REDIRECT             = True
     SESSION_COOKIE_SECURE           = True
     CSRF_COOKIE_SECURE              = True
+
+# ── Site URL (used to build absolute links in emails/SMS) ────
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
 
 # ── Email Configuration ───────────────────────────────────
 EMAIL_BACKEND     = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
@@ -144,3 +182,62 @@ DEFAULT_FROM_EMAIL  = config('DEFAULT_FROM_EMAIL', default='GymX <noreply@gymx.c
 TWILIO_ACCOUNT_SID  = config('TWILIO_ACCOUNT_SID',  default='')
 TWILIO_AUTH_TOKEN   = config('TWILIO_AUTH_TOKEN',   default='')
 TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER', default='')
+
+# ── Logging ────────────────────────────────────────────────
+# Without this, logger.warning()/error() calls (e.g. failed OTP delivery,
+# account lockouts) only go to Python's ephemeral "last resort" stderr handler
+# and are lost the moment the process restarts. This gives them a durable,
+# rotating file — and a dedicated 'security' channel for auth-sensitive events
+# so they're easy to monitor/alert on separately from ordinary app noise.
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} [{levelname}] {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'app_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'app.log',
+            'maxBytes': 5 * 1024 * 1024,   # 5 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'security_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'security.log',
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 10,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'app_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # Auth-sensitive events (failed logins, OTP brute-force, lockouts) —
+        # written to both the app log and a dedicated security log so they're
+        # easy to isolate for monitoring/alerting without adding a new dependency.
+        'apps.accounts': {
+            'handlers': ['console', 'app_file', 'security_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        '': {  # root logger — everything else
+            'handlers': ['console', 'app_file'],
+            'level': 'WARNING',
+        },
+    },
+}

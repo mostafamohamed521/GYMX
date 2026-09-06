@@ -1,32 +1,39 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}{{ post.title }} — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:42px 0 28px;">
-  <div class="container">
-    <div class="gx-eyebrow">{{ post.published_at|date:"M d, Y" }}</div>
-    <h1 style="font-size:27px;">{{ post.title }}</h1>
-  </div>
-</section>
-<section class="gx-section">
-  <div class="container" style="max-width:760px;">
-    <div class="gx-photo-card" style="aspect-ratio:16/9;margin-bottom:32px;">
-      <img src="{% if post.cover_image %}{{ post.cover_image.url }}{% else %}https://images.unsplash.com/photo-1545612036-2872840642dc?fm=jpg&q=80&w=1200&auto=format&fit=crop{% endif %}" alt="{{ post.title }}" />
+
+{% include 'website/includes/breadcrumb_header.html' with page_title=post.title %}
+
+<section class="section">
+  <div class="container wrap-md">
+    <div class="photo-card" style="aspect-ratio:16/9;margin-bottom:24px;">
+      {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}">{% else %}<img src="{% static 'fitness_template/img/feature-1.jpg' %}" alt="{{ post.title }}">{% endif %}
     </div>
-    <div style="font-size:14px;line-height:1.9;color:var(--text-secondary);white-space:pre-line;">{{ post.content }}</div>
+    <div style="display:flex;gap:20px;font-size:12.5px;color:var(--text-muted);margin-bottom:24px;">
+      <span><i class="fa-solid fa-user" style="margin-right:6px;"></i>{{ post.author.get_full_name|default:"GymX Team" }}</span>
+      <span><i class="fa-solid fa-calendar" style="margin-right:6px;"></i>{{ post.published_at|date:"M d, Y" }}</span>
+    </div>
+    <div style="font-size:14.5px;line-height:1.9;white-space:pre-line;color:var(--text-secondary);">{{ post.content }}</div>
   </div>
 </section>
+
 {% if related %}
-<section class="gx-section muted">
+<section class="section alt">
   <div class="container">
-    <h2 style="font-size:18px;">More from the blog</h2>
-    <div class="gx-grid gx-grid-3">
+    <h2 style="font-size:26px;margin-bottom:24px;">More From The Blog</h2>
+    <div class="grid grid-3">
       {% for r in related %}
-      <a href="{% url 'website:blog_detail' r.slug %}" style="text-decoration:none;color:inherit;">
-        <div class="gx-card"><h3 style="font-size:13.5px;">{{ r.title }}</h3><p style="font-size:12px;color:var(--text-muted);">{{ r.excerpt|truncatechars:70 }}</p></div>
+      <a href="{% url 'website:blog_detail' r.slug %}" style="color:inherit;">
+        <div class="card glow">
+          <h3 style="font-size:16px;">{{ r.title }}</h3>
+          <p style="font-size:12.5px;">{{ r.excerpt|truncatechars:70 }}</p>
+        </div>
       </a>
       {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
+
 {% endblock %}

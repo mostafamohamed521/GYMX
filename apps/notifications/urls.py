@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('expiry-alerts/',                views.expiry_alerts,        name='expiry_alerts'),
     path('payment-reminders/',            views.payment_reminders,    name='payment_reminders'),
+    path('payment-reminders/send/<str:kind>/<int:pk>/', views.payment_reminder_send, name='payment_reminder_send'),
 
     path('scheduled/',                    views.scheduled_messages,   name='scheduled'),
     path('scheduled/new/',                views.scheduled_new,        name='scheduled_new'),

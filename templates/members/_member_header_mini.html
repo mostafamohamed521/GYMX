@@ -1,5 +1,5 @@
 {% load static %}
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
+<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
   <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;overflow:hidden;flex-shrink:0;">
     {% if member.profile_image %}<img src="{{ member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ member.get_initials }}{% endif %}
   </div>

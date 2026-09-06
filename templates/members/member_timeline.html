@@ -26,11 +26,11 @@
       {% for event in events %}
       <div style="display:flex;gap:16px;margin-bottom:24px;position:relative;">
         <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;position:relative;z-index:1;border:3px solid white;box-shadow:var(--shadow-xs);
-          {% if event.get_color == 'green' %}background:#ECFDF5;color:var(--success);
-          {% elif event.get_color == 'blue' %}background:#FBE5EA;color:var(--primary);
-          {% elif event.get_color == 'orange' %}background:#FFFBEB;color:var(--warning);
-          {% elif event.get_color == 'red' %}background:#FEF2F2;color:var(--danger);
-          {% elif event.get_color == 'purple' %}background:#F5F3FF;color:var(--purple);
+          {% if event.get_color == 'green' %}background:rgba(51,209,122,0.12);color:var(--success);
+          {% elif event.get_color == 'blue' %}background:var(--primary-light);color:var(--primary);
+          {% elif event.get_color == 'orange' %}background:rgba(245,197,66,0.12);color:var(--warning);
+          {% elif event.get_color == 'red' %}background:rgba(245,86,107,0.12);color:var(--danger);
+          {% elif event.get_color == 'purple' %}background:rgba(185,140,255,0.12);color:var(--purple);
           {% else %}background:var(--bg-muted);color:var(--text-muted);{% endif %}">
           <i class="fa-solid {{ event.get_icon }}"></i>
         </div>

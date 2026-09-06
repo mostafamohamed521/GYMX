@@ -9,10 +9,10 @@
 </div>
 <div class="row justify-content-center">
   <div class="col-lg-5">
-    <div class="card-gymx" style="border-color:#FECACA;">
-      <div class="card-header" style="background:#FEF2F2;"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-xmark"></i> Cancel Membership</span></div>
+    <div class="card-gymx" style="border-color:rgba(245,86,107,0.3);">
+      <div class="card-header" style="background:rgba(245,86,107,0.12);"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-xmark"></i> Cancel Membership</span></div>
       <div class="card-body">
-        <div style="background:#FEF2F2;border-radius:var(--radius-xl);padding:14px;margin-bottom:20px;font-size:13px;color:#7F1D1D;">Cancelling will immediately deactivate <strong>{{ sub.member.get_full_name }}'s</strong> {{ sub.plan.name }} membership (expires {{ sub.end_date|date:"M d, Y" }}).</div>
+        <div style="background:rgba(245,86,107,0.12);border-radius:var(--radius-xl);padding:14px;margin-bottom:20px;font-size:13px;color:#FF8FA0;">Cancelling will immediately deactivate <strong>{{ sub.member.get_full_name }}'s</strong> {{ sub.plan.name }} membership (expires {{ sub.end_date|date:"M d, Y" }}).</div>
         <form method="post">
           {% csrf_token %}
           <div class="mb-3">

@@ -33,9 +33,9 @@
   <div class="col-lg-8">
     {% if result %}
     <div class="row g-3 mb-4">
-      <div class="col-md-4"><div style="background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:32px;font-weight:900;">{{ result.mifflin }}</div><div style="font-size:11px;opacity:0.8;margin-top:4px;">Mifflin-St Jeor (kcal)</div></div></div>
-      <div class="col-md-4"><div style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:32px;font-weight:900;">{{ result.harris }}</div><div style="font-size:11px;opacity:0.8;margin-top:4px;">Harris-Benedict (kcal)</div></div></div>
-      <div class="col-md-4"><div style="background:linear-gradient(135deg,#10B981,#059669);border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:32px;font-weight:900;">{{ result.avg }}</div><div style="font-size:11px;opacity:0.8;margin-top:4px;">Average BMR (kcal)</div></div></div>
+      <div class="col-md-4"><div style="background:linear-gradient(135deg,var(--warning),var(--warning));border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:32px;font-weight:900;">{{ result.mifflin }}</div><div style="font-size:11px;opacity:0.8;margin-top:4px;">Mifflin-St Jeor (kcal)</div></div></div>
+      <div class="col-md-4"><div style="background:linear-gradient(135deg,var(--purple),var(--purple));border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:32px;font-weight:900;">{{ result.harris }}</div><div style="font-size:11px;opacity:0.8;margin-top:4px;">Harris-Benedict (kcal)</div></div></div>
+      <div class="col-md-4"><div style="background:linear-gradient(135deg,var(--success),var(--success));border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:32px;font-weight:900;">{{ result.avg }}</div><div style="font-size:11px;opacity:0.8;margin-top:4px;">Average BMR (kcal)</div></div></div>
     </div>
     <div class="card-gymx">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-dumbbell"></i> Calories by Activity Level</span></div>
@@ -56,7 +56,7 @@
             <span style="font-size:15px;font-weight:800;color:var(--primary);">{{ result.moderate }}</span>
             <span style="font-size:11px;color:var(--text-muted);">kcal/day</span>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#FBE5EA;border-radius:var(--radius-xl);border:1.5px solid var(--primary);">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--primary-light);border-radius:var(--radius-xl);border:1.5px solid var(--primary);">
             <span style="flex:1;font-size:13px;font-weight:600;color:var(--primary);">Active</span>
             <span style="font-size:15px;font-weight:800;color:var(--primary);">{{ result.active }}</span>
             <span style="font-size:11px;color:var(--primary);">kcal/day</span>
@@ -70,7 +70,7 @@
       </div>
     </div>
     {% else %}
-    <div style="text-align:center;padding:72px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <div style="text-align:center;padding:72px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
       <i class="fa-solid fa-fire" style="font-size:48px;color:var(--text-muted);display:block;margin-bottom:16px;opacity:0.3;"></i>
       <div style="font-size:16px;font-weight:600;color:var(--text-primary);">Enter your details to calculate BMR</div>
     </div>

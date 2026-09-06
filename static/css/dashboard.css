@@ -2,21 +2,22 @@
 
 /* Welcome banner */
 .welcome-banner {
-  background: linear-gradient(135deg, #0C1844 0%, #93002A 100%);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-muted) 100%);
+  border: 1px solid var(--border);
   border-radius: var(--radius-2xl);
   padding: 24px 28px;
   margin-bottom: 24px;
   position: relative;
   overflow: hidden;
-  color: white;
+  color: var(--text-primary);
 }
 
 .welcome-banner::before {
   content: '';
   position: absolute;
-  right: -40px; top: -40px;
-  width: 200px; height: 200px;
-  background: rgba(255,255,255,0.05);
+  right: -60px; top: -60px;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
   border-radius: 50%;
 }
 
@@ -25,7 +26,7 @@
   position: absolute;
   right: 60px; bottom: -60px;
   width: 150px; height: 150px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.03);
   border-radius: 50%;
 }
 
@@ -38,15 +39,16 @@
 }
 
 .welcome-text h2 {
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
   margin-bottom: 4px;
   letter-spacing: -0.2px;
 }
 
 .welcome-text p {
-  color: rgba(255,255,255,0.6);
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -54,19 +56,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: var(--bg-hover);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-full);
   padding: 8px 16px;
   font-size: 12.5px;
-  color: rgba(255,255,255,0.9);
+  color: var(--text-primary);
   font-weight: 500;
   backdrop-filter: blur(8px);
 }
 
 .live-dot {
   width: 7px; height: 7px;
-  background: #34D399;
+  background: var(--success);
   border-radius: 50%;
   animation: pulseLive 1.8s ease-in-out infinite;
 }

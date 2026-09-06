@@ -54,7 +54,7 @@
 <div class="row g-3">
   {% for coach in coaches %}
   <div class="col-md-6 col-xl-4">
-    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;transition:all 0.2s;box-shadow:var(--shadow-xs);"
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;transition:all 0.2s;box-shadow:var(--shadow-xs);"
          onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'"
          onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow-xs)';this.style.borderColor='var(--border)'">
 
@@ -110,7 +110,7 @@
   </div>
   {% empty %}
   <div class="col-12">
-    <div style="text-align:center;padding:72px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <div style="text-align:center;padding:72px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
       <i class="fa-solid fa-person-running" style="font-size:40px;color:var(--text-muted);display:block;margin-bottom:14px;opacity:0.4;"></i>
       <div style="font-size:17px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">No coaches found</div>
       <a href="{% url 'coaches:add' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:8px;">Add First Coach</a>

@@ -10,7 +10,7 @@
 /* Left brand panel */
 .auth-brand-panel {
   flex: 1;
-  background: linear-gradient(150deg, #0C1844 0%, #5A1030 55%, #93002A 100%);
+  background: linear-gradient(150deg, #0A0E14 0%, #171C28 55%, #0A0E14 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,8 +26,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.06) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 40%);
+    radial-gradient(circle at 20% 80%, rgba(198,255,62,0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(198,255,62,0.06) 0%, transparent 40%);
 }
 
 /* Floating circles */
@@ -152,7 +152,7 @@
 /* Right form panel */
 .auth-form-panel {
   width: 460px;
-  background: white;
+  background: var(--bg-surface);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -216,7 +216,7 @@
   background: var(--primary);
   border: none;
   border-radius: var(--radius-full);
-  color: white;
+  color: #0A0E14;
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font);

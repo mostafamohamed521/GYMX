@@ -31,14 +31,14 @@
             <input type="text" name="member_id" id="memberSearch" class="form-control"
                    placeholder="e.g. GYM00001" autocomplete="off" autofocus
                    style="font-family:monospace;font-size:15px;letter-spacing:1px;" />
-            <div id="memberDropdown" style="display:none;position:absolute;z-index:200;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);width:320px;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
+            <div id="memberDropdown" style="display:none;position:absolute;z-index:200;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);width:320px;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
           </div>
           <div class="mb-4">
             <label class="form-label">Method</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button type="button" onclick="setMethod('manual',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--primary);background:var(--primary);color:white;cursor:pointer;"><i class="fa-solid fa-hand-pointer"></i> Manual</button>
-              <button type="button" onclick="setMethod('qr',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-qrcode"></i> QR</button>
-              <button type="button" onclick="setMethod('barcode',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:white;color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-barcode"></i> Barcode</button>
+              <button type="button" onclick="setMethod('qr',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-qrcode"></i> QR</button>
+              <button type="button" onclick="setMethod('barcode',this)" class="method-btn" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-full);font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-barcode"></i> Barcode</button>
             </div>
           </div>
           <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;padding:12px;font-size:14px;"><i class="fa-solid fa-right-to-bracket"></i> Check In</button>
@@ -47,9 +47,9 @@
     </div>
 
     <div class="row g-2">
-      <div class="col-4"><div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--success);">{{ inside_count }}</div><div style="font-size:11px;color:var(--text-muted);">Inside</div></div></div>
-      <div class="col-4"><div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--primary);">{{ recent|length }}</div><div style="font-size:11px;color:var(--text-muted);">Today</div></div></div>
-      <div class="col-4"><a href="{% url 'attendance:today' %}" style="display:block;background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;text-decoration:none;"><div style="font-size:22px;font-weight:800;color:var(--accent);"><i class="fa-solid fa-table-list"></i></div><div style="font-size:11px;color:var(--text-muted);">All Today</div></a></div>
+      <div class="col-4"><div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--success);">{{ inside_count }}</div><div style="font-size:11px;color:var(--text-muted);">Inside</div></div></div>
+      <div class="col-4"><div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--primary);">{{ recent|length }}</div><div style="font-size:11px;color:var(--text-muted);">Today</div></div></div>
+      <div class="col-4"><a href="{% url 'attendance:today' %}" style="display:block;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;text-align:center;text-decoration:none;"><div style="font-size:22px;font-weight:800;color:var(--accent);"><i class="fa-solid fa-table-list"></i></div><div style="font-size:11px;color:var(--text-muted);">All Today</div></a></div>
     </div>
   </div>
 
@@ -113,7 +113,7 @@ inp.addEventListener('input', function() {
   dd.innerHTML = f.map(m =>
     `<div onclick="document.getElementById('memberSearch').value='${m.id}';document.getElementById('memberDropdown').style.display='none';"
           style="padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px;"
-          onmouseenter="this.style.background='#FBE5EA'" onmouseleave="this.style.background='white'">
+          onmouseenter="this.style.background='var(--primary-light)'" onmouseleave="this.style.background='white'">
       <strong>${m.name}</strong> <span style="color:var(--text-muted);font-size:11px;font-family:monospace;">${m.id}</span>
     </div>`
   ).join('');

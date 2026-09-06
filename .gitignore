@@ -31,3 +31,7 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Logs (rotating app/security logs written at runtime)
+logs/
+*.log

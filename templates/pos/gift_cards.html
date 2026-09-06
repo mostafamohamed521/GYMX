@@ -18,7 +18,7 @@
 <div class="row g-3">
   {% for c in cards %}
   <div class="col-md-6 col-lg-4">
-    <div style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);border-radius:var(--radius-2xl);padding:20px;color:white;box-shadow:var(--shadow-md);">
+    <div style="background:linear-gradient(135deg,var(--purple),var(--purple));border-radius:var(--radius-2xl);padding:20px;color:white;box-shadow:var(--shadow-md);">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
         <i class="fa-solid fa-gift" style="font-size:24px;opacity:0.8;"></i>
         <span class="badge-gymx {{ c.get_status_color }}" style="font-size:10px;">{{ c.get_status_display }}</span>
@@ -30,7 +30,7 @@
     </div>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No gift cards issued yet</div>
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No gift cards issued yet</div>
   {% endfor %}
 </div>
 {% endblock %}

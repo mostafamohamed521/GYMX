@@ -4,6 +4,7 @@ Handles all email (Gmail SMTP) and SMS (Twilio) communications.
 """
 import logging
 from django.conf import settings
+from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -135,20 +136,20 @@ def send_welcome_email(user) -> bool:
     html = f"""
     {_email_header()}
     <div style="padding:32px 40px;">
-      <h2 style="font-size:22px;font-weight:700;color:#0F172A;margin-bottom:8px;">
+      <h2 style="font-size:22px;font-weight:700;color:#0C1844;margin-bottom:8px;">
         Welcome to GymX, {user.get_short_name()}! 💪
       </h2>
-      <p style="font-size:14px;color:#475569;line-height:1.7;margin-bottom:20px;">
+      <p style="font-size:14px;color:#5B5F6E;line-height:1.7;margin-bottom:20px;">
         Your account has been created successfully. You now have access to the
         GymX Gym Management System.
       </p>
-      <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;margin-bottom:24px;">
-        <div style="font-size:12px;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Your Account Details</div>
-        <div style="font-size:14px;color:#0F172A;margin-bottom:8px;"><strong>Name:</strong> {user.get_full_name()}</div>
-        <div style="font-size:14px;color:#0F172A;margin-bottom:8px;"><strong>Username:</strong> {user.username}</div>
-        <div style="font-size:14px;color:#0F172A;"><strong>Role:</strong> {user.get_role_display()}</div>
+      <div style="background:#FDF6EA;border:1px solid #EADFCB;border-radius:12px;padding:20px;margin-bottom:24px;">
+        <div style="font-size:12px;font-weight:600;color:#6F7482;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Your Account Details</div>
+        <div style="font-size:14px;color:#0C1844;margin-bottom:8px;"><strong>Name:</strong> {user.get_full_name()}</div>
+        <div style="font-size:14px;color:#0C1844;margin-bottom:8px;"><strong>Username:</strong> {user.username}</div>
+        <div style="font-size:14px;color:#0C1844;"><strong>Role:</strong> {user.get_role_display()}</div>
       </div>
-      <a href="#" style="display:inline-block;background:#3B82F6;color:white;padding:12px 28px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;">
+      <a href="{settings.SITE_URL}{reverse('dashboard:index')}" style="display:inline-block;background:#C80036;color:white;padding:12px 28px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;">
         Access Dashboard
       </a>
     </div>
@@ -165,8 +166,8 @@ def send_login_alert_email(user, ip: str, browser: str = "Unknown") -> bool:
     html = f"""
     {_email_header()}
     <div style="padding:32px 40px;">
-      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">New Login Detected</h2>
-      <p style="font-size:14px;color:#475569;line-height:1.7;margin-bottom:20px;">
+      <h2 style="font-size:20px;font-weight:700;color:#0C1844;margin-bottom:8px;">New Login Detected</h2>
+      <p style="font-size:14px;color:#5B5F6E;line-height:1.7;margin-bottom:20px;">
         Hi {user.get_short_name()}, we detected a new sign-in to your GymX account.
       </p>
       <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:20px;margin-bottom:24px;">
@@ -174,9 +175,9 @@ def send_login_alert_email(user, ip: str, browser: str = "Unknown") -> bool:
         <div style="font-size:13px;color:#92400E;margin-bottom:8px;"><strong>IP Address:</strong> {ip}</div>
         <div style="font-size:13px;color:#92400E;"><strong>Browser:</strong> {browser}</div>
       </div>
-      <p style="font-size:13px;color:#475569;">
+      <p style="font-size:13px;color:#5B5F6E;">
         If this was you, no action needed. If not, please
-        <a href="#" style="color:#3B82F6;font-weight:600;">change your password immediately</a>
+        <a href="{settings.SITE_URL}{reverse('accounts:change_password')}" style="color:#C80036;font-weight:600;">change your password immediately</a>
         and enable Two-Factor Authentication.
       </p>
     </div>
@@ -201,14 +202,14 @@ def send_membership_expiry_email(user, expiry_date: str, days_left: int) -> bool
     html = f"""
     {_email_header()}
     <div style="padding:32px 40px;">
-      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">
+      <h2 style="font-size:20px;font-weight:700;color:#0C1844;margin-bottom:8px;">
         Your Membership is Expiring Soon
       </h2>
-      <p style="font-size:14px;color:#475569;line-height:1.7;margin-bottom:20px;">
+      <p style="font-size:14px;color:#5B5F6E;line-height:1.7;margin-bottom:20px;">
         Hi {user.get_short_name()}, your GymX membership will expire on
         <strong>{expiry_date}</strong> ({days_left} days remaining).
       </p>
-      <a href="#" style="display:inline-block;background:#3B82F6;color:white;padding:12px 28px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;">
+      <a href="{settings.SITE_URL}{reverse('portal:membership')}" style="display:inline-block;background:#C80036;color:white;padding:12px 28px;border-radius:999px;font-size:14px;font-weight:600;text-decoration:none;">
         Renew Membership
       </a>
     </div>
@@ -238,13 +239,13 @@ def send_payment_confirmation_email(user, amount: str, reference: str) -> bool:
         </div>
         <h2 style="font-size:22px;font-weight:700;color:#065F46;">Payment Confirmed</h2>
       </div>
-      <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px;margin-bottom:24px;">
-        <div style="font-size:12px;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Payment Details</div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E2E8F0;font-size:14px;"><span style="color:#475569;">Amount</span><span style="font-weight:700;color:#0F172A;">{amount}</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E2E8F0;font-size:14px;"><span style="color:#475569;">Reference</span><span style="font-weight:600;color:#3B82F6;">#{reference}</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;"><span style="color:#475569;">Date</span><span style="color:#0F172A;">{timezone.now().strftime('%b %d, %Y')}</span></div>
+      <div style="background:#FDF6EA;border:1px solid #EADFCB;border-radius:12px;padding:20px;margin-bottom:24px;">
+        <div style="font-size:12px;font-weight:600;color:#6F7482;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Payment Details</div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EADFCB;font-size:14px;"><span style="color:#5B5F6E;">Amount</span><span style="font-weight:700;color:#0C1844;">{amount}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EADFCB;font-size:14px;"><span style="color:#5B5F6E;">Reference</span><span style="font-weight:600;color:#C80036;">#{reference}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;"><span style="color:#5B5F6E;">Date</span><span style="color:#0C1844;">{timezone.now().strftime('%b %d, %Y')}</span></div>
       </div>
-      <p style="font-size:13px;color:#475569;text-align:center;">Thank you for your payment, {user.get_short_name()}. Keep up the great work!</p>
+      <p style="font-size:13px;color:#5B5F6E;text-align:center;">Thank you for your payment, {user.get_short_name()}. Keep up the great work!</p>
     </div>
     {_email_footer()}
     """
@@ -265,8 +266,8 @@ def send_2fa_enabled_email(user) -> bool:
     html = f"""
     {_email_header()}
     <div style="padding:32px 40px;">
-      <h2 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px;">2FA Enabled Successfully</h2>
-      <p style="font-size:14px;color:#475569;line-height:1.7;margin-bottom:20px;">
+      <h2 style="font-size:20px;font-weight:700;color:#0C1844;margin-bottom:8px;">2FA Enabled Successfully</h2>
+      <p style="font-size:14px;color:#5B5F6E;line-height:1.7;margin-bottom:20px;">
         Hi {user.get_short_name()}, Two-Factor Authentication has been enabled on your GymX account.
         Your account is now more secure.
       </p>
@@ -275,7 +276,7 @@ def send_2fa_enabled_email(user) -> bool:
           🛡️ From now on, you'll need to enter a verification code every time you sign in.
         </p>
       </div>
-      <p style="font-size:13px;color:#475569;">
+      <p style="font-size:13px;color:#5B5F6E;">
         If you did not enable 2FA, please contact support immediately.
       </p>
     </div>
@@ -295,19 +296,19 @@ def _render_otp_email(
     digits = list(otp)
     digit_boxes = "".join(
         f'<span style="display:inline-block;width:44px;height:54px;line-height:54px;'
-        f'text-align:center;font-size:26px;font-weight:800;color:#1D4ED8;'
-        f'background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;margin:0 4px;">'
+        f'text-align:center;font-size:26px;font-weight:800;color:#93002A;'
+        f'background:#FBE5EA;border:2px solid #F3B8C4;border-radius:10px;margin:0 4px;">'
         f'{d}</span>'
         for d in digits
     )
 
-    extra = f'<p style="font-size:12px;color:#94A3B8;margin-top:16px;">{extra_note}</p>' if extra_note else ""
+    extra = f'<p style="font-size:12px;color:#6F7482;margin-top:16px;">{extra_note}</p>' if extra_note else ""
 
     return f"""
     {_email_header()}
     <div style="padding:32px 40px;">
-      <h2 style="font-size:22px;font-weight:700;color:#0F172A;margin-bottom:6px;">{purpose}</h2>
-      <p style="font-size:14px;color:#475569;line-height:1.7;margin-bottom:28px;">
+      <h2 style="font-size:22px;font-weight:700;color:#0C1844;margin-bottom:6px;">{purpose}</h2>
+      <p style="font-size:14px;color:#5B5F6E;line-height:1.7;margin-bottom:28px;">
         Hi {name}, use the verification code below to complete your {purpose.lower()}.
       </p>
 
@@ -324,7 +325,7 @@ def _render_otp_email(
         </p>
       </div>
 
-      <p style="font-size:13px;color:#475569;">
+      <p style="font-size:13px;color:#5B5F6E;">
         If you didn't request this code, you can safely ignore this email.
       </p>
       {extra}
@@ -338,11 +339,11 @@ def _email_header() -> str:
     <!DOCTYPE html>
     <html>
     <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-    <body style="margin:0;padding:0;background:#F0F4FF;font-family:'Helvetica Neue',Arial,sans-serif;">
+    <body style="margin:0;padding:0;background:#FFFBF5;font-family:'Helvetica Neue',Arial,sans-serif;">
     <div style="max-width:560px;margin:32px auto;background:white;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.10);">
 
       <!-- Header -->
-      <div style="background:linear-gradient(135deg,#1E3A8A,#1D4ED8);padding:24px 40px;text-align:center;">
+      <div style="background:linear-gradient(135deg,#0C1844,#93002A);padding:24px 40px;text-align:center;">
         <div style="display:inline-flex;align-items:center;gap:10px;">
           <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;">
             <span style="color:white;font-size:18px;">🏋️</span>
@@ -357,8 +358,8 @@ def _email_footer() -> str:
     from django.utils import timezone
     return f"""
       <!-- Footer -->
-      <div style="background:#F8FAFC;padding:20px 40px;border-top:1px solid #E2E8F0;text-align:center;">
-        <p style="font-size:12px;color:#94A3B8;margin:0 0 6px;">
+      <div style="background:#FDF6EA;padding:20px 40px;border-top:1px solid #EADFCB;text-align:center;">
+        <p style="font-size:12px;color:#6F7482;margin:0 0 6px;">
           © {timezone.now().year} GymX Management System. All rights reserved.
         </p>
         <p style="font-size:11px;color:#CBD5E1;margin:0;">

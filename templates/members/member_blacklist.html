@@ -3,12 +3,15 @@
 {% block title %}Blacklist Member — GymX{% endblock %}
 {% block page_breadcrumb %}Members / {{ member.get_full_name }} / Blacklist{% endblock %}
 {% block content %}
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <div><h1 class="page-title"><i class="fa-solid fa-ban" style="color:var(--danger);font-size:.8em;margin-right:8px;"></i>Blacklist Member</h1><p class="page-subtitle">Restrict this member from accessing the gym</p></div>
+</div>
 {% include 'members/_member_header_mini.html' %}
 <div class="row justify-content-center"><div class="col-lg-5">
-  <div class="card-gymx" style="border-color:#FECACA;">
-    <div class="card-header" style="background:#FEF2F2;"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-ban"></i> Blacklist Member</span></div>
+  <div class="card-gymx" style="border-color:rgba(245,86,107,0.3);">
+    <div class="card-header" style="background:rgba(245,86,107,0.12);"><span class="card-header-title" style="color:var(--danger);"><i class="fa-solid fa-ban"></i> Blacklist Member</span></div>
     <div class="card-body">
-      <div style="background:#FEF2F2;border-radius:var(--radius-xl);padding:12px 16px;margin-bottom:20px;font-size:13px;color:#7F1D1D;"><i class="fa-solid fa-triangle-exclamation"></i> Blacklisting will permanently ban <strong>{{ member.get_full_name }}</strong> from the gym. This action should only be taken for serious violations.</div>
+      <div style="background:rgba(245,86,107,0.12);border-radius:var(--radius-xl);padding:12px 16px;margin-bottom:20px;font-size:13px;color:#FF8FA0;"><i class="fa-solid fa-triangle-exclamation"></i> Blacklisting will permanently ban <strong>{{ member.get_full_name }}</strong> from the gym. This action should only be taken for serious violations.</div>
       <form method="post">
         {% csrf_token %}
         <div class="mb-3"><label class="form-label">Reason for blacklisting <span style="color:var(--danger);">*</span></label>{{ form.blacklist_reason }}{% if form.blacklist_reason.errors %}<div style="color:var(--danger);font-size:12px;margin-top:4px;">{{ form.blacklist_reason.errors|first }}</div>{% endif %}</div>

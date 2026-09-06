@@ -10,7 +10,7 @@
 <div class="row g-3">
   {% for f in feedback %}
   <div class="col-md-6 col-lg-4">
-    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <span style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ f.member.get_full_name|default:"Anonymous" }}</span>
         <span style="font-size:14px;">{% for i in "12345" %}{% if forloop.counter <= f.rating %}⭐{% endif %}{% endfor %}</span>
@@ -21,7 +21,7 @@
     </div>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No feedback submitted yet</div>
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No feedback submitted yet</div>
   {% endfor %}
 </div>
 {% endblock %}

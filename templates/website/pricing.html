@@ -1,34 +1,32 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Pricing — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 32px;">
-  <div class="container gx-hero-grid">
-    <div>
-      <div class="gx-eyebrow"><i class="fa-solid fa-tags"></i> Transparent Pricing</div>
-      <h1 style="font-size:30px;">No hidden fees. Ever.</h1>
-      <p>Straightforward plans that give you full access to everything GymX offers.</p>
-    </div>
-    <div class="gx-hero-photo">
-      <img src="https://images.unsplash.com/photo-1721394749382-223a18ce8bb9?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="Cardio zone at GymX" />
-    </div>
-  </div>
-</section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Pricing" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-grid gx-grid-3">
-      {% for p in plans %}
-      <div class="gx-card">
-        <h3 style="font-size:16px;">{{ p.name }}</h3>
-        <div style="font-size:26px;font-weight:800;margin:10px 0;">{{ p.price|floatformat:0 }} EGP<span style="font-size:12px;font-weight:500;color:var(--text-muted);"> / {{ p.duration_days }} days</span></div>
-        <ul style="list-style:none;padding:0;font-size:12.5px;color:var(--text-secondary);line-height:2;">
-          <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Full gym access</li>
-          <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Group classes included</li>
-          <li><i class="fa-solid fa-check" style="color:var(--success);margin-right:8px;"></i>Locker room access</li>
+    <div class="grid grid-3">
+      {% for plan in plans %}
+      <div class="card{% if plan.is_featured %} glow{% endif %}" style="text-align:center;{% if plan.is_featured %}border-color:var(--accent);{% endif %}">
+        {% if plan.is_featured %}<span class="badge accent" style="margin-bottom:14px;">Most Popular</span>{% endif %}
+        <h3 style="font-size:20px;">{{ plan.name }}</h3>
+        <div style="font-family:var(--font-display);font-size:38px;color:var(--accent);font-weight:700;margin:10px 0;">{{ plan.price|floatformat:0 }}<span style="font-size:14px;color:var(--text-secondary);"> EGP/{{ plan.get_billing_cycle_display }}</span></div>
+        <p style="font-size:13px;margin-bottom:20px;">{{ plan.description|default:"Everything you need to train consistently."|truncatewords:14 }}</p>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;text-align:left;">
+          {% for feat in plan.features|slice:":5" %}<li style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>{{ feat }}</li>{% empty %}
+          <li style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>Full equipment access</li>
+          <li style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>Group classes included</li>
+          {% endfor %}
         </ul>
-        <a href="{% url 'website:contact' %}" class="btn-outline" style="width:100%;justify-content:center;margin-top:10px;">Get Started</a>
+        <a href="{% url 'website:plans' %}" class="btn-primary" style="width:100%;justify-content:center;">Choose Plan</a>
       </div>
-      {% empty %}<p style="color:var(--text-muted);">Pricing coming soon.</p>{% endfor %}
+      {% empty %}
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>Plans are being updated — <a href="{% url 'website:contact' %}" class="text-accent">contact us</a> for current pricing.</p></div>
+      {% endfor %}
     </div>
   </div>
 </section>
+
 {% endblock %}

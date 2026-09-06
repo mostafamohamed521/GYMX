@@ -13,6 +13,46 @@ from .models import (
 from apps.members.models import Member
 from apps.memberships.models import MemberSubscription
 from apps.payments.models import Payment, Invoice
+from apps.accounts.notifications import send_email, send_sms
+
+
+@role_required(*FRONT_DESK_ROLES)
+def payment_reminder_send(request, kind, pk):
+    """Send a payment/invoice/expiry reminder to a member (email + SMS)."""
+    if kind == 'payment':
+        obj = get_object_or_404(Payment, pk=pk)
+        member = obj.member
+        subject = "GymX — Payment Reminder"
+        body = f"Hi {member.get_full_name()}, this is a reminder about your pending payment of {obj.net_amount} EGP."
+        redirect_to = 'notifications:payment_reminders'
+    elif kind == 'invoice':
+        obj = get_object_or_404(Invoice, pk=pk)
+        member = obj.member
+        subject = "GymX — Overdue Invoice Reminder"
+        body = f"Hi {member.get_full_name()}, invoice for {obj.total} EGP was due on {obj.due_date}. Please settle it soon."
+        redirect_to = 'notifications:payment_reminders'
+    elif kind == 'expiry':
+        obj = get_object_or_404(MemberSubscription, pk=pk)
+        member = obj.member
+        subject = "GymX — Membership Expiry Reminder"
+        body = f"Hi {member.get_full_name()}, your membership ends on {obj.end_date}. Renew now to keep training!"
+        redirect_to = 'notifications:expiry_alerts'
+    else:
+        messages.error(request, 'Unknown reminder type.')
+        return redirect('notifications:payment_reminders')
+
+    sent = False
+    if member.email:
+        sent = send_email(member.email, subject, f"<p>{body}</p>") or sent
+    if getattr(member, 'phone', None):
+        sent = send_sms(member.phone, body) or sent
+
+    if sent:
+        messages.success(request, f'Reminder sent to {member.get_full_name()}.')
+    else:
+        messages.warning(request, f'{member.get_full_name()} has no email or phone on file — reminder not sent.')
+
+    return redirect(redirect_to)
 
 
 # ── 1. Notification Center ─────────────────────────────────

@@ -26,11 +26,11 @@ new Chart(document.getElementById('revChart').getContext('2d'), {
   data:{
     labels: [...historyLabels, ...forecastLabels],
     datasets:[
-      { label:'Actual', data:[...historyData, null, null, null], borderColor:'#10B981', backgroundColor:'rgba(16,185,129,0.1)', borderWidth:2.5, pointRadius:4, tension:0.3, fill:true },
-      { label:'Forecast', data:[...Array(historyData.length-1).fill(null), historyData[historyData.length-1], ...forecastData], borderColor:'#F59E0B', borderDash:[6,4], borderWidth:2.5, pointRadius:4, tension:0.3, fill:false }
+      { label:'Actual', data:[...historyData, null, null, null], borderColor:'var(--success)', backgroundColor:'rgba(16,185,129,0.1)', borderWidth:2.5, pointRadius:4, tension:0.3, fill:true },
+      { label:'Forecast', data:[...Array(historyData.length-1).fill(null), historyData[historyData.length-1], ...forecastData], borderColor:'var(--warning)', borderDash:[6,4], borderWidth:2.5, pointRadius:4, tension:0.3, fill:false }
     ]
   },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'#FBEFDD' }, beginAtZero:true } } }
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top' } }, scales:{ x:{ grid:{ display:false } }, y:{ grid:{ color:'var(--bg-hover)' }, beginAtZero:true } } }
 });
 </script>
 {% endblock %}

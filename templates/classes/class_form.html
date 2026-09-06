@@ -23,7 +23,7 @@
             <div class="col-md-3"><label class="form-label">Duration (min)</label><input type="number" name="duration_min" class="form-control" value="{{ cls.duration_min|default:60 }}" /></div>
             <div class="col-md-3"><label class="form-label">Max Capacity</label><input type="number" name="max_capacity" class="form-control" value="{{ cls.max_capacity|default:20 }}" /></div>
             <div class="col-md-3"><label class="form-label">Calories Burn</label><input type="number" name="calories_burn" class="form-control" value="{{ cls.calories_burn|default:300 }}" /></div>
-            <div class="col-md-3"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="{{ cls.color|default:'#C80036' }}" style="height:38px;" /></div>
+            <div class="col-md-3"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="{{ cls.color|default:'var(--primary)' }}" style="height:38px;" /></div>
             <div class="col-md-6"><label class="form-label">Room</label><input type="text" name="room" class="form-control" value="{{ cls.room|default:'' }}" placeholder="e.g. Studio A" /></div>
             <div class="col-12"><label class="form-label">Equipment Needed</label><textarea name="equipment_needed" class="form-control" rows="2">{{ cls.equipment_needed|default:'' }}</textarea></div>
           </div>
@@ -45,7 +45,7 @@
     <div class="col-lg-4">
       <div class="card-gymx">
         <div class="card-body" style="text-align:center;padding:28px;">
-          <div id="colorPreview" style="width:80px;height:80px;border-radius:var(--radius-2xl);background:{{ cls.color|default:'#C80036' }};margin:0 auto 12px;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-chalkboard-user" style="font-size:32px;color:white;"></i></div>
+          <div id="colorPreview" style="width:80px;height:80px;border-radius:var(--radius-2xl);background:{{ cls.color|default:'var(--primary)' }};margin:0 auto 12px;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-chalkboard-user" style="font-size:32px;color:white;"></i></div>
           <div style="font-size:13px;color:var(--text-muted);">Class card preview</div>
         </div>
       </div>

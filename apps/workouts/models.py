@@ -10,7 +10,7 @@ class ExerciseCategory(models.Model):
     name        = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     icon        = models.CharField(max_length=50, default='fa-dumbbell')
-    color       = models.CharField(max_length=7, default='#3B82F6')
+    color       = models.CharField(max_length=7, default='#C80036')
     created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -2,15 +2,28 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
+from django.contrib.sitemaps.views import sitemap
+from apps.website.sitemaps import StaticViewSitemap, BlogSitemap, JobSitemap
 
 def root_redirect(request):
     if request.user.is_authenticated:
         return redirect('dashboard:index')
     return redirect('website:home')
 
+def robots_txt(request):
+    return render(request, 'robots.txt', content_type='text/plain')
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'blog': BlogSitemap,
+    'jobs': JobSitemap,
+}
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', robots_txt, name='robots_txt'),
     path('', root_redirect),
     path('auth/', include('apps.accounts.urls', namespace='accounts')),
     path('dashboard/', include('apps.dashboard.urls', namespace='dashboard')),

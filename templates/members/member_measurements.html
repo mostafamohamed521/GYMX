@@ -85,8 +85,8 @@ grad.addColorStop(0,'rgba(200,0,54,0.15)');
 grad.addColorStop(1,'rgba(200,0,54,0)');
 new Chart(ctx, {
   type:'line',
-  data:{ labels, datasets:[{ data, borderColor:'#C80036', backgroundColor:grad, borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'#C80036', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
-  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'white', borderColor:'#E2E8F0', borderWidth:1, titleColor:'#0C1844', bodyColor:'#5B5F6E', callbacks:{ label: c => c.parsed.y + ' kg' } } }, scales:{ x:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', font:{ family:'Inter', size:11 } } }, y:{ grid:{ color:'#FBEFDD' }, ticks:{ color:'#9AA0AC', font:{ family:'Inter', size:11 }, callback: v => v+' kg' } } } }
+  data:{ labels, datasets:[{ data, borderColor:'var(--primary)', backgroundColor:grad, borderWidth:2, pointBackgroundColor:'white', pointBorderColor:'var(--primary)', pointBorderWidth:2, pointRadius:4, tension:0.4, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'white', borderColor:'var(--border)', borderWidth:1, titleColor:'var(--accent)', bodyColor:'var(--text-secondary)', callbacks:{ label: c => c.parsed.y + ' kg' } } }, scales:{ x:{ grid:{ color:'var(--bg-hover)' }, ticks:{ color:'var(--text-muted)', font:{ family:'Inter', size:11 } } }, y:{ grid:{ color:'var(--bg-hover)' }, ticks:{ color:'var(--text-muted)', font:{ family:'Inter', size:11 }, callback: v => v+' kg' } } } }
 });
 </script>
 {% endif %}

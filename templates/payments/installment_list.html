@@ -55,7 +55,7 @@
   </div>
   {% empty %}
   <div class="col-12">
-    <div style="text-align:center;padding:64px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <div style="text-align:center;padding:64px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
       <i class="fa-solid fa-calendar-days" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;"></i>
       <div style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">No installment plans</div>
       <a href="{% url 'payments:installment_new' %}" class="btn-gymx primary" style="text-decoration:none;margin-top:8px;">Create First Plan</a>

@@ -9,7 +9,7 @@ class ClassCategory(models.Model):
     name        = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     icon        = models.CharField(max_length=50, default='fa-dumbbell')
-    color       = models.CharField(max_length=7, default='#3B82F6')
+    color       = models.CharField(max_length=7, default='#C80036')
 
     class Meta:
         db_table = 'class_categories'
@@ -47,7 +47,7 @@ class GymClass(models.Model):
     room            = models.CharField(max_length=100, blank=True)
     equipment_needed= models.TextField(blank=True)
     calories_burn   = models.PositiveIntegerField(default=300)
-    color           = models.CharField(max_length=7, default='#3B82F6')
+    color           = models.CharField(max_length=7, default='#C80036')
     image           = models.ImageField(upload_to='classes/', null=True, blank=True)
     created_by      = models.ForeignKey(User, on_delete=models.SET_NULL,
                                         null=True, blank=True)

@@ -15,7 +15,7 @@
           <div class="mb-3"><label class="form-label">Name <span style="color:var(--danger);">*</span></label><input type="text" name="name" class="form-control" /></div>
           <div class="row g-2 mb-3">
             <div class="col-7"><label class="form-label">Icon</label><input type="text" name="icon" class="form-control" value="fa-box" /></div>
-            <div class="col-5"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="#C80036" style="height:38px;" /></div>
+            <div class="col-5"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="var(--primary)" style="height:38px;" /></div>
           </div>
           <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add</button>
         </form>
@@ -26,13 +26,13 @@
     <div class="row g-3">
       {% for c in cats %}
       <div class="col-md-6">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xs);">
           <div style="width:44px;height:44px;background:{{ c.color }}20;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;"><i class="fa-solid {{ c.icon }}" style="color:{{ c.color }};font-size:18px;"></i></div>
           <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ c.name }}</div></div>
           <span style="font-size:18px;font-weight:800;color:var(--primary);">{{ c.prod_count }}</span>
         </div>
       </div>
-      {% empty %}<div class="col-12" style="text-align:center;padding:48px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No categories yet</div>{% endfor %}
+      {% empty %}<div class="col-12" style="text-align:center;padding:48px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No categories yet</div>{% endfor %}
     </div>
   </div>
 </div>

@@ -520,6 +520,17 @@ def corporate_list(request):
 
 
 @login_required
+def corporate_detail(request, pk):
+    corp = get_object_or_404(
+        CorporateMembership.objects.select_related('plan', 'created_by'), pk=pk
+    )
+    employees = corp.employees.select_related('member', 'subscription').order_by('-enrolled_at')
+    return render(request, 'memberships/corporate_detail.html', {
+        'corp': corp, 'employees': employees,
+    })
+
+
+@login_required
 def corporate_add(request):
     if request.method == 'POST':
         form = CorporateMembershipForm(request.POST)

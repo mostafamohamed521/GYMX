@@ -1,20 +1,25 @@
 {% extends 'website/base_public.html' %}
-{% block title %}Membership Plans — GymX{% endblock %}
+{% load static %}
+{% block title %}Get Started — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-id-card"></i> Join GymX</div><h1 style="font-size:30px;">Membership Plans</h1></div></section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Get Started" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-grid gx-grid-3">
-      {% for p in plans %}
-      <div class="gx-card" style="text-align:center;">
-        <div class="gx-badge">{{ p.duration_days }} days</div>
-        <h3 style="font-size:18px;margin:16px 0 6px;">{{ p.name }}</h3>
-        <div style="font-size:29px;font-weight:800;">{{ p.price|floatformat:0 }} <span style="font-size:12.5px;font-weight:500;color:var(--text-muted);">EGP</span></div>
-        <p style="font-size:12.5px;color:var(--text-secondary);margin:14px 0;">{{ p.description|default:"Full access to all gym facilities and equipment." }}</p>
-        <a href="{% url 'website:contact' %}" class="btn-primary" style="width:100%;justify-content:center;">Join Now</a>
+    <div class="grid grid-3">
+      {% for plan in plans %}
+      <div class="card glow" style="text-align:center;">
+        <h3 style="font-size:20px;">{{ plan.name }}</h3>
+        <div style="font-family:var(--font-display);font-size:38px;color:var(--accent);font-weight:700;margin:10px 0;">{{ plan.price|floatformat:0 }}<span style="font-size:14px;color:var(--text-secondary);"> EGP/{{ plan.get_billing_cycle_display }}</span></div>
+        <p style="font-size:13px;margin-bottom:24px;">{{ plan.description|default:"Everything you need to train consistently."|truncatewords:14 }}</p>
+        <a href="{% url 'accounts:register_member' %}" class="btn-primary" style="width:100%;justify-content:center;">Register Now</a>
       </div>
-      {% empty %}<p style="color:var(--text-muted);">Plans coming soon. Contact us for details.</p>{% endfor %}
+      {% empty %}
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>Plans are being updated — <a href="{% url 'website:contact' %}" class="text-accent">contact us</a> to get started.</p></div>
+      {% endfor %}
     </div>
   </div>
 </section>
+
 {% endblock %}

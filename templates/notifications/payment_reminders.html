@@ -17,7 +17,7 @@
         <td style="font-size:13px;font-weight:600;">{{ p.member.get_full_name }}</td>
         <td style="font-size:13px;font-weight:700;color:var(--warning);">{{ p.net_amount|floatformat:0 }} EGP</td>
         <td style="font-size:12.5px;color:var(--text-muted);">{{ p.payment_date|date:"M d, Y" }}</td>
-        <td><button class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></td>
+        <td><form method="post" action="{% url 'notifications:payment_reminder_send' 'payment' p.pk %}">{% csrf_token %}<button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></form></td>
       </tr>
       {% empty %}<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No pending payments</td></tr>{% endfor %}
     </tbody>
@@ -31,9 +31,9 @@
       {% for i in overdue_invoices %}
       <tr>
         <td style="font-size:13px;font-weight:600;">{{ i.member.get_full_name }}</td>
-        <td style="font-size:13px;font-weight:700;color:var(--danger);">{{ i.total_amount|floatformat:0 }} EGP</td>
+        <td style="font-size:13px;font-weight:700;color:var(--danger);">{{ i.total|floatformat:0 }} EGP</td>
         <td style="font-size:12.5px;color:var(--text-muted);">{{ i.due_date|date:"M d, Y" }}</td>
-        <td><button class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></td>
+        <td><form method="post" action="{% url 'notifications:payment_reminder_send' 'invoice' i.pk %}">{% csrf_token %}<button type="submit" class="btn-gymx outline" style="font-size:11px;padding:4px 10px;"><i class="fa-solid fa-paper-plane"></i> Send Reminder</button></form></td>
       </tr>
       {% empty %}<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">No overdue invoices</td></tr>{% endfor %}
     </tbody>

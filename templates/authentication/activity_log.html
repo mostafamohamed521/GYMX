@@ -12,21 +12,21 @@
 </div>
 
 <!-- Filter bar -->
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow-xs);">
+<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow-xs);">
   <span style="font-size:13px;font-weight:600;color:var(--text-secondary);">
     <i class="fa-solid fa-filter" style="margin-right:6px;"></i>Filter:
   </span>
   <a href="{% url 'accounts:activity_log' %}"
      class="filter-pill {% if not filter_action %}active{% endif %}"
      style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none;border:1px solid;transition:all 0.15s;
-     {% if not filter_action %}background:var(--primary);color:white;border-color:var(--primary);{% else %}background:white;color:var(--text-secondary);border-color:var(--border);{% endif %}">
+     {% if not filter_action %}background:var(--primary);color:white;border-color:var(--primary);{% else %}background:var(--bg-surface);color:var(--text-secondary);border-color:var(--border);{% endif %}">
     All
   </a>
   {% for val, label in action_choices %}
   <a href="?action={{ val }}"
      class="filter-pill"
      style="padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none;border:1px solid;transition:all 0.15s;
-     {% if filter_action == val %}background:var(--primary);color:white;border-color:var(--primary);{% else %}background:white;color:var(--text-secondary);border-color:var(--border);{% endif %}">
+     {% if filter_action == val %}background:var(--primary);color:white;border-color:var(--primary);{% else %}background:var(--bg-surface);color:var(--text-secondary);border-color:var(--border);{% endif %}">
     {{ label }}
   </a>
   {% endfor %}
@@ -53,10 +53,10 @@
 
         <!-- Dot -->
         <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;position:relative;z-index:1;
-          {% if log.get_color == 'green' %}background:#ECFDF5;color:var(--success);
-          {% elif log.get_color == 'blue' %}background:#FBE5EA;color:var(--primary);
-          {% elif log.get_color == 'orange' %}background:#FFFBEB;color:var(--warning);
-          {% elif log.get_color == 'red' %}background:#FEF2F2;color:var(--danger);
+          {% if log.get_color == 'green' %}background:rgba(51,209,122,0.12);color:var(--success);
+          {% elif log.get_color == 'blue' %}background:var(--primary-light);color:var(--primary);
+          {% elif log.get_color == 'orange' %}background:rgba(245,197,66,0.12);color:var(--warning);
+          {% elif log.get_color == 'red' %}background:rgba(245,86,107,0.12);color:var(--danger);
           {% else %}background:var(--bg-muted);color:var(--text-muted);{% endif %}
           border:3px solid white;box-shadow:var(--shadow-xs);">
           <i class="fa-solid {{ log.get_icon }}"></i>

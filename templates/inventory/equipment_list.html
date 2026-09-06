@@ -24,7 +24,7 @@
   {% for eq in equipment %}
   <div class="col-md-6 col-lg-4">
     <a href="{% url 'inventory:equipment_detail' eq.pk %}" style="text-decoration:none;">
-      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);transition:all 0.15s;" onmouseenter="this.style.borderColor='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)'">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
           <div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ eq.name }}</div><div style="font-size:12px;color:var(--text-muted);">{{ eq.brand.name|default:"—" }}</div></div>
           <span class="badge-gymx {{ eq.get_status_color }}" style="font-size:10px;">{{ eq.get_status_display }}</span>
@@ -35,7 +35,7 @@
     </a>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No equipment yet</div>
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No equipment yet</div>
   {% endfor %}
 </div>
 {% endblock %}

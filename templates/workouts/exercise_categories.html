@@ -18,7 +18,7 @@
           <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
           <div class="row g-2 mb-3">
             <div class="col-7"><label class="form-label">Icon (FA class)</label><input type="text" name="icon" class="form-control" value="fa-dumbbell" placeholder="fa-dumbbell" /></div>
-            <div class="col-5"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="#C80036" style="height:38px;" /></div>
+            <div class="col-5"><label class="form-label">Color</label><input type="color" name="color" class="form-control" value="var(--primary)" style="height:38px;" /></div>
           </div>
           <button type="submit" class="btn-gymx primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Add</button>
         </form>
@@ -29,7 +29,7 @@
     <div class="row g-3">
       {% for cat in cats %}
       <div class="col-md-6">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-xs);">
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-xs);">
           <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:{{ cat.color }}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i class="fa-solid {{ cat.icon }}" style="font-size:20px;color:{{ cat.color }};"></i>
           </div>
@@ -41,7 +41,7 @@
         </div>
       </div>
       {% empty %}
-      <div class="col-12" style="text-align:center;padding:48px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+      <div class="col-12" style="text-align:center;padding:48px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
         <div style="font-size:15px;color:var(--text-muted);">No categories yet — add one</div>
       </div>
       {% endfor %}

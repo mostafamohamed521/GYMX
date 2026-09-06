@@ -12,7 +12,7 @@
 </div>
 
 <!-- Capacity bar -->
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:18px 20px;margin-bottom:24px;box-shadow:var(--shadow-xs);">
+<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:18px 20px;margin-bottom:24px;box-shadow:var(--shadow-xs);">
   <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
     <span style="font-size:14px;font-weight:700;color:var(--text-primary);">Capacity</span>
     <span style="font-size:14px;font-weight:700;color:{% if session.is_full %}var(--danger){% else %}var(--success){% endif %};">{{ session.booked_count }} / {{ session.gym_class.max_capacity }}</span>

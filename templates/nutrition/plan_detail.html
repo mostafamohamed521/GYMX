@@ -19,8 +19,8 @@
 </div>
 
 <!-- Member strip -->
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-xs);">
-  <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:white;overflow:hidden;flex-shrink:0;">
+<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-xs);">
+  <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--success),var(--success));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:white;overflow:hidden;flex-shrink:0;">
     {% if plan.member.profile_image %}<img src="{{ plan.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ plan.member.get_initials }}{% endif %}
   </div>
   <div style="flex:1;">
@@ -30,9 +30,9 @@
   <div style="display:flex;gap:20px;">
     <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--primary);">{{ plan.daily_calories }}</div><div style="font-size:10px;color:var(--text-muted);">kcal/day</div></div>
     <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#EC4899;">{{ plan.daily_protein }}g</div><div style="font-size:10px;color:var(--text-muted);">protein</div></div>
-    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#F59E0B;">{{ plan.daily_carbs }}g</div><div style="font-size:10px;color:var(--text-muted);">carbs</div></div>
-    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#10B981;">{{ plan.daily_fat }}g</div><div style="font-size:10px;color:var(--text-muted);">fat</div></div>
-    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#C80036;">{{ plan.daily_water_ml }}</div><div style="font-size:10px;color:var(--text-muted);">ml water</div></div>
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--warning);">{{ plan.daily_carbs }}g</div><div style="font-size:10px;color:var(--text-muted);">carbs</div></div>
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--success);">{{ plan.daily_fat }}g</div><div style="font-size:10px;color:var(--text-muted);">fat</div></div>
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--primary);">{{ plan.daily_water_ml }}</div><div style="font-size:10px;color:var(--text-muted);">ml water</div></div>
   </div>
 </div>
 
@@ -53,7 +53,7 @@
           </div>
           <div style="flex:1;padding:10px 14px;display:flex;gap:8px;flex-wrap:wrap;">
             {% for entry in day_meals %}
-            <span style="background:{% if entry.meal.meal_type == 'breakfast' %}#FEF9C3{% elif entry.meal.meal_type == 'lunch' %}#FBE5EA{% elif entry.meal.meal_type == 'dinner' %}#F3E8FF{% elif entry.meal.meal_type == 'snack' %}#DCFCE7{% else %}#FFE4E6{% endif %};padding:5px 10px;border-radius:var(--radius-full);font-size:12px;font-weight:500;color:var(--text-primary);">
+            <span style="background:{% if entry.meal.meal_type == 'breakfast' %}rgba(245,197,66,0.18){% elif entry.meal.meal_type == 'lunch' %}var(--primary-light){% elif entry.meal.meal_type == 'dinner' %}rgba(185,140,255,0.16){% elif entry.meal.meal_type == 'snack' %}rgba(51,209,122,0.2){% else %}rgba(244,114,182,0.16){% endif %};padding:5px 10px;border-radius:var(--radius-full);font-size:12px;font-weight:500;color:var(--text-primary);">
               {{ entry.meal.name }} <span style="font-size:10px;opacity:0.7;">({{ entry.meal.total_calories|floatformat:0 }} kcal)</span>
             </span>
             {% empty %}

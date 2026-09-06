@@ -1,30 +1,37 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Testimonials — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 32px;">
-  <div class="container gx-hero-grid">
-    <div>
-      <div class="gx-eyebrow"><i class="fa-solid fa-quote-left"></i> Real Results</div>
-      <h1 style="font-size:30px;">Member Testimonials</h1>
-      <p>Real stories from real members who trained, showed up, and transformed.</p>
-    </div>
-    <div class="gx-hero-photo">
-      <img src="https://images.unsplash.com/photo-1758875568671-9fa1829fe1e3?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="GymX member training success" />
-    </div>
-  </div>
-</section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Testimonials" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-grid gx-grid-3">
-      {% for t in testimonial_list %}
-      <div class="gx-card">
-        <div style="color:var(--warning);font-size:13px;margin-bottom:10px;">{% for i in "12345" %}{% if forloop.counter <= t.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
-        <p style="font-size:13px;font-style:italic;color:var(--text-secondary);">"{{ t.quote }}"</p>
-        <div style="margin-top:16px;font-weight:700;font-size:13px;">{{ t.name }}</div>
-        <div style="font-size:11px;color:var(--text-muted);">{{ t.role }}</div>
+    <div class="grid grid-3">
+      {% for ts in testimonial_list %}
+      <div class="card">
+        <i class="fa-solid fa-quote-left text-accent" style="font-size:20px;margin-bottom:14px;display:block;"></i>
+        <p style="font-size:14px;color:var(--text-primary);margin-bottom:18px;">{{ ts.quote }}</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+            {% if ts.photo %}<img src="{{ ts.photo.url }}" alt="{{ ts.name }}">{% else %}{% include 'website/includes/avatar_placeholder.html' with icon="fa-solid fa-quote-right" %}{% endif %}
+          </div>
+          <div><strong style="color:var(--text-primary);font-size:13.5px;">{{ ts.name }}</strong><div style="font-size:12px;color:var(--text-muted);">{{ ts.role }}</div></div>
+        </div>
+        <div>{% for i in "12345" %}{% if forloop.counter <= ts.rating %}<i class="fa-solid fa-star text-accent"></i>{% else %}<i class="fa-solid fa-star" style="color:var(--border-strong);"></i>{% endif %}{% endfor %}</div>
       </div>
-      {% empty %}<p style="color:var(--text-muted);">No testimonials yet.</p>{% endfor %}
+      {% empty %}
+      <div class="card">
+        <i class="fa-solid fa-quote-left text-accent" style="font-size:20px;margin-bottom:14px;display:block;"></i>
+        <p style="font-size:14px;color:var(--text-primary);margin-bottom:18px;">GymX turned my routine around completely — the coaches actually pay attention.</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;">{% include 'website/includes/avatar_placeholder.html' with icon="fa-solid fa-quote-right" %}</div>
+          <div><strong style="color:var(--text-primary);font-size:13.5px;">Client Name</strong><div style="font-size:12px;color:var(--text-muted);">Member</div></div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </section>
+
 {% endblock %}

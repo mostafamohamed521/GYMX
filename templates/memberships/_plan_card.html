@@ -1,11 +1,11 @@
 {% load static %}
 <div class="col-md-6 col-xl-4">
-  <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;transition:all 0.2s;box-shadow:var(--shadow-xs);"
+  <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);overflow:hidden;transition:all 0.2s;box-shadow:var(--shadow-xs);"
        onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)';this.style.borderColor='var(--primary)'"
        onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow-xs)';this.style.borderColor='var(--border)'">
 
     <!-- Top stripe -->
-    <div style="height:4px;background:{% if plan.plan_type == 'premium' %}linear-gradient(90deg,#8B5CF6,#A78BFA){% elif plan.plan_type == 'vip' %}linear-gradient(90deg,#F59E0B,#FCD34D){% elif plan.plan_type == 'family' %}linear-gradient(90deg,#EC4899,#F9A8D4){% elif plan.plan_type == 'corporate' %}linear-gradient(90deg,#6B7280,#9CA3AF){% else %}linear-gradient(90deg,var(--primary),var(--accent)){% endif %};"></div>
+    <div style="height:4px;background:{% if plan.plan_type == 'premium' %}linear-gradient(90deg,var(--purple),var(--purple)){% elif plan.plan_type == 'vip' %}linear-gradient(90deg,var(--warning),#FCD34D){% elif plan.plan_type == 'family' %}linear-gradient(90deg,#EC4899,#F9A8D4){% elif plan.plan_type == 'corporate' %}linear-gradient(90deg,#6B7280,#9CA3AF){% else %}linear-gradient(90deg,var(--primary),var(--accent)){% endif %};"></div>
 
     <div style="padding:20px;">
       <!-- Header -->

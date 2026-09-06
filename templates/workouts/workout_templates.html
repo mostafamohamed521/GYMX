@@ -24,7 +24,7 @@
   {% for t in templates %}
   <div class="col-md-6 col-lg-4">
     <div class="card-gymx">
-      <div style="background:linear-gradient(135deg,{% if t.goal == 'weight_loss' %}#F59E0B,#EF4444{% elif t.goal == 'muscle_gain' %}#C80036,#93002A{% elif t.goal == 'strength' %}#EF4444,#991B1B{% elif t.goal == 'endurance' %}#10B981,#059669{% else %}#8B5CF6,#6D28D9{% endif %});padding:18px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;">
+      <div style="background:linear-gradient(135deg,{% if t.goal == 'weight_loss' %}var(--warning),var(--danger){% elif t.goal == 'muscle_gain' %}var(--primary),var(--primary-dark){% elif t.goal == 'strength' %}var(--danger),#A83246{% elif t.goal == 'endurance' %}var(--success),var(--success){% else %}var(--purple),var(--purple){% endif %});padding:18px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;">
         <div style="font-size:15px;font-weight:800;color:white;">{{ t.name }}</div>
         <div style="display:flex;gap:8px;margin-top:8px;">
           <span style="background:rgba(255,255,255,0.2);color:white;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:600;">{{ t.get_goal_display }}</span>
@@ -43,7 +43,7 @@
     </div>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
     <i class="fa-solid fa-copy" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i>
     <div style="font-size:16px;font-weight:700;margin-bottom:8px;">No templates yet</div>
     <a href="{% url 'workouts:template_new' %}" class="btn-gymx primary" style="text-decoration:none;">Create First Template</a>

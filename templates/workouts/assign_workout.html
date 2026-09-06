@@ -20,7 +20,7 @@
               {% for t in templates %}<option value="{{ t.pk }}" data-goal="{{ t.get_goal_display }}" data-weeks="{{ t.duration_weeks }}" data-days="{{ t.days_per_week }}" data-min="{{ t.session_duration }}" data-diff="{{ t.difficulty }}">{{ t.name }}</option>{% endfor %}
             </select>
           </div>
-          <div id="templateInfo" style="display:none;background:#FBE5EA;border:1px solid #F3B8C4;border-radius:var(--radius-xl);padding:14px 16px;margin-bottom:16px;">
+          <div id="templateInfo" style="display:none;background:var(--primary-light);border:1px solid rgba(198,255,62,0.35);border-radius:var(--radius-xl);padding:14px 16px;margin-bottom:16px;">
             <div style="display:flex;gap:16px;flex-wrap:wrap;">
               <div style="text-align:center;"><div id="tGoal" style="font-size:13px;font-weight:700;color:var(--primary);"></div><div style="font-size:10px;color:var(--text-muted);">Goal</div></div>
               <div style="text-align:center;"><div id="tWeeks" style="font-size:13px;font-weight:700;color:var(--primary);"></div><div style="font-size:10px;color:var(--text-muted);">Weeks</div></div>

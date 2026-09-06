@@ -52,32 +52,32 @@
   <div class="col-lg-7">
     {% if result %}
     <div class="row g-3 mb-4">
-      <div class="col-md-4"><div style="background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:36px;font-weight:900;">{{ result.bmr }}</div><div style="font-size:12px;opacity:0.85;margin-top:4px;">BMR (kcal)</div><div style="font-size:11px;opacity:0.7;margin-top:2px;">Base metabolic rate</div></div></div>
-      <div class="col-md-4"><div style="background:linear-gradient(135deg,#C80036,#93002A);border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:36px;font-weight:900;">{{ result.tdee }}</div><div style="font-size:12px;opacity:0.85;margin-top:4px;">TDEE (kcal)</div><div style="font-size:11px;opacity:0.7;margin-top:2px;">Total daily expenditure</div></div></div>
-      <div class="col-md-4"><div style="background:linear-gradient(135deg,#10B981,#059669);border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:36px;font-weight:900;">{{ result.target }}</div><div style="font-size:12px;opacity:0.85;margin-top:4px;">Target (kcal)</div><div style="font-size:11px;opacity:0.7;margin-top:2px;">Daily goal</div></div></div>
+      <div class="col-md-4"><div style="background:linear-gradient(135deg,var(--warning),var(--warning));border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:36px;font-weight:900;">{{ result.bmr }}</div><div style="font-size:12px;opacity:0.85;margin-top:4px;">BMR (kcal)</div><div style="font-size:11px;opacity:0.7;margin-top:2px;">Base metabolic rate</div></div></div>
+      <div class="col-md-4"><div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:36px;font-weight:900;">{{ result.tdee }}</div><div style="font-size:12px;opacity:0.85;margin-top:4px;">TDEE (kcal)</div><div style="font-size:11px;opacity:0.7;margin-top:2px;">Total daily expenditure</div></div></div>
+      <div class="col-md-4"><div style="background:linear-gradient(135deg,var(--success),var(--success));border-radius:var(--radius-2xl);padding:20px;text-align:center;color:white;box-shadow:var(--shadow-md);"><div style="font-size:36px;font-weight:900;">{{ result.target }}</div><div style="font-size:12px;opacity:0.85;margin-top:4px;">Target (kcal)</div><div style="font-size:11px;opacity:0.7;margin-top:2px;">Daily goal</div></div></div>
     </div>
     <div class="card-gymx mb-4">
       <div class="card-header"><span class="card-header-title"><i class="fa-solid fa-chart-pie"></i> Recommended Macros</span></div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-4">
-            <div style="text-align:center;padding:16px;background:#FDF2F8;border-radius:var(--radius-xl);border:2px solid #FBCFE8;">
+            <div style="text-align:center;padding:16px;background:rgba(244,114,182,0.12);border-radius:var(--radius-xl);border:2px solid rgba(244,114,182,0.35);">
               <div style="font-size:28px;font-weight:800;color:#EC4899;">{{ result.protein }}g</div>
-              <div style="font-size:12px;color:#9D174D;font-weight:600;">Protein</div>
+              <div style="font-size:12px;color:#FF9EC7;font-weight:600;">Protein</div>
               <div style="font-size:11px;color:var(--text-muted);">30% · {{ result.protein|floatformat:0 }}g × 4 kcal</div>
             </div>
           </div>
           <div class="col-md-4">
-            <div style="text-align:center;padding:16px;background:#FFFBEB;border-radius:var(--radius-xl);border:2px solid #FDE68A;">
-              <div style="font-size:28px;font-weight:800;color:#D97706;">{{ result.carbs }}g</div>
-              <div style="font-size:12px;color:#92400E;font-weight:600;">Carbohydrates</div>
+            <div style="text-align:center;padding:16px;background:rgba(245,197,66,0.12);border-radius:var(--radius-xl);border:2px solid rgba(245,197,66,0.3);">
+              <div style="font-size:28px;font-weight:800;color:var(--warning);">{{ result.carbs }}g</div>
+              <div style="font-size:12px;color:#FFD873;font-weight:600;">Carbohydrates</div>
               <div style="font-size:11px;color:var(--text-muted);">40% · {{ result.carbs|floatformat:0 }}g × 4 kcal</div>
             </div>
           </div>
           <div class="col-md-4">
-            <div style="text-align:center;padding:16px;background:#F0FDF4;border-radius:var(--radius-xl);border:2px solid #BBF7D0;">
-              <div style="font-size:28px;font-weight:800;color:#059669;">{{ result.fat }}g</div>
-              <div style="font-size:12px;color:#065F46;font-weight:600;">Fat</div>
+            <div style="text-align:center;padding:16px;background:rgba(51,209,122,0.12);border-radius:var(--radius-xl);border:2px solid rgba(51,209,122,0.4);">
+              <div style="font-size:28px;font-weight:800;color:var(--success);">{{ result.fat }}g</div>
+              <div style="font-size:12px;color:#6EE7A8;font-weight:600;">Fat</div>
               <div style="font-size:11px;color:var(--text-muted);">30% · {{ result.fat|floatformat:0 }}g × 9 kcal</div>
             </div>
           </div>
@@ -86,7 +86,7 @@
     </div>
     <a href="{% url 'nutrition:plan_new' %}" class="btn-gymx primary" style="text-decoration:none;width:100%;justify-content:center;"><i class="fa-solid fa-plus"></i> Create Nutrition Plan with These Values</a>
     {% else %}
-    <div style="text-align:center;padding:72px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);">
+    <div style="text-align:center;padding:72px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);">
       <i class="fa-solid fa-calculator" style="font-size:48px;color:var(--text-muted);display:block;margin-bottom:16px;opacity:0.3;"></i>
       <div style="font-size:16px;font-weight:600;color:var(--text-primary);">Fill in the form to calculate</div>
       <div style="font-size:13px;color:var(--text-muted);margin-top:8px;">We use the Mifflin-St Jeor equation</div>

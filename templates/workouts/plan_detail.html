@@ -18,7 +18,7 @@
 </div>
 
 <!-- Member + progress -->
-<div style="background:white;border:1px solid var(--border);border-radius:var(--radius-2xl);padding:18px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow-xs);flex-wrap:wrap;">
+<div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-2xl);padding:18px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow-xs);flex-wrap:wrap;">
   <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:white;overflow:hidden;flex-shrink:0;">
     {% if plan.member.profile_image %}<img src="{{ plan.member.profile_image.url }}" style="width:100%;height:100%;object-fit:cover;" />{% else %}{{ plan.member.get_initials }}{% endif %}
   </div>

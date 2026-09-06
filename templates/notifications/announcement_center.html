@@ -13,7 +13,7 @@
 <div class="row g-3">
   {% for a in announcements %}
   <div class="col-md-6">
-    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);{% if a.is_pinned %}border-left:4px solid var(--warning);{% endif %}">
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;box-shadow:var(--shadow-xs);{% if a.is_pinned %}border-left:4px solid var(--warning);{% endif %}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
         <span style="font-size:14px;font-weight:700;color:var(--text-primary);">{% if a.is_pinned %}📌 {% endif %}{{ a.title }}</span>
         <span class="badge-gymx {{ a.get_priority_color }}" style="font-size:10px;">{{ a.get_priority_display }}</span>
@@ -23,7 +23,7 @@
     </div>
   </div>
   {% empty %}
-  <div class="col-12" style="text-align:center;padding:56px;background:white;border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No announcements yet</div>
+  <div class="col-12" style="text-align:center;padding:56px;background:var(--bg-surface);border-radius:var(--radius-2xl);border:1px solid var(--border);color:var(--text-muted);">No announcements yet</div>
   {% endfor %}
 </div>
 {% endblock %}

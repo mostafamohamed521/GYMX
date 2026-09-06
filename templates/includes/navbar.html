@@ -20,6 +20,11 @@
 
   <div class="navbar-actions">
 
+    <!-- View public website -->
+    <a href="{% url 'website:home' %}" target="_blank" rel="noopener" class="navbar-btn" title="View Website">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i>
+    </a>
+
     <!-- Notifications -->
     <div class="navbar-btn" data-bs-toggle="dropdown" style="position:relative;" title="Notifications">
       <i class="fa-solid fa-bell"></i>
@@ -40,10 +45,10 @@
       <li>
         <a class="dropdown-item" href="{% url 'accounts:notifications' %}" style="align-items:flex-start;gap:10px;padding:12px 16px;">
           <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;
-            {% if notif.type == 'success' or notif.type == 'payment' %}background:#ECFDF5;color:var(--success);
-            {% elif notif.type == 'warning' %}background:#FFFBEB;color:var(--warning);
-            {% elif notif.type == 'danger' %}background:#FEF2F2;color:var(--danger);
-            {% else %}background:#FBE5EA;color:var(--primary);{% endif %}">
+            {% if notif.type == 'success' or notif.type == 'payment' %}background:rgba(51,209,122,0.12);color:var(--success);
+            {% elif notif.type == 'warning' %}background:rgba(245,197,66,0.12);color:var(--warning);
+            {% elif notif.type == 'danger' %}background:rgba(245,86,107,0.12);color:var(--danger);
+            {% else %}background:var(--primary-light);color:var(--primary);{% endif %}">
             <i class="fa-solid {{ notif.get_icon }}"></i>
           </div>
           <div>

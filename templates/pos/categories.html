@@ -10,7 +10,7 @@
 <div class="row g-3">
   {% for c in cats %}
   <div class="col-md-4 col-6">
-    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:18px;text-align:center;box-shadow:var(--shadow-xs);">
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:18px;text-align:center;box-shadow:var(--shadow-xs);">
       <div style="width:48px;height:48px;background:{{ c.color }}20;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i class="fa-solid {{ c.icon }}" style="color:{{ c.color }};font-size:20px;"></i></div>
       <div style="font-size:14px;font-weight:700;color:var(--text-primary);">{{ c.name }}</div>
       <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">{{ c.prod_count }} sellable product{{ c.prod_count|pluralize }}</div>

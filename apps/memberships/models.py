@@ -9,8 +9,8 @@ from apps.members.models import Member
 class MembershipCategory(models.Model):
     name        = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
-    color       = models.CharField(max_length=7, default='#3B82F6',
-                                   help_text='Hex color e.g. #3B82F6')
+    color       = models.CharField(max_length=7, default='#C80036',
+                                   help_text='Hex color e.g. #C80036')
     icon        = models.CharField(max_length=50, default='fa-id-card',
                                    help_text='Font Awesome icon class')
     is_active   = models.BooleanField(default=True)

@@ -35,8 +35,8 @@
           <input type="hidden" name="product_id" value="{{ p.pk }}" />
           <input type="hidden" name="qty" value="1" />
           <button type="submit" style="width:100%;border:none;background:none;padding:0;cursor:pointer;text-align:left;">
-            <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;transition:all 0.15s;box-shadow:var(--shadow-xs);" onmouseenter="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--border)';this.style.transform=''">
-              <div style="width:100%;height:70px;background:{% if p.category %}{{ p.category.color }}15{% else %}#FBEFDD{% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px;transition:all 0.15s;box-shadow:var(--shadow-xs);" onmouseenter="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--border)';this.style.transform=''">
+              <div style="width:100%;height:70px;background:{% if p.category %}{{ p.category.color }}15{% else %}var(--bg-hover){% endif %};border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
                 <i class="fa-solid {% if p.category %}{{ p.category.icon }}{% else %}fa-box{% endif %}" style="font-size:26px;color:{% if p.category %}{{ p.category.color }}{% else %}var(--text-muted){% endif %};"></i>
               </div>
               <div style="font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</div>

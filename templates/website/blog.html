@@ -1,25 +1,31 @@
 {% extends 'website/base_public.html' %}
+{% load static %}
 {% block title %}Blog — GymX{% endblock %}
 {% block content %}
-<section class="gx-hero" style="padding:48px 0 40px;"><div class="container"><div class="gx-eyebrow"><i class="fa-solid fa-pen-nib"></i> Insights & Tips</div><h1 style="font-size:30px;">GymX Blog</h1></div></section>
-<section class="gx-section">
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Our Blog" %}
+
+<section class="section">
   <div class="container">
-    <div class="gx-grid gx-grid-3">
-      {% for p in posts %}
-      <a href="{% url 'website:blog_detail' p.slug %}" style="text-decoration:none;color:inherit;">
-        <div class="gx-card" style="padding:0;overflow:hidden;">
-          <div style="width:100%;aspect-ratio:16/10;background:var(--bg-muted);overflow:hidden;">
-            <img src="{% if p.cover_image %}{{ p.cover_image.url }}{% else %}https://images.unsplash.com/photo-1646492169621-d8da8016354a?fm=jpg&q=80&w=800&auto=format&fit=crop{% endif %}" style="width:100%;height:100%;object-fit:cover;" alt="{{ p.title }}" />
+    <div class="grid grid-3">
+      {% for post in posts %}
+      <a href="{% url 'website:blog_detail' post.slug %}" style="color:inherit;">
+        <div class="card glow" style="padding:0;overflow:hidden;">
+          <div class="photo-card" style="aspect-ratio:16/10;border-radius:0;border:none;">
+            {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}">{% else %}{% cycle 'feature-1.jpg' 'feature-2.jpg' 'feature-3.jpg' 'feature-4.jpg' as blog_img %}<img src="{% static 'fitness_template/img/' %}{{ blog_img }}" alt="{{ post.title }}">{% endif %}
           </div>
           <div style="padding:20px;">
-            <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:8px;">{{ p.published_at|date:"M d, Y" }}</div>
-            <h3 style="font-size:14px;margin:0 0 8px;">{{ p.title }}</h3>
-            <p style="font-size:12.5px;color:var(--text-secondary);">{{ p.excerpt|truncatechars:90 }}</p>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;"><i class="fa-solid fa-calendar" style="margin-right:6px;"></i>{{ post.published_at|date:"M d, Y" }}</div>
+            <h3 style="font-size:17px;">{{ post.title }}</h3>
+            <p style="font-size:13px;">{{ post.excerpt|default:post.content|truncatewords:16 }}</p>
           </div>
         </div>
       </a>
-      {% empty %}<p style="color:var(--text-muted);">No blog posts yet.</p>{% endfor %}
+      {% empty %}
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>No posts yet — check back soon.</p></div>
+      {% endfor %}
     </div>
   </div>
 </section>
+
 {% endblock %}
