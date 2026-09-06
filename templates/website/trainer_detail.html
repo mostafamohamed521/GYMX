@@ -1,0 +1,50 @@
+{% extends 'website/base_public.html' %}
+{% load static %}
+{% block title %}{{ coach.get_full_name }} — GymX Trainers{% endblock %}
+{% block content %}
+
+{% include 'website/includes/breadcrumb_header.html' with page_title=coach.get_full_name %}
+
+<section class="section">
+  <div class="container">
+    <a href="{% url 'website:trainers' %}" class="btn-outline btn-sm" style="margin-bottom:32px;display:inline-flex;"><i class="fa-solid fa-arrow-left"></i> All Trainers</a>
+    <div class="grid grid-2" style="grid-template-columns:320px 1fr;gap:44px;">
+      <div>
+        <div class="photo-card" style="aspect-ratio:3/4;margin-bottom:16px;">
+          {% if coach.profile_image %}<img src="{{ coach.profile_image.url }}" alt="{{ coach.get_full_name }}">{% else %}{% include 'website/includes/avatar_placeholder.html' %}{% endif %}
+        </div>
+        <div class="card center" style="margin-bottom:16px;">
+          <div class="text-accent" style="font-family:var(--font-display);font-size:20px;">⭐ {{ coach.rating }}</div>
+          <div style="font-size:12px;color:var(--text-muted);">{{ coach.experience_years }} years experience</div>
+        </div>
+        {% if coach.instagram or coach.youtube %}
+        <div style="display:flex;gap:10px;justify-content:center;">
+          {% if coach.instagram %}<a href="{{ coach.instagram }}" target="_blank" rel="noopener" class="btn-ghost btn-sm"><i class="fa-brands fa-instagram"></i></a>{% endif %}
+          {% if coach.youtube %}<a href="{{ coach.youtube }}" target="_blank" rel="noopener" class="btn-ghost btn-sm"><i class="fa-brands fa-youtube"></i></a>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      <div>
+        <h2 style="font-size:32px;">{{ coach.get_full_name }}</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+          {% for spec in coach.specializations.all %}<span class="badge accent">{{ spec.name }}</span>{% endfor %}
+        </div>
+        <p class="lead" style="margin-bottom:24px;">{{ coach.bio|default:"A dedicated GymX coach ready to help you reach your goals." }}</p>
+        {% if coach.certificates.all %}
+        <h3 style="font-size:18px;margin-bottom:14px;">Certifications</h3>
+        <div class="grid grid-2" style="margin-bottom:28px;">
+          {% for cert in coach.certificates.all %}
+          <div class="card" style="padding:16px;">
+            <div style="font-weight:600;color:var(--text-primary);font-size:13.5px;">{{ cert.title }}</div>
+            <div style="font-size:12px;color:var(--text-muted);">{{ cert.issued_by }} · {{ cert.issue_date|date:"Y" }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <a href="{% url 'website:contact' %}" class="btn-primary">Book a Session With {{ coach.first_name }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
