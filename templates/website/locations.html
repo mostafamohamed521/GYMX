@@ -1,0 +1,36 @@
+{% extends 'website/base_public.html' %}
+{% load static %}
+{% block title %}Our Locations — GymX{% endblock %}
+{% block content %}
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Our Locations" %}
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2">
+      {% for b in branches %}
+      <div class="card glow">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <h3 style="font-size:19px;margin:0;">{{ b.name }}</h3>
+          <div style="display:flex;gap:6px;">
+            {% if b.is_main_branch %}<span class="badge accent">Main</span>{% endif %}
+            {% if b.status == 'coming_soon' %}<span class="badge">Coming Soon</span>{% endif %}
+          </div>
+        </div>
+        {% if b.address or b.city %}<p style="font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-location-dot text-accent" style="margin-right:8px;"></i>{{ b.address }}{% if b.city %}{% if b.address %}, {% endif %}{{ b.city }}{% endif %}</p>{% endif %}
+        <p style="font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-clock text-accent" style="margin-right:8px;"></i>{{ b.opening_time|time:"g:i A" }} – {{ b.closing_time|time:"g:i A" }}, daily</p>
+        {% if b.phone %}<p style="font-size:13px;margin-bottom:8px;"><i class="fa-solid fa-phone text-accent" style="margin-right:8px;"></i>{{ b.phone }}</p>{% endif %}
+        {% if b.email %}<p style="font-size:13px;margin-bottom:20px;"><i class="fa-solid fa-envelope text-accent" style="margin-right:8px;"></i>{{ b.email }}</p>{% endif %}
+        <div style="display:flex;gap:10px;">
+          {% if b.latitude and b.longitude %}<a href="https://www.google.com/maps?q={{ b.latitude }},{{ b.longitude }}" target="_blank" rel="noopener" class="btn-ghost btn-sm">Directions</a>{% endif %}
+          {% if b.status == 'active' %}<a href="{% url 'website:contact' %}" class="btn-primary btn-sm">Contact</a>{% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="center wrap-md" style="grid-column:1/-1;padding:40px;"><p>No locations to show right now — check back soon.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
