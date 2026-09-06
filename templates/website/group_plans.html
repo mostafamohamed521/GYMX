@@ -1,0 +1,59 @@
+{% extends 'website/base_public.html' %}
+{% load static %}
+{% block title %}Family & Corporate Plans — GymX{% endblock %}
+{% block content %}
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Family & Corporate Plans" %}
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="icon-box"><i class="fa-solid fa-house-user"></i></div>
+        <h3 style="font-size:19px;">Family Plan</h3>
+        <p style="font-size:13.5px;margin-bottom:16px;">Sign up together and each additional family member gets a discount. Up to 4 members per group.</p>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>One primary account manages the whole family</li>
+          <li style="margin-bottom:8px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>Discount grows with each member added</li>
+          <li style="font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>Everyone keeps their own workout history</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="icon-box"><i class="fa-solid fa-building"></i></div>
+        <h3 style="font-size:19px;">Corporate Plan</h3>
+        <p style="font-size:13.5px;margin-bottom:16px;">Give your team a wellness perk with a dedicated company account and fixed employee discount.</p>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="margin-bottom:8px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>Custom discount rate for your whole company</li>
+          <li style="margin-bottom:8px;font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>One contract, employees enroll individually</li>
+          <li style="font-size:13px;"><i class="fa-solid fa-check text-accent" style="margin-right:8px;"></i>A single point of contact for HR</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container center wrap-md">
+    <div class="card" style="text-align:left;padding:32px;">
+      <h3 style="font-size:20px;margin-bottom:20px;">Talk To Our Team</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom:16px;"><label class="form-label">I'm interested in</label>
+          <select name="plan_type" class="form-control"><option value="Family">Family Plan</option><option value="Corporate">Corporate Plan</option></select>
+        </div>
+        <div class="grid grid-2" style="margin-bottom:16px;">
+          <div><label class="form-label">First Name</label><input type="text" name="first_name" class="form-control" required></div>
+          <div><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-control"></div>
+        </div>
+        <div class="grid grid-2" style="margin-bottom:16px;">
+          <div><label class="form-label">Company (if corporate)</label><input type="text" name="company" class="form-control"></div>
+          <div><label class="form-label">Phone</label><input type="tel" name="phone" class="form-control" required></div>
+        </div>
+        <div style="margin-bottom:20px;"><label class="form-label">Email (optional)</label><input type="email" name="email" class="form-control"></div>
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Request A Callback</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
