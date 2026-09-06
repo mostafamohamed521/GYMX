@@ -1,0 +1,44 @@
+{% extends 'website/base_public.html' %}
+{% load static %}
+{% block title %}Gift Cards — GymX{% endblock %}
+{% block content %}
+
+{% include 'website/includes/breadcrumb_header.html' with page_title="Gift Cards" %}
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="gap:56px;">
+      <div>
+        <span class="eyebrow">Give The Gift Of Fitness</span>
+        <h2>GymX Gift Cards</h2>
+        <p class="lead" style="margin-bottom:24px;">The perfect present for anyone starting their fitness journey. Pick an amount, we'll handle the rest.</p>
+        <div class="grid grid-3" style="margin-bottom:28px;">
+          <div class="card center" style="padding:18px;"><div style="font-family:var(--font-display);font-size:26px;color:var(--accent);">500</div><small style="color:var(--text-muted);">EGP</small></div>
+          <div class="card center" style="padding:18px;"><div style="font-family:var(--font-display);font-size:26px;color:var(--accent);">1000</div><small style="color:var(--text-muted);">EGP</small></div>
+          <div class="card center" style="padding:18px;"><div style="font-family:var(--font-display);font-size:26px;color:var(--accent);">2000</div><small style="color:var(--text-muted);">EGP</small></div>
+        </div>
+        <div style="display:flex;gap:14px;margin-bottom:16px;"><div class="icon-box" style="margin-bottom:0;flex-shrink:0;">1</div><div><strong style="color:var(--text-primary);">Tell us the amount</strong><p style="font-size:13px;margin:2px 0 0;">Any value from 100 to 5,000 EGP.</p></div></div>
+        <div style="display:flex;gap:14px;margin-bottom:16px;"><div class="icon-box" style="margin-bottom:0;flex-shrink:0;">2</div><div><strong style="color:var(--text-primary);">We confirm by phone</strong><p style="font-size:13px;margin:2px 0 0;">Usually within a few hours.</p></div></div>
+        <div style="display:flex;gap:14px;"><div class="icon-box" style="margin-bottom:0;flex-shrink:0;">3</div><div><strong style="color:var(--text-primary);">Card is issued</strong><p style="font-size:13px;margin:2px 0 0;">Ready to redeem at any GymX location.</p></div></div>
+      </div>
+      <div class="card" style="padding:32px;">
+        <h3 style="font-size:20px;margin-bottom:20px;">Request A Gift Card</h3>
+        <form method="post">
+          {% csrf_token %}
+          <div class="grid grid-2" style="margin-bottom:16px;">
+            <div><label class="form-label">First Name</label><input type="text" name="first_name" class="form-control" required></div>
+            <div><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-control"></div>
+          </div>
+          <div class="grid grid-2" style="margin-bottom:16px;">
+            <div><label class="form-label">Phone</label><input type="tel" name="phone" class="form-control" required></div>
+            <div><label class="form-label">Email (optional)</label><input type="email" name="email" class="form-control"></div>
+          </div>
+          <div style="margin-bottom:20px;"><label class="form-label">Amount (EGP)</label><input type="number" name="amount" min="100" max="5000" class="form-control"></div>
+          <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Request Gift Card</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
